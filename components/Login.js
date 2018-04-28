@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
-import { StackNavigator } from 'react-navigation';
 
 class LoginScreen extends Component {
 

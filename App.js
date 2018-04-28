@@ -14,14 +14,15 @@ const RootStack = StackNavigator(
       screen: LoginScreen
     },
     Home: {
-      screen: HomeScreen,
+      screen: HomeScreen
     },
     WhatsNew: {
-      screen: WhatsNewScreen,
+      screen: WhatsNewScreen
     }
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Home'
+    // headerMode: 'none'
   }
 );
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, StatusBar } from 'react-native';
 import { 
   Container, 
   Header, 
@@ -8,14 +8,10 @@ import {
   Right, 
   Title, 
   Content, 
-  Footer, 
-  FooterTab, 
-  Button, 
   Icon, 
   Text,
   List, 
   ListItem,
-  Switch,
   Item, 
   Input,
   Form,
@@ -23,10 +19,11 @@ import {
   Card, 
   CardItem, 
   Thumbnail,
-  View
+  View,
+  Footer,
+  FooterTab,
+  Button
 } from 'native-base';
-import { Col, Row, Grid } from "react-native-easy-grid";
-import { StackNavigator } from 'react-navigation';
 import Expo from "expo";
 import { cards, groups_category } from '../data/dummies';
 
@@ -37,7 +34,7 @@ class HomeScreen extends Component {
 
     this.state = {
       loading: true,
-      isUserLogin: false,
+      isUserLogin: true,
       searchStatus: false
     }
 
@@ -58,11 +55,11 @@ class HomeScreen extends Component {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
-  checkLoginStatus () {
+  checkLoginStatus (url) {
     if (!this.state.isUserLogin) {
       return this.props.navigation.navigate('Login');
     } else {
-      return
+      return this.props.navigation.navigate(url);
     }
   }
 
@@ -142,19 +139,19 @@ class HomeScreen extends Component {
         {/* Content */}
         <Footer>
           <FooterTab>
-            <Button vertical active>
+            <Button onPress={() => this.checkLoginStatus('Home')} vertical active>
               <Icon active name="home" />
               <Text style={{fontSize: 9.5}}>Home</Text>
             </Button>
-            <Button vertical>
+            <Button onPress={() => this.checkLoginStatus('WhatsNew')} vertical>
               <Icon name="megaphone" />
               <Text style={{fontSize: 9.5}}>Baru</Text>
             </Button>
-            <Button vertical>
+            <Button onPress={() => this.checkLoginStatus('Notification')} vertical>
               <Icon name="notifications" />
               <Text style={{fontSize: 9.5}}>Notifikasi</Text>
             </Button>
-            <Button onPress={this.checkLoginStatus} vertical>
+            <Button onPress={() => this.checkLoginStatus('Profile')} vertical>
               <Icon name="person" />
               <Text style={{fontSize: 9.5}}>Profil</Text>
             </Button>
