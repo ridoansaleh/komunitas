@@ -1,9 +1,9 @@
-import img1 from '../static/swim_group.jpg';
-import img2 from '../static/js_group.png';
-import img3 from '../static/python_group.png';
-import group1 from './groups/fishing.jpg';
-import group2 from './groups/hunting.jpg';
-import group3 from './groups/dancing.jpg';
+import img1 from './images/suggestions/swim_group.jpg';
+import img2 from './images/suggestions/js_group.png';
+import img3 from './images/suggestions/python_group.png';
+import img4 from './images/new/fishing.jpg';
+import img5 from './images/new/hunting.jpg';
+import img6 from './images/new/dancing.jpg';
 
 export const cards = [
     {
@@ -54,19 +54,19 @@ export const groups_category = [
 export const new_groups = [
     {
         id: 1,
-        image: group1,
+        image: img4,
         title: "Grup Memancing Jakarta",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
     },
     {
         id: 2,
-        image: group2,
+        image: img5,
         title: "Grup Berburu Bareng",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
     },
     {
         id: 3,
-        image: group3,
+        image: img6,
         title: "Grup Ayou Menari",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
     }
