@@ -29,7 +29,7 @@ class WhatsNewScreen extends Component {
     return (
       <Container>
         <Content padder={true}>
-          <Grid>
+          <Grid style={{ borderBottomWidth: 1, marginBottom: 20 }}>
             <Col>
               <ListItem style={styles.list}>
                 <CheckBox checked={true} />
@@ -47,9 +47,9 @@ class WhatsNewScreen extends Component {
               </ListItem>
             </Col>
           </Grid>
-          {new_groups.map( group => {
+          { new_groups.map( group => {
               return (
-                <Grid key={group.id}>
+                <Grid key={group.id} style={{ marginBottom: 20 }}>
                   <Row>
                     <Image style={{height: 130, width: (width-20)}} source={group.image} />
                   </Row>
@@ -61,8 +61,7 @@ class WhatsNewScreen extends Component {
                   </Row>
                 </Grid>
               )
-            }
-          )}
+          })}
         </Content>
         <Footer>
           <FooterTab>

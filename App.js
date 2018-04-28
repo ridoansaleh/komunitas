@@ -4,6 +4,8 @@ import LoginScreen from './components/Login';
 import HomeScreen from './components/Home';
 import WhatsNewScreen from './components/WhatsNew';
 import SignUpScreen from './components/SignUp';
+import NotificationScreen from './components/Notification';
+import ProfileScreen from './components/Profile';
 
 const RootStack = StackNavigator(
   {
@@ -18,6 +20,12 @@ const RootStack = StackNavigator(
     },
     WhatsNew: {
       screen: WhatsNewScreen
+    },
+    Notification: {
+      screen: NotificationScreen
+    },
+    Profile: {
+      screen: ProfileScreen
     }
   },
   {

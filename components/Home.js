@@ -122,18 +122,19 @@ class HomeScreen extends Component {
             <ListItem itemHeader first>
               <Text>Kategori Grup</Text>
             </ListItem>
-            {groups_category.map(group => {
-                return (<ListItem key={group.id}>
-                  <Left>
-                    <Icon name={group.icon}/>
-                  </Left>
-                  <Body>
-                    <Text>{group.name}</Text>
-                  </Body>
-                  <Right />
-                </ListItem>) 
-              }
-            )}
+            { groups_category.map(group => {
+                return (
+                  <ListItem key={group.id}>
+                    <Left>
+                      <Icon name={group.icon}/>
+                    </Left>
+                    <Body>
+                      <Text>{group.name}</Text>
+                    </Body>
+                    <Right />
+                  </ListItem>
+                ) 
+            })}
           </List>
         </Content>
         {/* Content */}

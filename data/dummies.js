@@ -56,18 +56,45 @@ export const new_groups = [
         id: 1,
         image: img4,
         title: "Grup Memancing Jakarta",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
+        total_members: 1200
     },
     {
         id: 2,
         image: img5,
         title: "Grup Berburu Bareng",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
+        total_members: 190
     },
     {
         id: 3,
         image: img6,
-        title: "Grup Ayou Menari",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales."
+        title: "Grup Ayo Menari",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
+        total_members: 400
+    }
+]
+
+export const avatars = [
+    {
+        id: 1,
+        image: img1,
+        actor: 'Jakarta Berenang',
+        information: 'Mengumumkan meetup terbaru pada tanggal 12 Mei 20018',
+        time: '12.40 WIB'
+    },
+    {
+        id: 2,
+        image: img2,
+        actor: 'JakartaJS',
+        information: " Merubah tanggal Meetup 'Popular JS Framework pada tahun 2018' ",
+        time: '04.50 WIB'
+    },
+    {
+        id: 3,
+        image: img3,
+        actor: 'Jakarta Python',
+        information: 'Mengumumkan meetup terbaru pada tanggal 1 Mei 2018',
+        time: '09.10 WIB'
     }
 ]
