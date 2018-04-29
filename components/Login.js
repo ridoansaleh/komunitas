@@ -20,12 +20,12 @@ class LoginScreen extends Component {
                 <Content padder={true} style={styles.content}>
                 <Form>
                     <Item floatingLabel>
-                    <Label>Email</Label>
-                    <Input />
+                        <Label>Email</Label>
+                        <Input />
                     </Item>
                     <Item floatingLabel last>
-                    <Label>Password</Label>
-                    <Input secureTextEntry={true} />
+                        <Label>Password</Label>
+                        <Input secureTextEntry={true} />
                     </Item>
                     <Button block info style={styles.loginBtn}>
                         <Text> Masuk </Text>

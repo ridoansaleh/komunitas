@@ -81,7 +81,7 @@ class HomeScreen extends Component {
         { !this.state.searchStatus &&
           (<Header>
             <Left>
-              <Icon name='add' style={{color: '#FFFFFF'}} />
+              <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.checkLoginStatus('NewGroup')} />
             </Left>
             <Body style={{ alignItems: 'center' }}>
               <Title>Komunitas</Title>

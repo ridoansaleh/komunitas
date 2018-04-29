@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
+import SignUpScreen from './components/SignUp';
 import LoginScreen from './components/Login';
 import HomeScreen from './components/Home';
 import WhatsNewScreen from './components/WhatsNew';
-import SignUpScreen from './components/SignUp';
 import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
+import NewGroupScreen from './components/NewGroup';
 
 const RootStack = StackNavigator(
   {
@@ -26,6 +27,9 @@ const RootStack = StackNavigator(
     },
     Profile: {
       screen: ProfileScreen
+    },
+    NewGroup: {
+      screen: NewGroupScreen
     }
   },
   {
