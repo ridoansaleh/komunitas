@@ -7,6 +7,7 @@ import WhatsNewScreen from './components/WhatsNew';
 import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import NewGroupScreen from './components/NewGroup';
+import CategoryScreen from './components/Category';
 
 const RootStack = StackNavigator(
   {
@@ -17,7 +18,10 @@ const RootStack = StackNavigator(
       screen: LoginScreen
     },
     Home: {
-      screen: HomeScreen
+      screen: HomeScreen,
+      navigationOptions: ({ navigation }) => ({
+        header: null
+      })
     },
     WhatsNew: {
       screen: WhatsNewScreen
@@ -30,6 +34,9 @@ const RootStack = StackNavigator(
     },
     NewGroup: {
       screen: NewGroupScreen
+    },
+    Category: {
+      screen: CategoryScreen
     }
   },
   {

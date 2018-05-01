@@ -5,7 +5,7 @@ import img4 from './images/new/fishing.jpg';
 import img5 from './images/new/hunting.jpg';
 import img6 from './images/new/dancing.jpg';
 
-export const cards = [
+const cards = [
     {
         text: 'Jakarta Berenang',
         name: 'One',
@@ -23,59 +23,67 @@ export const cards = [
     }
 ];
 
-export const groups_category = [
-    {
-        id: 1,
-        icon: 'ios-people',
-        name: 'Belajar'
-    },
-    {
-        id: 2,
-        icon: 'jet',
-        name: 'Travelling'
-    },
-    {
-        id: 3,
-        icon: 'basketball',
-        name: 'Olahraga'
-    },
-    {
-        id: 4,
-        icon: 'musical-notes',
-        name: 'Musik'
-    },
-    {
-        id: 5,
-        icon: 'briefcase',
-        name: 'Bisnis'
-    }
-];
-
-export const new_groups = [
+const new_groups = [
     {
         id: 1,
         image: img4,
         title: "Grup Memancing Jakarta",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
-        total_members: 1200
+        total_members: 1200,
+        category: 'travelling'
     },
     {
         id: 2,
         image: img5,
         title: "Grup Berburu Bareng",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
-        total_members: 190
+        total_members: 190,
+        category: 'belajar'
     },
     {
         id: 3,
         image: img6,
         title: "Grup Ayo Menari",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et rutrum arcu. Praesent euismod urna vehicula convallis posuere. Aenean auctor nibh id pretium sodales.",
-        total_members: 400
+        total_members: 400,
+        category: 'musik'
     }
 ]
 
-export const avatars = [
+const groups_category = [
+    {
+        id: 1,
+        icon: 'ios-people',
+        name: 'Belajar',
+        groups: new_groups
+    },
+    {
+        id: 2,
+        icon: 'jet',
+        name: 'Travelling',
+        groups: new_groups
+    },
+    {
+        id: 3,
+        icon: 'basketball',
+        name: 'Olahraga',
+        groups: new_groups
+    },
+    {
+        id: 4,
+        icon: 'musical-notes',
+        name: 'Musik',
+        groups: new_groups
+    },
+    {
+        id: 5,
+        icon: 'briefcase',
+        name: 'Bisnis',
+        groups: new_groups
+    }
+];
+
+const avatars = [
     {
         id: 1,
         image: img1,
@@ -98,3 +106,10 @@ export const avatars = [
         time: '09.10 WIB'
     }
 ]
+
+export { 
+    cards, 
+    groups_category, 
+    new_groups, 
+    avatars 
+}

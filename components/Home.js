@@ -70,7 +70,7 @@ class HomeScreen extends Component {
     return (
       <Container>
         { this.state.searchStatus &&
-          (<Header searchBar rounded>
+          (<Header style={{ marginTop: 30 }} searchBar rounded>
             <Item regular>
               <Icon name='md-arrow-back' onPress={this.showSearch} />
               <Input placeholder='Contoh: Jakarta Memancing'/>
@@ -79,7 +79,7 @@ class HomeScreen extends Component {
           </Header>)
         }
         { !this.state.searchStatus &&
-          (<Header>
+          (<Header style={{ marginTop: 30 }}>
             <Left>
               <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.checkLoginStatus('NewGroup')} />
             </Left>
@@ -124,7 +124,7 @@ class HomeScreen extends Component {
             </ListItem>
             { groups_category.map(group => {
                 return (
-                  <ListItem key={group.id}>
+                  <ListItem key={group.id} onPress={() => this.checkLoginStatus('Category')} >
                     <Left>
                       <Icon name={group.icon}/>
                     </Left>
