@@ -55,11 +55,13 @@ class HomeScreen extends Component {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
-  checkLoginStatus (url) {
+  checkLoginStatus (url, groupId) {
     if (!this.state.isUserLogin) {
       return this.props.navigation.navigate('Login');
     } else {
-      return this.props.navigation.navigate(url);
+      return this.props.navigation.navigate(url, {
+        group_id: groupId 
+      });
     }
   }
 
@@ -124,7 +126,7 @@ class HomeScreen extends Component {
             </ListItem>
             { groups_category.map(group => {
                 return (
-                  <ListItem key={group.id} onPress={() => this.checkLoginStatus('Category')} >
+                  <ListItem key={group.id} onPress={() => this.checkLoginStatus('Category', group.id)} >
                     <Left>
                       <Icon name={group.icon}/>
                     </Left>

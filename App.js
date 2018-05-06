@@ -8,8 +8,9 @@ import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
+import { Root } from 'native-base';
 
-const RootStack = StackNavigator(
+const AppNavigator = StackNavigator(
   {
     SignUp: {
       screen: SignUpScreen
@@ -47,7 +48,11 @@ const RootStack = StackNavigator(
 
 class App extends Component {
   render() {
-    return <RootStack />;
+    return (
+      <Root>
+        <AppNavigator />
+      </Root>
+    )
   }
 }
 

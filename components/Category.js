@@ -1,9 +1,9 @@
 import React,  { Component } from 'react';
-import { Container, Header, Content, Segment, Button, Text } from 'native-base';
+import { Container, Content, Segment, Button, Text, List, ListItem, Body } from 'native-base';
+import { groups_category } from '../data/dummies';
 
+class CategoryScreen extends Component {
 
-class Category extends Component {
-    
     constructor (props) {
         super(props);
     }
@@ -16,10 +16,25 @@ class Category extends Component {
                         <Button first><Text>Rekomendasi</Text></Button>
                         <Button last active><Text>Tanggal</Text></Button>
                     </Segment>
+                    <List>
+                        { groups_category.map(ctg => {
+                            if (ctg.id === this.props.navigation.state.params.group_id) {
+                                return ctg.groups.map(group => {
+                                    return (
+                                        <ListItem key={group.id}>
+                                            <Body>
+                                                <Text>{group.title}</Text>
+                                            </Body>
+                                        </ListItem>
+                                    )
+                                })
+                            }
+                        })}
+                    </List>
                 </Content>
             </Container>
         )
     }
 }
 
-export default Category;
+export default CategoryScreen;
