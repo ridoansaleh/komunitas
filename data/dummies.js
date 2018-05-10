@@ -1,25 +1,34 @@
 import img1 from './images/suggestions/swim_group.jpg';
 import img2 from './images/suggestions/js_group.png';
-import img3 from './images/suggestions/python_group.png';
+import img3 from './images/suggestions/python.jpg';
 import img4 from './images/new/fishing.jpg';
 import img5 from './images/new/hunting.jpg';
 import img6 from './images/new/dancing.jpg';
 
-const cards = [
+const popular_events = [
     {
-        text: 'Jakarta Berenang',
-        name: 'One',
-        image: img1
+        id: 1,
+        name: 'Berenang di Danau Sunter',
+        date: '15 Agustus 2018',
+        image: img1,
+        group: 'Jakarta Berenang',
+        group_image: img4
     },
     {
-        text: 'JakartaJS',
-        name: 'Two',
-        image: img2
+        id: 2,
+        name: 'Optimasi ReactJs',
+        date: '20 September 2018',
+        image: img2,
+        group: 'JakartaJS',
+        group_image: img5
     },
     {
-        text: 'Jakarta Python',
-        name: 'Three',
-        image: img3
+        id: 3,
+        name: 'Belajar Python Terbaru',
+        date: '5 Oktober 2018',
+        image: img3,
+        group: 'Jakarta Python',
+        group_image: img6
     }
 ];
 
@@ -108,7 +117,7 @@ const avatars = [
 ]
 
 export { 
-    cards, 
+    popular_events, 
     groups_category, 
     new_groups, 
     avatars 

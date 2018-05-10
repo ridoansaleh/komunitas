@@ -22,7 +22,7 @@ import {
   View
 } from 'native-base';
 import Expo from "expo";
-import { cards, groups_category } from '../data/dummies';
+import { popular_events, groups_category } from '../data/dummies';
 import Footer from './partials/Footer';
 
 class HomeScreen extends Component {
@@ -94,17 +94,17 @@ class HomeScreen extends Component {
         }
         {/* Content */}
         <Content padder={true}>
-          <View style={{height: 470}}>
+          <View style={{height: 435}}>
             <DeckSwiper
-              dataSource={cards}
+              dataSource={popular_events}
               renderItem={item =>
                 <Card style={{ elevation: 3 }}>
                   <CardItem>
                     <Left>
-                      <Thumbnail source={item.image} />
+                      <Thumbnail source={item.group_image} />
                       <Body>
-                        <Text>{item.text}</Text>
-                        <Text note>NativeBase</Text>
+                        <Text>{item.group}</Text>
+                        <Text note>{item.date}</Text>
                       </Body>
                     </Left>
                   </CardItem>
@@ -112,7 +112,7 @@ class HomeScreen extends Component {
                     <Image style={{ height: 300, flex: 1 }} source={item.image} />
                   </CardItem>
                   <CardItem>
-                    <Icon name="heart" style={{ color: '#ED4A6A' }} />
+                    {/* <Icon name="heart" style={{ color: '#ED4A6A' }} /> */}
                     <Text>{item.name}</Text>
                   </CardItem>
                 </Card>

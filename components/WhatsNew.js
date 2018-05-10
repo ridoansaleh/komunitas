@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Image, Dimensions } from 'react-native';
-import { Container, Content, Footer, ListItem, CheckBox, Text, Body, FooterTab, Button, Icon, H2 } from 'native-base';
+import { Container, Content, ListItem, CheckBox, Text, Body, H2 } from 'native-base';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { new_groups } from '../data/dummies';
+import Footer from './partials/Footer';
 
 class WhatsNewScreen extends Component {
 
@@ -10,13 +11,14 @@ class WhatsNewScreen extends Component {
     super(props);
 
     this.state = {
-      isUserLogin: true
+      isUserLogin: true,
+      activeMenu: 'WhatsNew'
     }
 
-    this.checkLoginStatus = this.checkLoginStatus.bind(this);
+    this.handleRouteChange = this.handleRouteChange.bind(this);
   }
 
-  checkLoginStatus (url) {
+  handleRouteChange (url) {
     if (!this.state.isUserLogin) {
       return this.props.navigation.navigate('Login');
     } else {
@@ -63,26 +65,7 @@ class WhatsNewScreen extends Component {
               )
           })}
         </Content>
-        <Footer>
-          <FooterTab>
-            <Button onPress={() => this.checkLoginStatus('Home')} vertical>
-              <Icon active name="home" />
-              <Text style={{fontSize: 9.5}}>Home</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('WhatsNew')} vertical active>
-              <Icon name="megaphone" />
-              <Text style={{fontSize: 9.5}}>Baru</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('Notification')} vertical>
-              <Icon name="notifications" />
-              <Text style={{fontSize: 9.5}}>Notifikasi</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('Profile')} vertical>
-              <Icon name="person" />
-              <Text style={{fontSize: 9.5}}>Profil</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+        <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
       </Container>
     );
   }
