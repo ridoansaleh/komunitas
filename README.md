@@ -20,35 +20,35 @@ Here are a few page screenshots of Komunitas app :
 
 <img src='./docs/images/SignUp.jpg' />
 
-2. Login
+## Login
 
 <img src='./docs/images/Login.jpg' />
 
-3. Home 
+## Home 
 
 <img src='./docs/images/Home.jpg' />
 
-4. WhatsNew 
+## WhatsNew 
 
 <img src='./docs/images/WhatsNew.jpg' />
 
-5. Notification
+## Notification
 
 <img src='./docs/images/Notification.jpg' />
 
-6. Profile
+## Profile
 
 <img src='./docs/images/Profile.jpg' />
 
-7. Search
+## Search
 
 <img src='./docs/images/Search.jpg' />
 
-8. New Group
+## New Group
 
 <img src='./docs/images/NewGroup.jpg' />
 
-8. Logout
+## Logout
 
 <img src='./docs/images/Logout.jpg' />
 
