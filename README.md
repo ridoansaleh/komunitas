@@ -6,7 +6,17 @@ In the near future, i would like to integrate this with Firebase as database.
 
 Here are a few page screenshots of Komunitas app :
 
-1. Sign Up
+- [Sign Up](#sign-up)
+- [Login](#login)
+- [Home](#home)
+- [WhatsNew](#whatsnew)
+- [Notification](#notification)
+- [Profile](#profile)
+- [Search](#search)
+- [New Group](#new-group)
+- [Logout](#logout)
+
+## Sign Up
 
 <img src='./docs/images/SignUp.jpg' />
 
