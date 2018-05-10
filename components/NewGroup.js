@@ -10,27 +10,11 @@ import {
     Input,
     Textarea 
 } from 'native-base';
-import Footer from './partials/Footer';
 
 class NewGroupScreen extends Component {
     
     constructor (props) {
         super(props);
-    
-        this.state = {
-          isUserLogin: true,
-          activeMenu: 'NewGroup'
-        }
-    
-        this.handleRouteChange = this.handleRouteChange.bind(this);
-    }
-    
-    handleRouteChange (url) {
-        if (!this.state.isUserLogin) {
-          return this.props.navigation.navigate('Login');
-        } else {
-          return this.props.navigation.navigate(url);
-        }
     }
 
     render () {
@@ -50,7 +34,6 @@ class NewGroupScreen extends Component {
                         </Button>
                     </Form>
                 </Content>
-                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
             </Container>
         );
     }

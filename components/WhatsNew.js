@@ -53,7 +53,7 @@ class WhatsNewScreen extends Component {
               return (
                 <Grid key={group.id} style={{ marginBottom: 20 }}>
                   <Row>
-                    <Image style={{height: 130, width: (width-20)}} source={group.image} />
+                    <Image style={{height: 200, width: (width-20)}} source={group.image} />
                   </Row>
                   <Row>
                     <H2>{group.title}</H2>
