@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { 
     Container,
-    Content, 
-    Footer, 
+    Content,
     ActionSheet,
-    FooterTab, 
-    Button, 
-    Icon, 
+    Button,
     List, 
     ListItem, 
     Left, 
@@ -19,6 +16,7 @@ import {
 import { Col, Row, Grid } from "react-native-easy-grid";
 import userAvatar from '../data/images/user_avatar.png';
 import { new_groups } from '../data/dummies';
+import Footer from './partials/Footer';
 
 var BUTTONS = [
     { text: "Edit Profil", icon: "md-cog", iconColor: "#2c8ef4" },
@@ -33,13 +31,14 @@ class ProfileScreen extends Component {
         super(props);
     
         this.state = {
-          isUserLogin: true
+          isUserLogin: true,
+          activeMenu: 'Profile'
         }
     
-        this.checkLoginStatus = this.checkLoginStatus.bind(this);
+        this.handleRouteChange = this.handleRouteChange.bind(this);
     }
     
-    checkLoginStatus (url) {
+    handleRouteChange (url) {
         if (!this.state.isUserLogin) {
           return this.props.navigation.navigate('Login');
         } else {
@@ -98,26 +97,7 @@ class ProfileScreen extends Component {
                         })}
                     </List>
                 </Content>
-                <Footer>
-                    <FooterTab>
-                        <Button onPress={() => this.checkLoginStatus('Home')} vertical>
-                            <Icon active name="home" />
-                            <Text style={{fontSize: 9.5}}>Home</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('WhatsNew')} vertical>
-                            <Icon name="megaphone" />
-                            <Text style={{fontSize: 9.5}}>Baru</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('Notification')} vertical>
-                            <Icon name="notifications" />
-                            <Text style={{fontSize: 9.5}}>Notifikasi</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('Profile')} vertical active>
-                            <Icon name="person" />
-                            <Text style={{fontSize: 9.5}}>Profil</Text>
-                        </Button>
-                    </FooterTab>
-                </Footer>
+                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
             </Container>
         );
     }

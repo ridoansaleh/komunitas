@@ -19,13 +19,11 @@ import {
   Card, 
   CardItem, 
   Thumbnail,
-  View,
-  Footer,
-  FooterTab,
-  Button
+  View
 } from 'native-base';
 import Expo from "expo";
 import { cards, groups_category } from '../data/dummies';
+import Footer from './partials/Footer';
 
 class HomeScreen extends Component {
 
@@ -35,11 +33,12 @@ class HomeScreen extends Component {
     this.state = {
       loading: true,
       isUserLogin: true,
-      searchStatus: false
+      searchStatus: false,
+      activeMenu: 'Home'
     }
 
     this.showSearch = this.showSearch.bind(this);
-    this.checkLoginStatus = this.checkLoginStatus.bind(this);
+    this.handleRouteChange = this.handleRouteChange.bind(this);
   }
 
   async componentWillMount() {
@@ -55,7 +54,7 @@ class HomeScreen extends Component {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
-  checkLoginStatus (url, groupId) {
+  handleRouteChange (url, groupId) {
     if (!this.state.isUserLogin) {
       return this.props.navigation.navigate('Login');
     } else {
@@ -83,7 +82,7 @@ class HomeScreen extends Component {
         { !this.state.searchStatus &&
           (<Header style={{ marginTop: 30 }}>
             <Left>
-              <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.checkLoginStatus('NewGroup')} />
+              <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.handleRouteChange('NewGroup')} />
             </Left>
             <Body style={{ alignItems: 'center' }}>
               <Title>Komunitas</Title>
@@ -126,7 +125,7 @@ class HomeScreen extends Component {
             </ListItem>
             { groups_category.map(group => {
                 return (
-                  <ListItem key={group.id} onPress={() => this.checkLoginStatus('Category', group.id)} >
+                  <ListItem key={group.id} onPress={() => this.handleRouteChange('Category', group.id)} >
                     <Left>
                       <Icon name={group.icon}/>
                     </Left>
@@ -140,26 +139,7 @@ class HomeScreen extends Component {
           </List>
         </Content>
         {/* Content */}
-        <Footer>
-          <FooterTab>
-            <Button onPress={() => this.checkLoginStatus('Home')} vertical active>
-              <Icon active name="home" />
-              <Text style={{fontSize: 9.5}}>Home</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('WhatsNew')} vertical>
-              <Icon name="megaphone" />
-              <Text style={{fontSize: 9.5}}>Baru</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('Notification')} vertical>
-              <Icon name="notifications" />
-              <Text style={{fontSize: 9.5}}>Notifikasi</Text>
-            </Button>
-            <Button onPress={() => this.checkLoginStatus('Profile')} vertical>
-              <Icon name="person" />
-              <Text style={{fontSize: 9.5}}>Profil</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+        <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
       </Container>
     );
   }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Root } from 'native-base';
 import { StackNavigator } from 'react-navigation';
 import SignUpScreen from './components/SignUp';
 import LoginScreen from './components/Login';
@@ -8,7 +9,6 @@ import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
-import { Root } from 'native-base';
 
 const AppNavigator = StackNavigator(
   {

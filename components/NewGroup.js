@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { 
     Container,
-    Content, 
-    Footer, 
-    FooterTab, 
-    Button, 
-    Icon,
+    Content,
+    Button,
     Text,
     Form,
     Item,
@@ -13,6 +10,7 @@ import {
     Input,
     Textarea 
 } from 'native-base';
+import Footer from './partials/Footer';
 
 class NewGroupScreen extends Component {
     
@@ -20,13 +18,14 @@ class NewGroupScreen extends Component {
         super(props);
     
         this.state = {
-          isUserLogin: true
+          isUserLogin: true,
+          activeMenu: 'NewGroup'
         }
     
-        this.checkLoginStatus = this.checkLoginStatus.bind(this);
+        this.handleRouteChange = this.handleRouteChange.bind(this);
     }
     
-    checkLoginStatus (url) {
+    handleRouteChange (url) {
         if (!this.state.isUserLogin) {
           return this.props.navigation.navigate('Login');
         } else {
@@ -51,26 +50,7 @@ class NewGroupScreen extends Component {
                         </Button>
                     </Form>
                 </Content>
-                <Footer>
-                    <FooterTab>
-                        <Button onPress={() => this.checkLoginStatus('Home')} vertical active>
-                            <Icon active name="home" />
-                            <Text style={{fontSize: 9.5}}>Home</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('WhatsNew')} vertical>
-                            <Icon name="megaphone" />
-                            <Text style={{fontSize: 9.5}}>Baru</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('Notification')} vertical>
-                            <Icon name="notifications" />
-                            <Text style={{fontSize: 9.5}}>Notifikasi</Text>
-                        </Button>
-                        <Button onPress={() => this.checkLoginStatus('Profile')} vertical>
-                            <Icon name="person" />
-                            <Text style={{fontSize: 9.5}}>Profil</Text>
-                        </Button>
-                    </FooterTab>
-                </Footer>
+                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
             </Container>
         );
     }
