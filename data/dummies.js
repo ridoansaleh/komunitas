@@ -57,7 +57,7 @@ const new_groups = [
         total_members: 400,
         category: 'musik'
     }
-]
+];
 
 const groups_category = [
     {
@@ -114,7 +114,7 @@ const avatars = [
         information: 'Mengumumkan meetup terbaru pada tanggal 1 Mei 2018',
         time: '09.10 WIB'
     }
-]
+];
 
 export { 
     popular_events, 

@@ -1,4 +1,5 @@
-// Initialize Firebase
+import * as firebase from 'firebase';
+
 var config = {
     apiKey: "AIzaSyBr7TkHX6geFDLBgIcJ5D6CzOgMKdCJIBk",
     authDomain: "komunitas-3baa3.firebaseapp.com",
@@ -8,4 +9,12 @@ var config = {
     messagingSenderId: "915947038761"
 };
 
-export default config;
+if (!firebase.apps.length) {
+    firebase.initializeApp(config);
+}
+
+var auth = firebase.auth();
+
+export {
+  auth
+};

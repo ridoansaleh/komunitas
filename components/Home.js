@@ -1,25 +1,8 @@
 import React, { Component } from 'react';
 import { Image, StatusBar } from 'react-native';
-import { 
-  Container, 
-  Header, 
-  Left, 
-  Body, 
-  Right, 
-  Title, 
-  Content, 
-  Icon, 
-  Text,
-  List, 
-  ListItem,
-  Item, 
-  Input,
-  Form,
-  DeckSwiper,
-  Card, 
-  CardItem, 
-  Thumbnail,
-  View
+import {
+  Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
+  ListItem, Item, Input, Form, DeckSwiper, Card, CardItem, Thumbnail, View 
 } from 'native-base';
 import Expo from "expo";
 import { popular_events, groups_category } from '../data/dummies';
@@ -32,7 +15,7 @@ class HomeScreen extends Component {
 
     this.state = {
       loading: true,
-      isUserLogin: true,
+      isUserLogin: false,
       searchStatus: false,
       activeMenu: 'Home'
     }
