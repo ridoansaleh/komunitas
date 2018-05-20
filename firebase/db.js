@@ -1,13 +1,13 @@
 import { db } from './config';
 
 export const saveUser = (data) => {
-    db.ref('users/'+'user_b').set({
-        id: 'Default ID',
-        name: data.name,
-        email: data.email,
-        address: 'Default Address',
-        photo: 'Default Photo'
-    });
+    console.log('data : ', data)
+    let nameArr = data.name.split(' ')
+    let name = ''
+    nameArr.length > 1
+      ? name = nameArr[0].toLowerCase() + nameArr[1].toLowerCase()
+      : name = data.name
+    return db.ref('users/' + name).set({ ...data });
 }
 
 export const countUser = () => {

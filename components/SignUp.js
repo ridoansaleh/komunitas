@@ -72,7 +72,12 @@ class SignUpScreen extends Component {
     handleSubmit () {
         let { name, email, password1, password2 } = this.state;
         this.setState({ isSpinderLoading: true });
-        db.saveUser({ name: name, email: email });
+        db.saveUser({
+            name: name,
+            email: email,
+            address: 'default address',
+            photo: 'http://www.default-url.com/photo.jpg'
+        });
         auth.doCreateUserWithEmailAndPassword(email, password1)
         .then(authUser => {
             this.setState({ ...INITIAL_STATE });
