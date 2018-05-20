@@ -13,10 +13,20 @@ import CategoryScreen from './components/Category';
 const AppNavigator = StackNavigator(
   {
     SignUp: {
-      screen: SignUpScreen
+      screen: SignUpScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     Login: {
-      screen: LoginScreen
+      screen: LoginScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     Home: {
       screen: HomeScreen,
@@ -25,19 +35,44 @@ const AppNavigator = StackNavigator(
       })
     },
     WhatsNew: {
-      screen: WhatsNewScreen
+      screen: WhatsNewScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     Notification: {
-      screen: NotificationScreen
+      screen: NotificationScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     Profile: {
-      screen: ProfileScreen
+      screen: ProfileScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     NewGroup: {
-      screen: NewGroupScreen
+      screen: NewGroupScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     },
     Category: {
-      screen: CategoryScreen
+      screen: CategoryScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
     }
   },
   {

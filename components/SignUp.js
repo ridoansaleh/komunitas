@@ -1,28 +1,31 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body } from 'native-base';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body, Spinner } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { auth } from '../firebase';
+
+const INITIAL_STATE = {
+    name: '', 
+    email: '', 
+    password1: '', 
+    password2: '',
+    isNameValid: false,
+    isEmailValid: false,
+    isEmailChanged: false,
+    isPassword1Valid: false,
+    isPassword1Changed: false,
+    isPassword2Valid: false,
+    isPassword2Changed: false,
+    isPasswordChecked: false,
+    isSpinderLoading: false
+}
 
 class SignUpScreen extends Component {
 
     constructor (props) {
         super(props);
 
-        this.state = {
-            name: '',
-            email: '',
-            password1: '',
-            password2: '',
-            isNameValid: false,
-            isEmailValid: false,
-            isEmailChanged: false,
-            isPassword1Valid: false,
-            isPassword1Changed: false,
-            isPassword2Valid: false,
-            isPassword2Changed: false,
-            isPasswordChecked: false 
-        }
+        this.state = { ...INITIAL_STATE }
         
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -51,7 +54,7 @@ class SignUpScreen extends Component {
     }
 
     handleChangePassword1 (value) {
-        if (/^\w+$/.test(value) && (value.length >= 8)) {
+        if (value.length >= 8) {
             this.setState({ password1: value, isPassword1Valid: true, isPassword1Changed: true });
         } else {
             this.setState({ password1: value, isPassword1Valid: false, isPassword1Changed: true });
@@ -67,15 +70,20 @@ class SignUpScreen extends Component {
     }
 
     handleSubmit () {
-        let that = this;
         let { name, email, password1, password2 } = this.state;
+        this.setState({ isSpinderLoading: true });
         auth.doCreateUserWithEmailAndPassword(email, password1)
         .then(authUser => {
-            this.setState({ name: '', email: '', password1: '', password2: '' });
-            that.showToastMessage('Kamu berhasil signup, silahkan login!');
+            this.setState({ ...INITIAL_STATE });
+            this.showToastMessage('Kamu berhasil signup, silahkan login!');
         })
         .catch(error => {
-            that.showToastMessage('Kamu gagal signup, coba lagi!');
+            this.setState({ isSpinderLoading: false });
+            if (error.code === 'auth/email-already-in-use') {
+                this.showToastMessage('Email tersebut sudah digunakan akun lain');
+            } else {
+                this.showToastMessage('Kamu gagal signup, coba lagi!');
+            }
         });
     }
 
@@ -97,20 +105,20 @@ class SignUpScreen extends Component {
             name, email, password1, password2, isNameValid,
             isEmailValid, isEmailChanged, isPassword1Valid,
             isPassword1Changed, isPassword2Valid, isPassword2Changed,
-            isPasswordChecked
+            isPasswordChecked, isSpinderLoading
         } = this.state;
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
                     <Form>
-                        <Item floatingLabel>
+                        <Item floatingLabel last>
                             <Label>Nama</Label>
                             <Input
                                 value={name}
                                 onChangeText={(name) => this.handleChangeName(name)}
                             />
                         </Item>
-                        <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
                             <Label>Email</Label>
                             <Input
                                 value={email}
@@ -123,7 +131,7 @@ class SignUpScreen extends Component {
                                 <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel style={isPassword1Changed && !isPassword1Valid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isPassword1Changed && !isPassword1Valid ? styles.errorBorder : {}}>
                             <Label>Kata Sandi</Label>
                             <Input
                                 value={password1}
@@ -134,7 +142,7 @@ class SignUpScreen extends Component {
                         {
                             !isPassword1Valid && isPassword1Changed &&
                             <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Password minimal 8 karakter serta terdiri dari huruf & angka' }</Text>
+                                <Text style={styles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
                             </Item>
                         }
                         <Item floatingLabel last style={isPassword2Changed && !isPassword2Valid ? styles.errorBorder : {}}>
@@ -162,10 +170,11 @@ class SignUpScreen extends Component {
                         </ListItem>
                         { isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
                             <Button block info style={styles.signupBtn} onPress={this.handleSubmit}>
-                                <Text> Daftar </Text>
+                                { isSpinderLoading && <Spinner color='green' /> }
+                                { !isSpinderLoading && <Text> Daftar </Text> }
                             </Button> }
                         { (!isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
-                            <Button disabled block onPress={this.handleSubmit}>
+                            <Button disabled block style={styles.signupBtn} onPress={this.handleSubmit}>
                                 <Text> Daftar </Text>
                             </Button> }
                     </Form>
