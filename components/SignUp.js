@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast } from 'native-base';
+import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body } from 'native-base';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { auth } from '../firebase';
 
 class SignUpScreen extends Component {
@@ -13,7 +14,14 @@ class SignUpScreen extends Component {
             email: '',
             password1: '',
             password2: '',
-            isValid: false
+            isNameValid: false,
+            isEmailValid: false,
+            isEmailChanged: false,
+            isPassword1Valid: false,
+            isPassword1Changed: false,
+            isPassword2Valid: false,
+            isPassword2Changed: false,
+            isPasswordChecked: false 
         }
         
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
@@ -23,6 +31,7 @@ class SignUpScreen extends Component {
         this.handleChangePassword2 = this.handleChangePassword2.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
+        this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
     }
 
     handleRouteChanges () {
@@ -30,118 +39,163 @@ class SignUpScreen extends Component {
     }
 
     handleChangeName (value) {
-        this.setState({ name: value });
+        this.setState({ name: value, isNameValid: true });
     }
 
     handleChangeEmail (value) {
-        this.setState({ email: value });
+        if (/(.+)@(.+){2,}\.(.+){2,}/.test(value)) {
+            this.setState({ email: value, isEmailValid: true, isEmailChanged: true });
+        } else {
+            this.setState({ email: value, isEmailValid: false, isEmailChanged: true })
+        }
     }
 
     handleChangePassword1 (value) {
-        this.setState({ password1: value });
+        if (/^\w+$/.test(value) && (value.length >= 8)) {
+            this.setState({ password1: value, isPassword1Valid: true, isPassword1Changed: true });
+        } else {
+            this.setState({ password1: value, isPassword1Valid: false, isPassword1Changed: true });
+        }
     }
 
     handleChangePassword2 (value) {
-        this.setState({ password2: value });
+        if (this.state.password1 === value) {
+            this.setState({ password2: value, isPassword2Valid: true, isPassword2Changed: true });
+        } else {
+            this.setState({ password2: value, isPassword2Valid: false, isPassword2Changed: true });
+        }
     }
 
     handleSubmit () {
         let that = this;
-        let { 
-            name,
-            email,
-            password1,
-            password2
-        } = this.state;
-
-        if (name && email && password1 && password2) {
-            if (password1 !== password2) {
-                that.showToastMessage('Konfirmasi kata sandi tidak sama');
-            } else {
-                auth.doCreateUserWithEmailAndPassword(email, password1)
-                .then(authUser => {
-                    this.setState({ 
-                        name: '',
-                        email: '',
-                        password1: '',
-                        password2: '',
-                        isValid: false
-                    });
-                    that.showToastMessage('Kamu berhasil signup, silahkan login!');
-                })
-                .catch(error => {
-                    that.showToastMessage('Kamu gagal signup, coba lagi!');
-                });
-            }
-        } else {
-            that.showToastMessage('Tidak boleh ada data yang kosong');
-        }
+        let { name, email, password1, password2 } = this.state;
+        auth.doCreateUserWithEmailAndPassword(email, password1)
+        .then(authUser => {
+            this.setState({ name: '', email: '', password1: '', password2: '' });
+            that.showToastMessage('Kamu berhasil signup, silahkan login!');
+        })
+        .catch(error => {
+            that.showToastMessage('Kamu gagal signup, coba lagi!');
+        });
     }
 
     showToastMessage (message) {
         Toast.show({
             text: message,
             textStyle: { color: 'yellow' },
-            buttonText: 'Okay',
+            buttonText: 'Close',
             duration: 3000
         })
     }
 
+    handlePasswordCheck () {
+        this.setState({ isPasswordChecked: !this.state.isPasswordChecked });
+    }
+
     render() {
+        let { 
+            name, email, password1, password2, isNameValid,
+            isEmailValid, isEmailChanged, isPassword1Valid,
+            isPassword1Changed, isPassword2Valid, isPassword2Changed,
+            isPasswordChecked
+        } = this.state;
         return (
-            <Container>
+            <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
                     <Form>
                         <Item floatingLabel>
                             <Label>Nama</Label>
                             <Input
-                                value={this.state.name}
+                                value={name}
                                 onChangeText={(name) => this.handleChangeName(name)}
                             />
                         </Item>
-                        <Item floatingLabel>
+                        <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
                             <Label>Email</Label>
                             <Input
-                                value={this.state.email}
+                                value={email}
                                 onChangeText={(email) => this.handleChangeEmail(email)}
                             />
                         </Item>
-                        <Item floatingLabel>
+                        {
+                            !isEmailValid && isEmailChanged &&
+                            <Item style={styles.errorBox}>
+                                <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            </Item>
+                        }
+                        <Item floatingLabel style={isPassword1Changed && !isPassword1Valid ? styles.errorBorder : {}}>
                             <Label>Kata Sandi</Label>
                             <Input
-                                value={this.state.password1}
+                                value={password1}
                                 onChangeText={(password1) => this.handleChangePassword1(password1)}
-                                secureTextEntry={true}
+                                secureTextEntry={ isPasswordChecked ? false : true }
                             />
                         </Item>
-                        <Item floatingLabel last>
+                        {
+                            !isPassword1Valid && isPassword1Changed &&
+                            <Item style={styles.errorBox}>
+                                <Text style={styles.errorMessage}>{ 'Password minimal 8 karakter serta terdiri dari huruf & angka' }</Text>
+                            </Item>
+                        }
+                        <Item floatingLabel last style={isPassword2Changed && !isPassword2Valid ? styles.errorBorder : {}}>
                             <Label>Konfirmasi Kata Sandi</Label>
-                            <Input
-                                value={this.state.password2}
-                                onChangeText={(password2) => this.handleChangePassword2(password2)}
-                                secureTextEntry={true}
-                            />
+                            { isPassword1Valid && 
+                                <Input
+                                    value={password2}
+                                    onChangeText={(password2) => this.handleChangePassword2(password2)}
+                                    secureTextEntry={ isPasswordChecked ? false : true }
+                                /> }
+                            { !isPassword1Valid && 
+                                <Input disabled /> }
                         </Item>
-                        <Button block info style={styles.signUpBtn} onPress={this.handleSubmit}>
-                            <Text> Daftar </Text>
-                        </Button>
+                        {
+                            !isPassword2Valid && isPassword2Changed &&
+                            <Item style={styles.errorBox}>
+                                <Text style={styles.errorMessage}>{ 'Konfirmasi password harus sama dengan sebelumnya' }</Text>
+                            </Item>
+                        }
+                        <ListItem style={styles.errorBox} onPress={() => this.handlePasswordCheck()}>
+                            <CheckBox checked={ isPasswordChecked ? true : false } />
+                            <Body>
+                                <Text>Lihat Password</Text>
+                            </Body>
+                        </ListItem>
+                        { isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
+                            <Button block info style={styles.signupBtn} onPress={this.handleSubmit}>
+                                <Text> Daftar </Text>
+                            </Button> }
+                        { (!isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
+                            <Button disabled block onPress={this.handleSubmit}>
+                                <Text> Daftar </Text>
+                            </Button> }
                     </Form>
                     <TouchableOpacity onPress={this.handleRouteChanges}>
                         <Text style={styles.loginText}>Sudah punya akun? Login</Text>
                     </TouchableOpacity>
                 </Content>
-            </Container>
+            </KeyboardAwareScrollView>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    signUpBtn: {
+    signupBtn: {
         marginTop: 20
     },
     loginText: {
         marginTop: 20,
         textAlign: 'center'
+    },
+    errorBox: {
+        borderBottomWidth : 0
+    },
+    errorMessage: {
+        fontSize: 12,
+        color: '#FF5733'
+    },
+    errorBorder: {
+        borderBottomColor: '#FF5733',
+        borderBottomWidth: 2
     }
 });
 

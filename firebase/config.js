@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 
-var config = {
+const config = {
     apiKey: "AIzaSyBr7TkHX6geFDLBgIcJ5D6CzOgMKdCJIBk",
     authDomain: "komunitas-3baa3.firebaseapp.com",
     databaseURL: "https://komunitas-3baa3.firebaseio.com",
@@ -13,7 +13,7 @@ if (!firebase.apps.length) {
     firebase.initializeApp(config);
 }
 
-var auth = firebase.auth();
+const auth = firebase.auth();
 
 export {
   auth
