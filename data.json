@@ -1,0 +1,68 @@
+{
+    "users": {
+        "ronaldo": {
+            "name"    : "Cristiano Ronaldo",
+            "email"   : "cr7@gmail.com",
+            "address" : "Madrid",
+            "photo"   : "http://www.ronaldo.com/fun.jpg"
+        },
+        "messi": {
+            "name"    : "Lionel Messi",
+            "email"   : "messi@gmail.com",
+            "address" : "Barcelona",
+            "photo"   : "http://www.messi.com/fun.jpg"
+        },
+        "mosalah": {
+            "name"    : "Mohamed Salah",
+            "email"   : "mosalah@gmail.com",
+            "address" : "Liverpool",
+            "photo"   : "http://www.mosalah.com/fun.jpg" 
+        }
+    },
+    "groups": {
+        "mancingmania": {
+            "name" : "Mancing Mania",
+            "image": "http://www.mancingoke.com/fun.jpg",
+            "created_date" : "19 Mei 2017",
+            "location" : "Jakarta",
+            "about": "Mancing Mania adalah perkumpulan orang Jakarta yang hobi memancing.",
+            "admin" : "messi",
+            "members" : {
+                "ronaldo": true,
+                "mosalah": true
+            },
+            "events" : {
+                "mancingdisunter" : true,
+                "mancingdiui" : true
+            },
+            "active": true
+        }
+    },
+    "events": {
+        "mancingdiui": {
+            "name": "Mancing Bareng di UI",
+            "location": "Danau Universitas Indonesia",
+            "image": "http://www.mancingseru.com/fun.jpg",
+            "date": "11 Januari 2019",
+            "time": "15.30 WIB - 17.00 WIB",
+            "description": "Bagi yang mau ikut harus bawa pancingan ya. Kumpulnya di stasiun UI.",
+            "members": {
+                "mosalah": true,
+                "ronaldo": true,
+                "messi": true
+            }
+        }
+    },
+    "news": {
+        "grupbaru": {
+            "title": "Grup baru di Jakarta",
+            "timestamp": "2 Maret 2018 13.50 WIB",
+            "content": "Ada 25 grup baru dalam satu bulan terakhir di Jakarta. Silahkan lihat detilnya." 
+        },
+        "grupdibanned": {
+            "title": "Grup Makan Batu Telah Dibanned",
+            "timestamp": "11 April 2018 09.12 WIB",
+            "content": "Grup makan batu telah diidentifikasi sebagai grup terlarang di Indonesia."
+        }
+    }
+}

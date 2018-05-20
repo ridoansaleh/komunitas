@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body, Spinner } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 
 const INITIAL_STATE = {
     name: '', 
@@ -72,6 +72,7 @@ class SignUpScreen extends Component {
     handleSubmit () {
         let { name, email, password1, password2 } = this.state;
         this.setState({ isSpinderLoading: true });
+        db.saveUser({ name: name, email: email });
         auth.doCreateUserWithEmailAndPassword(email, password1)
         .then(authUser => {
             this.setState({ ...INITIAL_STATE });
