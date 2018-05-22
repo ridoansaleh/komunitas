@@ -1,22 +1,43 @@
 {
     "users": {
         "ronaldo": {
-            "name"    : "Cristiano Ronaldo",
-            "email"   : "cr7@gmail.com",
-            "address" : "Madrid",
-            "photo"   : "http://www.ronaldo.com/fun.jpg"
+            "name"      : "Cristiano Ronaldo",
+            "email"     : "cr7@gmail.com",
+            "city"      : "Madrid",
+            "photo"     : "http://www.ronaldo.com/fun.jpg",
+            "join_date" : "12 April 2016",
+            "groups"    : {
+                "mancingmania": true
+            },
+            "events"    : {
+                "mancingdiui": true
+            }
         },
         "messi": {
-            "name"    : "Lionel Messi",
-            "email"   : "messi@gmail.com",
-            "address" : "Barcelona",
-            "photo"   : "http://www.messi.com/fun.jpg"
+            "name"      : "Lionel Messi",
+            "email"     : "messi@gmail.com",
+            "city"      : "Barcelona",
+            "photo"     : "http://www.messi.com/fun.jpg",
+            "join_date" : "13 April 2016",
+            "groups"    : {
+                "mancingmania": true   
+            },
+            "events"    : {
+                "mancingdiui": true
+            }
         },
         "mosalah": {
-            "name"    : "Mohamed Salah",
-            "email"   : "mosalah@gmail.com",
-            "address" : "Liverpool",
-            "photo"   : "http://www.mosalah.com/fun.jpg" 
+            "name"      : "Mohamed Salah",
+            "email"     : "mosalah@gmail.com",
+            "city"      : "Liverpool",
+            "photo"     : "http://www.mosalah.com/fun.jpg",
+            "join_date" : "14 April 2016",
+            "groups"    : {
+                "mancingmania": true
+            },
+            "events"    : {
+                "mancingdiui": true
+            }
         }
     },
     "groups": {
@@ -35,6 +56,11 @@
                 "mancingdisunter" : true,
                 "mancingdiui" : true
             },
+            "waiting_list": {
+                "muller": true,
+                "giroud": true,
+                "jones": true
+            },
             "active": true
         }
     },
@@ -46,12 +72,18 @@
             "date": "11 Januari 2019",
             "time": "15.30 WIB - 17.00 WIB",
             "description": "Bagi yang mau ikut harus bawa pancingan ya. Kumpulnya di stasiun UI.",
+            "quota": 100,
             "members": {
                 "mosalah": true,
                 "ronaldo": true,
                 "messi": true
             }
         }
+    },
+    "notifications": {
+        "group": "mancingmania",
+        "message": "Grup Mancing Mania mengumumkan Meetup baru pada tanggal 12 Juni 2018",
+        "timestamp": "2 Maret 2018 13.50 WIB"
     },
     "news": {
         "grupbaru": {
