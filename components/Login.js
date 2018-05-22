@@ -1,13 +1,59 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
+import { auth } from '../firebase';
 
 class LoginScreen extends Component {
 
     constructor (props) {
         super(props);
+
+        this.state = {
+            email: '',
+            password: '',
+            isEmailValid: false,
+            isEmailChanged: false,
+            isPasswordValid: false,
+            isPasswordChanged: false
+        }
         
+        this.handleChangeEmail = this.handleChangeEmail.bind(this);
+        this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChangeEmail (value) {
+        if (/(.+)@(.+){2,}\.(.+){2,}/.test(value)) {
+            this.setState({ email: value, isEmailValid: true, isEmailChanged: true });
+        } else {
+            this.setState({ email: value, isEmailValid: false, isEmailChanged: true })
+        }
+    }
+
+    handleChangePassword (value) {
+        if (value.length >= 8) {
+            this.setState({ password: value, isPasswordValid: true, isPasswordChanged: true });
+        } else {
+            this.setState({ password: value, isPasswordValid: false, isPasswordChanged: true });
+        }
+    }
+
+    handleSubmit () {
+        let { email, password } = this.state;
+        auth.doSignInWithEmailAndPassword(email, password)
+        .then(data => {
+            this.setState({ email: '', password: '' });
+            try {
+                await AsyncStorage.setItem('user_login', data);
+            } catch (error) {
+                console.log('Error while saving user data in storage');
+            }
+            this.props.navigation.navigate('Profile');
+        })
+        .catch(error => {
+            console.log('Error while login');
+        })
     }
 
     handleRouteChanges () {
@@ -15,21 +61,32 @@ class LoginScreen extends Component {
     }
 
     render() {
+        let { email, password } = this.state;
         return (
             <Container>
                 <Content padder={true} style={styles.content}>
                 <Form>
                     <Item floatingLabel>
                         <Label>Email</Label>
-                        <Input />
+                        <Input
+                            value={email}
+                            onChangeText={(email) => this.handleChangeEmail(email)}
+                        />
                     </Item>
                     <Item floatingLabel last>
                         <Label>Password</Label>
-                        <Input secureTextEntry={true} />
+                        <Input
+                            value={password}
+                            onChangeText={(password) => this.handleChangePassword(password)}  
+                            secureTextEntry={true}
+                        />
                     </Item>
-                    <Button block info style={styles.loginBtn}>
+                    { (isEmailValid && isPasswordValid) && <Button block info style={styles.loginBtn} onPress={this.handleSubmit}>
                         <Text> Masuk </Text>
-                    </Button>
+                    </Button> }
+                    { (!isEmailValid || !isPasswordValid) && <Button block info style={styles.loginBtn} disabled>
+                        <Text> Masuk </Text>
+                    </Button> }
                 </Form>
                 <TouchableOpacity onPress={this.handleRouteChanges}>
                     <Text style={styles.signupText}>Belum punya akun? Daftar di sini</Text>
