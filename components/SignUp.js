@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body, Spinner } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { auth, db } from '../firebase';
@@ -35,6 +35,7 @@ class SignUpScreen extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
+        this.getFullDate = this.getFullDate.bind(this);
     }
 
     handleRouteChanges () {
@@ -69,17 +70,34 @@ class SignUpScreen extends Component {
         }
     }
 
+    getFullDate () {
+        let today = new Date();
+        let day = today.getDate();
+        let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        let month = monthNames[today.getMonth()];
+        let year = today.getFullYear();
+        return day+' '+month+' '+year
+    }
+
     handleSubmit () {
         let { name, email, password1, password2 } = this.state;
         this.setState({ isSpinderLoading: true });
-        db.saveUser({
-            name: name,
-            email: email,
-            address: 'default address',
-            photo: 'http://www.default-url.com/photo.jpg'
-        });
         auth.doCreateUserWithEmailAndPassword(email, password1)
         .then(authUser => {
+            console.log('authUser : ', authUser)
+            db.saveUser({
+                id: authUser.uid,
+                name: name,
+                email: email,
+                join_date: this.getFullDate(),
+                city: '-',
+                photo: '-'
+            });
+            try {
+                await AsyncStorage.setItem('user_login', authUser.uid);
+            } catch (error) {
+                console.log('Error while saving the data in storage');
+            }
             this.setState({ ...INITIAL_STATE });
             this.showToastMessage('Kamu berhasil signup, silahkan login!');
         })
@@ -160,7 +178,10 @@ class SignUpScreen extends Component {
                                     secureTextEntry={ isPasswordChecked ? false : true }
                                 /> }
                             { !isPassword1Valid && 
-                                <Input disabled /> }
+                                <Input 
+                                    disabled
+                                    value={''}
+                                /> }
                         </Item>
                         {
                             !isPassword2Valid && isPassword2Changed &&
