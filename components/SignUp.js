@@ -93,11 +93,7 @@ class SignUpScreen extends Component {
                 city: '-',
                 photo: '-'
             });
-            try {
-                await AsyncStorage.setItem('user_login', authUser.uid);
-            } catch (error) {
-                console.log('Error while saving the data in storage');
-            }
+            AsyncStorage.setItem('user_login', authUser.uid);
             this.setState({ ...INITIAL_STATE });
             this.showToastMessage('Kamu berhasil signup, silahkan login!');
         })

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
+import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast } from 'native-base';
 import { auth } from '../firebase';
 
 class LoginScreen extends Component {
@@ -13,8 +13,7 @@ class LoginScreen extends Component {
             password: '',
             isEmailValid: false,
             isEmailChanged: false,
-            isPasswordValid: false,
-            isPasswordChanged: false
+            isPasswordValid: false
         }
         
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -32,10 +31,10 @@ class LoginScreen extends Component {
     }
 
     handleChangePassword (value) {
-        if (value.length >= 8) {
-            this.setState({ password: value, isPasswordValid: true, isPasswordChanged: true });
+        if (value) {
+            this.setState({ password: value, isPasswordValid: true });
         } else {
-            this.setState({ password: value, isPasswordValid: false, isPasswordChanged: true });
+            this.setState({ password: value, isPasswordValid: false });
         }
     }
 
@@ -44,15 +43,16 @@ class LoginScreen extends Component {
         auth.doSignInWithEmailAndPassword(email, password)
         .then(data => {
             this.setState({ email: '', password: '' });
-            try {
-                await AsyncStorage.setItem('user_login', data);
-            } catch (error) {
-                console.log('Error while saving user data in storage');
-            }
+            AsyncStorage.setItem('user_login', data);
             this.props.navigation.navigate('Profile');
         })
         .catch(error => {
-            console.log('Error while login');
+            Toast.show({
+                text: 'Error while try to login',
+                textStyle: { color: 'white' },
+                buttonText: 'Close',
+                duration: 3000
+            })
         })
     }
 
@@ -61,18 +61,28 @@ class LoginScreen extends Component {
     }
 
     render() {
-        let { email, password } = this.state;
+        let { 
+            email, password, 
+            isEmailValid, isEmailChanged,
+            isPasswordValid
+        } = this.state;
         return (
             <Container>
                 <Content padder={true} style={styles.content}>
                 <Form>
-                    <Item floatingLabel>
+                    <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
                         <Label>Email</Label>
                         <Input
                             value={email}
                             onChangeText={(email) => this.handleChangeEmail(email)}
                         />
                     </Item>
+                    {
+                        !isEmailValid && isEmailChanged &&
+                        <Item style={styles.errorBox}>
+                            <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                        </Item>
+                    }
                     <Item floatingLabel last>
                         <Label>Password</Label>
                         <Input
@@ -109,6 +119,17 @@ const styles = StyleSheet.create({
     signupText: {
         marginTop: 20,
         textAlign: 'center'
+    },
+    errorBox: {
+        borderBottomWidth : 0
+    },
+    errorMessage: {
+        fontSize: 12,
+        color: '#FF5733'
+    },
+    errorBorder: {
+        borderBottomColor: '#FF5733',
+        borderBottomWidth: 2
     }
 });
 
