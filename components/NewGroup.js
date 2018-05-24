@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
-import { 
-    Container,
-    Content,
-    Button,
-    Text,
-    Form,
-    Item,
-    Label,
-    Input,
-    Textarea 
-} from 'native-base';
+import { Container, Content, Button, Text, Form, Item, Label, Input, Textarea } from 'native-base';
+import { auth, db } from '../firebase/config';
 
 class NewGroupScreen extends Component {
     
     constructor (props) {
         super(props);
+
+        this.state = {
+            isUserLogin: false
+        }
+    }
+
+    componentDidMount () {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                this.setState({ isUserLogin: true });
+            } else {
+                return this.props.navigation.navigate('Login');
+            }
+        });
     }
 
     render () {

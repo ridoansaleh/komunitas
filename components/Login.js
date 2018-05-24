@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast } from 'native-base';
-import { auth } from '../firebase';
+import { auth as authenticate } from '../firebase';
+import { auth } from '../firebase/config';
 
 class LoginScreen extends Component {
 
@@ -41,18 +42,13 @@ class LoginScreen extends Component {
 
     handleSubmit () {
         let { email, password } = this.state;
-        auth.doSignInWithEmailAndPassword(email, password)
+        authenticate.doSignInWithEmailAndPassword(email, password)
             .then(data => {
-                console.log('login>success : ',data)
-                setLoginStorate = async () => {
-                    try {
-                        await AsyncStorage.setItem('user_login', data);
-                    } catch (error) {
-                        console.log(error);
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        return this.props.navigation.navigate('Profile');
                     }
-                }
-                setLoginStorate();
-                return this.props.navigation.navigate('Profile');
+                });
             })
             .catch(error => {
                 if (error.code === 'auth/wrong-password') {

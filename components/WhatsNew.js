@@ -4,6 +4,7 @@ import { Container, Content, ListItem, CheckBox, Text, Body, H2 } from 'native-b
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { new_groups } from '../data/dummies';
 import Footer from './partials/Footer';
+import { auth, db } from '../firebase/config';
 
 class WhatsNewScreen extends Component {
 
@@ -11,11 +12,19 @@ class WhatsNewScreen extends Component {
     super(props);
 
     this.state = {
-      isUserLogin: true,
+      isUserLogin: false,
       activeMenu: 'WhatsNew'
     }
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
+  }
+
+  componentDidMount () {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.setState({ isUserLogin: true });
+      }
+    });
   }
 
   handleRouteChange (url) {

@@ -1,17 +1,8 @@
 import React, { Component } from 'react';
-import { 
-    Container,
-    Content,
-    List, 
-    ListItem, 
-    Left, 
-    Body, 
-    Right, 
-    Thumbnail, 
-    Text 
-} from 'native-base';
+import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
 import { avatars } from '../data/dummies';
 import Footer from './partials/Footer';
+import { auth, db } from '../firebase/config';
 
 class NotificationScreen extends Component {
     
@@ -19,11 +10,19 @@ class NotificationScreen extends Component {
         super(props);
     
         this.state = {
-          isUserLogin: true,
+          isUserLogin: false,
           activeMenu: 'Notification'
         }
     
         this.handleRouteChange = this.handleRouteChange.bind(this);
+    }
+
+    componentDidMount () {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                this.setState({ isUserLogin: true });
+            }
+        });
     }
     
     handleRouteChange (url) {

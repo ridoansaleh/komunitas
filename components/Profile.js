@@ -4,6 +4,7 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import userAvatar from '../data/images/user_avatar.png';
 import { new_groups } from '../data/dummies';
 import Footer from './partials/Footer';
+import { auth, db } from '../firebase/config';
 
 var BUTTONS = [
     { text: "Edit Profil", icon: "md-cog", iconColor: "#2c8ef4" },
@@ -18,12 +19,35 @@ class ProfileScreen extends Component {
         super(props);
     
         this.state = {
-          isUserLogin: true,
-          activeMenu: 'Profile'
+          isUserLogin: false,
+          activeMenu: 'Profile',
+          user: {}
         }
     
         this.handleRouteChange = this.handleRouteChange.bind(this);
         this.showSettings = this.showSettings.bind(this);
+    }
+
+    componentDidMount () {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                let ref = db.ref('/users/'+user.uid)
+                ref.once('value', data => {
+                    let usr = data.val()
+                    this.setState({
+                        user: {
+                            name: usr.name,
+                            city: usr.city,
+                            photo: userAvatar, // default image, will be change soon
+                            groups: usr.groups ? usr.groups : {}
+                        },
+                        isUserLogin: true
+                    })
+                })
+            } else {
+                return this.props.navigation.navigate('Login');
+            }
+        });
     }
     
     handleRouteChange (url) {
@@ -48,16 +72,17 @@ class ProfileScreen extends Component {
     }
 
     render () {
+        let { user } = this.state;
         return (
             <Container>
                 <Content padder={true}>
                     <Grid style={{ marginTop: 20 }}>
                         <Col style={{ alignItems: 'center' }}>
-                            <Thumbnail large source={userAvatar} />
+                            <Thumbnail large source={user.photo} />
                         </Col>
                         <Col>
-                            <H3>Ridoan Saleh Nasution</H3>
-                            <Text>Jakarta</Text>
+                            <H3>{user.name}</H3>
+                            <Text>{user.city}</Text>
                             <Button
                                 style={{ marginTop: 5 }}
                                 onPress={this.showSettings}>
@@ -77,7 +102,7 @@ class ProfileScreen extends Component {
                                     </Left>
                                     <Body>
                                         <Text>{group.title}</Text>
-                                        <Text note>{group.total_members} Orang</Text>
+                                        <Text note>{group.total_members} member</Text>
                                     </Body>
                                 </ListItem>
                             )

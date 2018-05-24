@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body, Spinner } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { auth, db } from '../firebase';
@@ -17,7 +17,7 @@ const INITIAL_STATE = {
     isPassword2Valid: false,
     isPassword2Changed: false,
     isPasswordChecked: false,
-    isSpinderLoading: false
+    isSpinnerLoading: false
 }
 
 class SignUpScreen extends Component {
@@ -81,30 +81,28 @@ class SignUpScreen extends Component {
 
     handleSubmit () {
         let { name, email, password1, password2 } = this.state;
-        this.setState({ isSpinderLoading: true });
+        this.setState({ isSpinnerLoading: true });
         auth.doCreateUserWithEmailAndPassword(email, password1)
-        .then(authUser => {
-            console.log('authUser : ', authUser)
-            db.saveUser({
-                id: authUser.uid,
-                name: name,
-                email: email,
-                join_date: this.getFullDate(),
-                city: '-',
-                photo: '-'
+            .then(authUser => {
+                db.saveUser({
+                    id: authUser.uid,
+                    name: name,
+                    email: email,
+                    join_date: this.getFullDate(),
+                    city: '-',
+                    photo: '-'
+                });
+                this.setState({ ...INITIAL_STATE });
+                this.showToastMessage('Kamu berhasil signup, silahkan login!');
+            })
+            .catch(error => {
+                this.setState({ isSpinnerLoading: false });
+                if (error.code === 'auth/email-already-in-use') {
+                    this.showToastMessage('Email tersebut sudah digunakan akun lain');
+                } else {
+                    this.showToastMessage('Kamu gagal signup, coba lagi!');
+                }
             });
-            AsyncStorage.setItem('user_login', authUser.uid);
-            this.setState({ ...INITIAL_STATE });
-            this.showToastMessage('Kamu berhasil signup, silahkan login!');
-        })
-        .catch(error => {
-            this.setState({ isSpinderLoading: false });
-            if (error.code === 'auth/email-already-in-use') {
-                this.showToastMessage('Email tersebut sudah digunakan akun lain');
-            } else {
-                this.showToastMessage('Kamu gagal signup, coba lagi!');
-            }
-        });
     }
 
     showToastMessage (message) {
@@ -125,7 +123,7 @@ class SignUpScreen extends Component {
             name, email, password1, password2, isNameValid,
             isEmailValid, isEmailChanged, isPassword1Valid,
             isPassword1Changed, isPassword2Valid, isPassword2Changed,
-            isPasswordChecked, isSpinderLoading
+            isPasswordChecked, isSpinnerLoading
         } = this.state;
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
@@ -193,8 +191,8 @@ class SignUpScreen extends Component {
                         </ListItem>
                         { isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
                             <Button block info style={styles.signupBtn} onPress={this.handleSubmit}>
-                                { isSpinderLoading && <Spinner color='green' /> }
-                                { !isSpinderLoading && <Text> Daftar </Text> }
+                                { isSpinnerLoading && <Spinner color='green' /> }
+                                { !isSpinnerLoading && <Text> Daftar </Text> }
                             </Button> }
                         { (!isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
                             <Button disabled block style={styles.signupBtn} onPress={this.handleSubmit}>

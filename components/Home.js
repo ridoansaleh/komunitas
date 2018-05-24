@@ -7,6 +7,7 @@ import {
 import Expo from "expo";
 import { popular_events, groups_category } from '../data/dummies';
 import Footer from './partials/Footer';
+import { auth, db } from '../firebase/config';
 
 class HomeScreen extends Component {
 
@@ -33,6 +34,14 @@ class HomeScreen extends Component {
     this.setState({ loading: false });
   }
 
+  componentDidMount () {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.setState({ isUserLogin: true });
+      }
+    });
+  }
+
   showSearch () {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
@@ -54,7 +63,7 @@ class HomeScreen extends Component {
     return (
       <Container>
         { this.state.searchStatus &&
-          (<Header style={{ marginTop: 30 }} searchBar rounded>
+          (<Header style={{ marginTop: 25 }} searchBar rounded>
             <Item regular>
               <Icon name='md-arrow-back' onPress={this.showSearch} />
               <Input placeholder='Contoh: Jakarta Memancing'/>
@@ -63,7 +72,7 @@ class HomeScreen extends Component {
           </Header>)
         }
         { !this.state.searchStatus &&
-          (<Header style={{ marginTop: 30 }}>
+          (<Header style={{ marginTop: 25}}>
             <Left>
               <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.handleRouteChange('NewGroup')} />
             </Left>
@@ -75,7 +84,6 @@ class HomeScreen extends Component {
             </Right>
           </Header>)
         }
-        {/* Content */}
         <Content padder={true}>
           <View style={{height: 435}}>
             <DeckSwiper
@@ -95,7 +103,6 @@ class HomeScreen extends Component {
                     <Image style={{ height: 300, flex: 1 }} source={item.image} />
                   </CardItem>
                   <CardItem>
-                    {/* <Icon name="heart" style={{ color: '#ED4A6A' }} /> */}
                     <Text>{item.name}</Text>
                   </CardItem>
                 </Card>
@@ -121,7 +128,6 @@ class HomeScreen extends Component {
             })}
           </List>
         </Content>
-        {/* Content */}
         <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
       </Container>
     );
