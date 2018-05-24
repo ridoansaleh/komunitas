@@ -1,18 +1,5 @@
 import React, { Component } from 'react';
-import { 
-    Container,
-    Content,
-    ActionSheet,
-    Button,
-    List, 
-    ListItem, 
-    Left, 
-    Body, 
-    Right, 
-    Thumbnail, 
-    Text,
-    H3
-} from 'native-base';
+import { Container, Content, ActionSheet, Button, List, ListItem, Left, Body, Right, Thumbnail, Text, H3 } from 'native-base';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import userAvatar from '../data/images/user_avatar.png';
 import { new_groups } from '../data/dummies';
@@ -36,6 +23,7 @@ class ProfileScreen extends Component {
         }
     
         this.handleRouteChange = this.handleRouteChange.bind(this);
+        this.showSettings = this.showSettings.bind(this);
     }
     
     handleRouteChange (url) {
@@ -44,6 +32,19 @@ class ProfileScreen extends Component {
         } else {
           return this.props.navigation.navigate(url);
         }
+    }
+
+    showSettings () {
+        ActionSheet.show(
+            {
+                options: BUTTONS,
+                cancelButtonIndex: CANCEL_INDEX,
+                title: 'Pengaturan Profil'
+            },
+            buttonIndex => {
+                this.setState({ clicked: BUTTONS[buttonIndex] });
+            }
+        )
     }
 
     render () {
@@ -59,18 +60,7 @@ class ProfileScreen extends Component {
                             <Text>Jakarta</Text>
                             <Button
                                 style={{ marginTop: 5 }}
-                                onPress={() =>
-                                    ActionSheet.show(
-                                        {
-                                            options: BUTTONS,
-                                            cancelButtonIndex: CANCEL_INDEX,
-                                            title: 'Pengaturan Profil'
-                                        },
-                                        buttonIndex => {
-                                            this.setState({ clicked: BUTTONS[buttonIndex] });
-                                        }
-                                    )
-                                }>
+                                onPress={this.showSettings}>
                                 <Text>Settings</Text>
                             </Button> 
                         </Col>
@@ -89,9 +79,6 @@ class ProfileScreen extends Component {
                                         <Text>{group.title}</Text>
                                         <Text note>{group.total_members} Orang</Text>
                                     </Body>
-                                    {/* <Right>
-                                        <Text note>{avt.time}</Text>
-                                    </Right> */}
                                 </ListItem>
                             )
                         })}

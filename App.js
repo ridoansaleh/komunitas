@@ -82,6 +82,13 @@ const AppNavigator = StackNavigator(
 );
 
 class App extends Component {
+  constructor (props) {
+    super(props)
+    console.ignoredYellowBox = [
+      'Setting a timer'
+    ];
+  }
+
   render() {
     return (
       <Root>

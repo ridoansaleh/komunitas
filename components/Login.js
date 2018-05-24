@@ -19,6 +19,7 @@ class LoginScreen extends Component {
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
+        this.showToastMessage = this.showToastMessage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -41,18 +42,33 @@ class LoginScreen extends Component {
     handleSubmit () {
         let { email, password } = this.state;
         auth.doSignInWithEmailAndPassword(email, password)
-        .then(data => {
-            this.setState({ email: '', password: '' });
-            AsyncStorage.setItem('user_login', data);
-            this.props.navigation.navigate('Profile');
-        })
-        .catch(error => {
-            Toast.show({
-                text: 'Error while try to login',
-                textStyle: { color: 'white' },
-                buttonText: 'Close',
-                duration: 3000
+            .then(data => {
+                console.log('login>success : ',data)
+                setLoginStorate = async () => {
+                    try {
+                        await AsyncStorage.setItem('user_login', data);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                setLoginStorate();
+                return this.props.navigation.navigate('Profile');
             })
+            .catch(error => {
+                if (error.code === 'auth/wrong-password') {
+                    this.showToastMessage('Email atau password salah')
+                } else {
+                    this.showToastMessage('Akun tidak ditemukan')
+                }
+            });
+    }
+
+    showToastMessage (message) {
+        Toast.show({
+            text: message,
+            textStyle: { color: 'yellow' },
+            buttonText: 'Close',
+            duration: 3000
         })
     }
 
