@@ -6,12 +6,11 @@ import { new_groups } from '../data/dummies';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 
-var BUTTONS = [
+const BUTTONS = [
     { text: "Edit Profil", icon: "md-cog", iconColor: "#2c8ef4" },
     { text: "Ubah Password", icon: "md-construct", iconColor: "#2c8ef4" },
     { text: "Logout", icon: "md-exit", iconColor: "#2c8ef4" }
 ];
-var CANCEL_INDEX = 2;
 
 class ProfileScreen extends Component {
     
@@ -62,11 +61,14 @@ class ProfileScreen extends Component {
         ActionSheet.show(
             {
                 options: BUTTONS,
-                cancelButtonIndex: CANCEL_INDEX,
                 title: 'Pengaturan Profil'
             },
             buttonIndex => {
-                this.setState({ clicked: BUTTONS[buttonIndex] });
+                if (buttonIndex === 2) {
+                    auth.signOut()
+                        .then(() => this.props.navigation.navigate('Home') )
+                        .catch((error) => console.log('Error: cant logout ', error) );
+                }
             }
         )
     }
@@ -94,11 +96,11 @@ class ProfileScreen extends Component {
                         <ListItem itemHeader first>
                             <Text>Member</Text>
                         </ListItem>
-                        { new_groups.map( group => {
+                        {new_groups.map(group => {
                             return (
                                 <ListItem key={group.id} avatar>
                                     <Left>
-                                        <Thumbnail source={group.image} />
+                                        <Thumbnail square source={group.image} />
                                     </Left>
                                     <Body>
                                         <Text>{group.title}</Text>
