@@ -77,12 +77,12 @@ class ProfileScreen extends Component {
         let { user } = this.state;
         return (
             <Container>
-                <Content padder={true}>
-                    <Grid style={{ marginTop: 20 }}>
-                        <Col style={{ alignItems: 'center' }}>
+                <Content>
+                    <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
+                        <Col style={{ width: '35%', alignContent: 'center' }}>
                             <Thumbnail large source={user.photo} />
                         </Col>
-                        <Col>
+                        <Col style={{ width: '65%' }}>
                             <H3>{user.name}</H3>
                             <Text>{user.city}</Text>
                             <Button

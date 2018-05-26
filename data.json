@@ -40,6 +40,48 @@
             }
         }
     },
+    "categories": {
+        "belajar": {
+            "id": 1,
+            "name": "Belajar",
+            "icon": "ios-people",
+            "groups": {
+                "matematika": true
+            }
+        },
+        "travelling": {
+            "id": 2,
+            "name": "Travelling",
+            "icon": "jet",
+            "groups": {
+                "jakartasurfing": true
+            }
+        },
+        "olahraga": {
+            "id": 3,
+            "name": "Olahraga",
+            "icon": "basketball",
+            "groups": {
+                "futsalmenteng": true
+            }
+        },
+        "musik": {
+            "id": 4,
+            "name": "Musik",
+            "icon": "musical-notes",
+            "groups": {
+                "dangdutpantura": true
+            }
+        },
+        "bisnis": {
+            "id": 5,
+            "name": "Bisnis",
+            "icon": "briefcase",
+            "groups": {
+                "satepadang": true
+            }
+        }
+    },
     "groups": {
         "mancingmania": {
             "name" : "Mancing Mania",
@@ -47,6 +89,7 @@
             "created_date" : "19 Mei 2017",
             "location" : "Jakarta",
             "about": "Mancing Mania adalah perkumpulan orang Jakarta yang hobi memancing.",
+            "category": "olahraga",
             "admin" : "messi",
             "members" : {
                 "ronaldo": true,
@@ -65,14 +108,42 @@
         }
     },
     "events": {
-        "mancingdiui": {
-            "name": "Mancing Bareng di UI",
+        "berenangui": {
+            "name": "Berenang di Kolam UI",
             "location": "Danau Universitas Indonesia",
-            "image": "http://www.mancingseru.com/fun.jpg",
+            "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37",
             "date": "11 Januari 2019",
             "time": "15.30 WIB - 17.00 WIB",
-            "description": "Bagi yang mau ikut harus bawa pancingan ya. Kumpulnya di stasiun UI.",
+            "description": "Bagi yang mau ikut harus bawa celana pendek ya. Kumpulnya di stasiun UI.",
             "quota": 100,
+            "members": {
+                "mosalah": true,
+                "ronaldo": true,
+                "messi": true
+            }
+        },
+        "optimasireactjs": {
+            "name": "Cara Optimasi Aplikasi ReactJs",
+            "location": "Kantor Gojek, Pasar Raya Blok M",
+            "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/js_group.png?alt=media&token=8f56f4e3-d2b6-4318-8b30-227e614d497e",
+            "date": "23 Agustus 2019",
+            "time": "20.30 WIB - 21.30 WIB",
+            "description": "Acara ini Free bagi mahasiswa/i yang membawa KTM.",
+            "quota": 300,
+            "members": {
+                "mosalah": true,
+                "ronaldo": true,
+                "messi": true
+            }
+        },
+        "belajarpython": {
+            "name": "Machine Learning Menggunakan Python",
+            "location": "Kantor Bukalapak",
+            "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/python.jpg?alt=media&token=2c7939c3-6d45-4476-9fc3-690cf2dbc3d3",
+            "date": "9 April 2019",
+            "time": "18.30 WIB - 20.30 WIB",
+            "description": "Mohon RSVP terlebih dahulu karena kuota terbatas.",
+            "quota": 250,
             "members": {
                 "mosalah": true,
                 "ronaldo": true,
@@ -81,9 +152,11 @@
         }
     },
     "notifications": {
-        "group": "mancingmania",
-        "message": "Grup Mancing Mania mengumumkan Meetup baru pada tanggal 12 Juni 2018",
-        "timestamp": "2 Maret 2018 13.50 WIB"
+        "hasdgy6hjY": {
+            "group": "mancingmania",
+            "message": "Grup Mancing Mania mengumumkan Meetup baru pada tanggal 12 Juni 2018",
+            "timestamp": "2 Maret 2018 13.50 WIB"
+        }
     },
     "news": {
         "grupbaru": {
