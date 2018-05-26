@@ -47,12 +47,15 @@ class HomeScreen extends Component {
   }
 
   handleRouteChange (url, groupId) {
+    let { navigate } = this.props.navigation;
     if (!this.state.isUserLogin) {
-      return this.props.navigation.navigate('Login');
+      if (url === 'Category') {
+        return navigate(url, { group_id: groupId });
+      } else {
+        return navigate('Login');
+      }
     } else {
-      return this.props.navigation.navigate(url, {
-        group_id: groupId 
-      });
+      return navigate(url, { group_id: groupId });
     }
   }
 
