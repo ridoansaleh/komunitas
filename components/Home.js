@@ -16,7 +16,6 @@ class HomeScreen extends Component {
 
     this.state = {
       loading: true,
-      isUserLogin: false,
       searchStatus: false,
       activeMenu: 'Home'
     }
@@ -34,21 +33,19 @@ class HomeScreen extends Component {
     this.setState({ loading: false });
   }
 
-  componentDidMount () {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        this.setState({ isUserLogin: true });
-      }
-    });
-  }
-
   showSearch () {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
   handleRouteChange (url, groupId) {
     let { navigate } = this.props.navigation;
-    if (!this.state.isUserLogin) {
+    let isUserLogin = false;
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        isUserLogin: true;
+      }
+    });
+    if (!isUserLogin) {
       if (url === 'Category') {
         return navigate(url, { group_id: groupId });
       } else {

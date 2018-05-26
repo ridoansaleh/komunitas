@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Modal, TouchableHighlight, Alert, C
 import { 
     Container, Header, Button, Text, Content, Form, Item,
     Input, Label, Toast, Icon, ListItem, CheckBox, Body,
-    Spinner, Thumbnail
+    Spinner, Thumbnail, Picker
 } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import defaultPhoto from '../data/icon/camera.png';
@@ -12,11 +12,14 @@ import { auth, db } from '../firebase';
 const INITIAL_STATE = {
     name: '', 
     email: '', 
+    city: '',
     password1: '', 
     password2: '',
     isNameValid: false,
     isEmailValid: false,
     isEmailChanged: false,
+    isCityValid: false,
+    isCityChanged: false,
     isPassword1Valid: false,
     isPassword1Changed: false,
     isPassword2Valid: false,
@@ -35,6 +38,7 @@ class SignUpScreen extends Component {
         this.handlePhotoUploadOptions = this.handlePhotoUploadOptions.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
+        this.handleChangeCity = this.handleChangeCity.bind(this);
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword1 = this.handleChangePassword1.bind(this);
         this.handleChangePassword2 = this.handleChangePassword2.bind(this);
@@ -58,6 +62,15 @@ class SignUpScreen extends Component {
             this.setState({ email: value, isEmailValid: true, isEmailChanged: true });
         } else {
             this.setState({ email: value, isEmailValid: false, isEmailChanged: true })
+        }
+    }
+
+    handleChangeCity (value) {
+        console.log(value.length)
+        if (value.length >= 3) {
+            this.setState({ city: value, isCityValid: true, isCityChanged: true });
+        } else {
+            this.setState({ city: value, isCityValid: false, isCityChanged: true });
         }
     }
 
@@ -87,7 +100,7 @@ class SignUpScreen extends Component {
     }
 
     handleSubmit () {
-        let { name, email, password1, password2 } = this.state;
+        let { name, email, city, password1, password2 } = this.state;
         this.setState({ isSpinnerLoading: true });
         auth.doCreateUserWithEmailAndPassword(email, password1)
             .then(authUser => {
@@ -96,7 +109,7 @@ class SignUpScreen extends Component {
                     name: name,
                     email: email,
                     join_date: this.getFullDate(),
-                    city: '-',
+                    city: city,
                     photo: '-'
                 });
                 this.setState({ ...INITIAL_STATE });
@@ -153,10 +166,10 @@ class SignUpScreen extends Component {
 
     render() {
         let { 
-            name, email, password1, password2, isNameValid,
-            isEmailValid, isEmailChanged, isPassword1Valid,
-            isPassword1Changed, isPassword2Valid, isPassword2Changed,
-            isPasswordChecked, isSpinnerLoading
+            name, email, city, password1, password2, isNameValid,
+            isEmailValid, isEmailChanged, isCityValid, isCityChanged, 
+            isPassword1Valid, isPassword1Changed, isPassword2Valid, 
+            isPassword2Changed, isPasswordChecked, isSpinnerLoading
         } = this.state;
 
         return (
@@ -184,6 +197,19 @@ class SignUpScreen extends Component {
                             !isEmailValid && isEmailChanged &&
                             <Item style={styles.errorBox}>
                                 <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            </Item>
+                        }
+                        <Item floatingLabel last style={isCityChanged && !isCityValid ? styles.errorBorder : {}}>
+                            <Label>City</Label>
+                            <Input
+                                value={city}
+                                onChangeText={(city) => this.handleChangeCity(city)}
+                            />
+                        </Item>
+                        {
+                            !isCityValid && isCityChanged &&
+                            <Item style={styles.errorBox}>
+                                <Text style={styles.errorMessage}>{ 'Nama kota terlalu pendek' }</Text>
                             </Item>
                         }
                         <Item floatingLabel last style={isPassword1Changed && !isPassword1Valid ? styles.errorBorder : {}}>
