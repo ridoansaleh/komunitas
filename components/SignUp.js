@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast, Icon, ListItem, CheckBox, Body, Spinner } from 'native-base';
+import { View, StyleSheet, TouchableOpacity, Modal, TouchableHighlight, Alert, CameraRoll } from 'react-native';
+import { 
+    Container, Header, Button, Text, Content, Form, Item,
+    Input, Label, Toast, Icon, ListItem, CheckBox, Body,
+    Spinner, Thumbnail
+} from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import defaultPhoto from '../data/icon/camera.png';
 import { auth, db } from '../firebase';
 
 const INITIAL_STATE = {
@@ -27,6 +32,7 @@ class SignUpScreen extends Component {
 
         this.state = { ...INITIAL_STATE }
         
+        this.handlePhotoUploadOptions = this.handlePhotoUploadOptions.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -36,6 +42,7 @@ class SignUpScreen extends Component {
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
         this.getFullDate = this.getFullDate.bind(this);
+        this._showCamera = this._showCamera.bind(this);
     }
 
     handleRouteChanges () {
@@ -118,6 +125,32 @@ class SignUpScreen extends Component {
         this.setState({ isPasswordChecked: !this.state.isPasswordChecked });
     }
 
+    _showCamera () {
+        CameraRoll.getPhotos({
+            first: 20,
+            assetType: 'Photos',
+          })
+          .then(r => {
+            this.setState({ photos: r.edges });
+          })
+          .catch((err) => {
+             //Error Loading Images
+          });
+    }
+
+    handlePhotoUploadOptions () {
+        let that = this;
+        Alert.alert(
+            'Photo Profil',
+            'Bagaimana Anda mengupload photo ?',
+            [
+              {text: 'Camera', onPress: () => this._showCamera() },
+              {text: 'Gallery', onPress: () => console.log('open gallery')},
+            ],
+            { cancelable: true }
+        )
+    }
+
     render() {
         let { 
             name, email, password1, password2, isNameValid,
@@ -125,9 +158,13 @@ class SignUpScreen extends Component {
             isPassword1Changed, isPassword2Valid, isPassword2Changed,
             isPasswordChecked, isSpinnerLoading
         } = this.state;
+
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
+                    <TouchableOpacity style={{ width: '30%', marginLeft: '35%', marginRight: '35%' }} onPress={this.handlePhotoUploadOptions}>
+                        <Thumbnail large source={defaultPhoto} />
+                    </TouchableOpacity>
                     <Form>
                         <Item floatingLabel last>
                             <Label>Nama</Label>

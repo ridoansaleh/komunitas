@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Root } from 'native-base';
+import { Root, Text } from 'native-base';
 import { StackNavigator } from 'react-navigation';
 import SignUpScreen from './components/SignUp';
 import LoginScreen from './components/Login';
@@ -10,11 +10,16 @@ import ProfileScreen from './components/Profile';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
 
+let renderTitle = (title) => {
+  return <Text style={{ color: 'white' }}>{title}</Text>
+}
+
 const AppNavigator = StackNavigator(
   {
     SignUp: {
       screen: SignUpScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Sign Up'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -23,6 +28,7 @@ const AppNavigator = StackNavigator(
     Login: {
       screen: LoginScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Login'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -37,6 +43,7 @@ const AppNavigator = StackNavigator(
     WhatsNew: {
       screen: WhatsNewScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Baru'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -45,6 +52,7 @@ const AppNavigator = StackNavigator(
     Notification: {
       screen: NotificationScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Notifikasi'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -53,6 +61,7 @@ const AppNavigator = StackNavigator(
     Profile: {
       screen: ProfileScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Profil'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -61,6 +70,7 @@ const AppNavigator = StackNavigator(
     NewGroup: {
       screen: NewGroupScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Grup Baru'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -69,6 +79,7 @@ const AppNavigator = StackNavigator(
     Category: {
       screen: CategoryScreen,
       navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Kategori Grup'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
@@ -77,7 +88,6 @@ const AppNavigator = StackNavigator(
   },
   {
     initialRouteName: 'Home'
-    // headerMode: 'none'
   }
 );
 
