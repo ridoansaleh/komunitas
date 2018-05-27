@@ -114,13 +114,15 @@
             "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37",
             "date": "11 Januari 2019",
             "time": "15.30 WIB - 17.00 WIB",
+            "created_date": "Sat May 26 2018 16:47:35 GMT+0700 (WIB)",
             "description": "Bagi yang mau ikut harus bawa celana pendek ya. Kumpulnya di stasiun UI.",
             "quota": 100,
             "members": {
                 "mosalah": true,
                 "ronaldo": true,
                 "messi": true
-            }
+            },
+            "group": "mancingmania"
         },
         "optimasireactjs": {
             "name": "Cara Optimasi Aplikasi ReactJs",
@@ -128,13 +130,15 @@
             "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/js_group.png?alt=media&token=8f56f4e3-d2b6-4318-8b30-227e614d497e",
             "date": "23 Agustus 2019",
             "time": "20.30 WIB - 21.30 WIB",
+            "created_date": "Sat May 27 2018 16:47:05 GMT+0700 (WIB)",
             "description": "Acara ini Free bagi mahasiswa/i yang membawa KTM.",
             "quota": 300,
             "members": {
                 "mosalah": true,
                 "ronaldo": true,
                 "messi": true
-            }
+            },
+            "group": "mancingmania"
         },
         "belajarpython": {
             "name": "Machine Learning Menggunakan Python",
@@ -142,13 +146,15 @@
             "image": "https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/python.jpg?alt=media&token=2c7939c3-6d45-4476-9fc3-690cf2dbc3d3",
             "date": "9 April 2019",
             "time": "18.30 WIB - 20.30 WIB",
+            "created_date": "Sat May 29 2018 16:47:31 GMT+0700 (WIB)",
             "description": "Mohon RSVP terlebih dahulu karena kuota terbatas.",
             "quota": 250,
             "members": {
                 "mosalah": true,
                 "ronaldo": true,
                 "messi": true
-            }
+            },
+            "group": "mancingmania"
         }
     },
     "notifications": {
