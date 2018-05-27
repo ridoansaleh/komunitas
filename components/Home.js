@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Image, StatusBar } from 'react-native';
-import {
-  Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
-  ListItem, Item, Input, Form, DeckSwiper, Card, CardItem, Thumbnail, View,
-  Spinner 
-} from 'native-base';
+import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
+         ListItem, Item, Input, Form, DeckSwiper, Card, CardItem, Thumbnail, View,
+         Spinner } from 'native-base';
 import Expo from "expo";
 import { popular_events, groups_category } from '../data/dummies';
 import Footer from './partials/Footer';
@@ -22,7 +20,8 @@ class HomeScreen extends Component {
       searchStatus: false,
       activeMenu: 'Home',
       events: null,
-      eventsFetched: false
+      eventsFetched: false,
+      groupsCategory: null
     }
 
     this.showSearch = this.showSearch.bind(this);
@@ -55,10 +54,11 @@ class HomeScreen extends Component {
     });
     */
 
-    let ref = db.ref('/events');
+    let eventRef = db.ref('/events');
     let groupRef = db.ref('/groups');
+    let categoryRef = db.ref('/categories');
 
-    ref.on('value', data => {
+    eventRef.on('value', data => {
       let usr = data.val();
 
       if ((Object.keys(usr).length > 0) && (usr.constructor === Object)) {
@@ -67,7 +67,7 @@ class HomeScreen extends Component {
         Object.keys(usr).map((u,i) => eventNames.push(u));
         eventNames.map((e,i) => {
           groupRef.child(usr[e]['group']).once('value', snap => {
-            let newObj = usr[e] // i can't manipulate Object from firebase directly, so i create this
+            let newObj = usr[e]; // i can't manipulate Object from firebase directly, so i create this
             usr[e]['group_name'] = snap.val().name;
             usr[e]['group_image'] = snap.val().image;
             topEvents.push(newObj);
@@ -82,7 +82,21 @@ class HomeScreen extends Component {
           eventsFetched: true
         });
       }
-    }, error => console.log('error while fetching events'))
+    }, error => console.log('error while fetching events'));
+
+    categoryRef.on('value', data => {
+      let categories = data.val();
+      let categoryNames = [];
+      let result = [];
+      Object.keys(categories).map((c,i) => categoryNames.push(c));
+      categoryNames.map((c,i) => {
+        let newObj = categories[c];
+        result.push(newObj);
+        if (result.length === categoryNames.length) {
+          this.setState({ groupsCategory: result });
+        }
+      });
+    }, error => console.log('error while fetching categories'));
   }
 
   renderTopEvents (events) {
@@ -154,13 +168,13 @@ class HomeScreen extends Component {
   }
 
   render() {
-    // console.log('render : ', this.state.events)
-    if (this.state.loading) {
+    let { groupsCategory, loading, searchStatus, events, eventsFetched, activeMenu } = this.state;
+    if (loading) {
       return <Expo.AppLoading />;
     }
     return (
       <Container>
-        { this.state.searchStatus &&
+        { searchStatus &&
           (<Header style={{ marginTop: 25 }} searchBar rounded>
             <Item regular>
               <Icon name='md-arrow-back' onPress={this.showSearch} />
@@ -169,7 +183,7 @@ class HomeScreen extends Component {
             </Item>
           </Header>)
         }
-        { !this.state.searchStatus &&
+        { !searchStatus &&
           (<Header style={{ marginTop: 25}}>
             <Left>
               <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.handleRouteChange('NewGroup')} />
@@ -183,16 +197,16 @@ class HomeScreen extends Component {
           </Header>)
         }
         <Content padder={true}>
-          { this.state.events
-            ? this.renderTopEvents(this.state.events)
-            : this.state.eventsFetched
+          { events
+            ? this.renderTopEvents(events)
+            : eventsFetched
               ? this.renderEmptyEvent()
               : <Spinner color='green' size='large' /> }
           <List>
             <ListItem itemHeader first>
               <Text>Kategori Grup</Text>
             </ListItem>
-            { groups_category.map(group => {
+            { groupsCategory && groupsCategory.map(group => {
                 return (
                   <ListItem key={group.id} onPress={() => this.handleRouteChange('Category', group.id)} >
                     <Left>
@@ -207,7 +221,7 @@ class HomeScreen extends Component {
             })}
           </List>
         </Content>
-        <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
+        <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} />
       </Container>
     );
   }
