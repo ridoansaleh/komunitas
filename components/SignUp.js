@@ -66,7 +66,6 @@ class SignUpScreen extends Component {
     }
 
     handleChangeCity (value) {
-        console.log(value.length)
         if (value.length >= 3) {
             this.setState({ city: value, isCityValid: true, isCityChanged: true });
         } else {

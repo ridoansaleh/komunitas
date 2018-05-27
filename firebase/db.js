@@ -1,11 +1,16 @@
 import { db } from './config';
 
 export const saveUser = (data) => {
-    let user_id = data.id;
+    let userRef = db.ref('/users/'+data.id);
     delete data.id
-    return db.ref('users/' + user_id).set({ ...data });
+    userRef.set({ ...data });
 }
 
-export const countUser = () => {
-    return db.ref('users/').child.length;
+export const saveGroup = (data) => {
+    let groupRef = db.ref('/groups/'+data.key);
+    let memberRef = db.ref('/groups/'+data.key+'/members/'+data.member);
+    delete data.key;
+    data.member = null;
+    groupRef.set({...data});
+    memberRef.set({ email: data.admin });
 }

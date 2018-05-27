@@ -1,29 +1,34 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { Content, Button, Text, Form, Item, Label, Input, Textarea, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { auth, db } from '../firebase/config';
+import { db as database } from '../firebase';
+
+const INITIAL_STATE = {
+    isUserLogin: false,
+    userEmail: null,
+    userId: null,
+    name: '',
+    isNameValid: false,
+    isNameChanged: false,
+    categorySelected: 'nothing',
+    isCategoryValid: false,
+    isCategoryChanged: false,
+    location: '',
+    isLocationValid: false,
+    isLocationChanged: false,
+    description: '',
+    isDescriptionValid: false,
+    isDescriptionChanged: false
+}
 
 class NewGroupScreen extends Component {
     
     constructor (props) {
         super(props);
 
-        this.state = {
-            isUserLogin: false,
-            name: '',
-            isNameValid: false,
-            isNameChanged: false,
-            categorySelected: 'nothing',
-            isCategoryValid: false,
-            isCategoryChanged: false,
-            location: '',
-            isLocationValid: false,
-            isLocationChanged: false,
-            description: '',
-            isDescriptionValid: false,
-            isDescriptionChanged: false
-        }
+        this.state = { ...INITIAL_STATE }
 
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
@@ -32,12 +37,14 @@ class NewGroupScreen extends Component {
         this.handleNameBlur = this.handleNameBlur.bind(this);
         this.handleLocationBlur = this.handleLocationBlur.bind(this);
         this.handleDescriptionBlur = this.handleDescriptionBlur.bind(this);
+        this.getFullDate = this.getFullDate.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount () {
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ isUserLogin: true });
+                this.setState({ isUserLogin: true, userEmail: user.email, userId: user.uid });
             } else {
                 return this.props.navigation.navigate('Login');
             }
@@ -93,6 +100,45 @@ class NewGroupScreen extends Component {
             this.setState({ isDescriptionChanged: false });
         }
     }
+
+    getFullDate () {
+        let today = new Date();
+        let day = today.getDate();
+        let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        let month = monthNames[today.getMonth()];
+        let year = today.getFullYear();
+        return day+' '+month+' '+year
+    }
+
+    handleSubmit () {
+        let { name, categorySelected, location, description, userEmail, userId } = this.state;
+        let key = (name + this.getFullDate() + location).split(' ').join('').split('a').join('_');
+        let data = {
+            key: key,
+            name: name,
+            image: 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/fishing.jpg?alt=media&token=00ffc3d9-5abe-49dc-bdc2-970e362b949d',
+            category: categorySelected,
+            location: location,
+            about: description,
+            created_date: this.getFullDate(),
+            active: true,
+            member: userId,
+            admin: userEmail,
+            waiting_list: false,
+            events: false            
+        };
+        database.saveGroup(data);
+        this.setState({ ...INITIAL_STATE });
+        Alert.alert(
+            'Sukses',
+            'Anda berhasil membuat grup baru.',
+            [
+              {text: 'Home', onPress: () => console.log('Cancel Pressed')},
+              {text: 'Lihat Grup', onPress: () => console.log('OK Pressed')}
+            ],
+            { cancelable: true }
+        );
+    } 
 
     render () {
         let { name, isNameValid, isNameChanged, categorySelected, isCategoryValid, isCategoryChanged, location,
@@ -163,7 +209,7 @@ class NewGroupScreen extends Component {
                             </Item>
                         }
                         { isNameValid && isCategoryValid && isLocationValid && isDescriptionValid &&
-                            <Button block info style={{ marginTop: 5 }}>
+                            <Button block info style={{ marginTop: 5 }} onPress={this.handleSubmit} >
                                 <Text> Submit </Text>
                             </Button> }
                         { (!isNameValid || !isCategoryValid || !isLocationValid || !isDescriptionValid) &&
