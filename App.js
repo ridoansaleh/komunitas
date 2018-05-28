@@ -9,6 +9,7 @@ import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
+import GroupScreen from './components/Group';
 
 let renderTitle = (title) => {
   return <Text style={{ color: 'white' }}>{title}</Text>
@@ -80,6 +81,15 @@ const AppNavigator = StackNavigator(
       screen: CategoryScreen,
       navigationOptions: ({ navigation }) => ({
         headerTitle: renderTitle('Kategori Grup'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
+    },
+    Group: {
+      screen: GroupScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Group'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }

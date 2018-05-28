@@ -134,7 +134,9 @@ class NewGroupScreen extends Component {
             'Anda berhasil membuat grup baru.',
             [
               {text: 'Home', onPress: () => console.log('Cancel Pressed')},
-              {text: 'Lihat Grup', onPress: () => console.log('OK Pressed')}
+              {text: 'Lihat Grup', onPress: () => {
+                  return this.props.navigation.navigate('Group');
+              }}
             ],
             { cancelable: true }
         );
