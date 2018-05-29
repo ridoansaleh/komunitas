@@ -61,8 +61,10 @@ class EventScreen extends Component {
                 })}
                 { !events && 
                     <Card>
-                        <CardItem cardBody>
-                            <Text style={{ textAlign: 'center' }}>{ 'Belum ada Event' }</Text>
+                        <CardItem>
+                            <Body>
+                                <Text style={{ textAlign: 'center' }}>{ 'Belum ada Event' }</Text>
+                            </Body>
                         </CardItem>
                     </Card>
                 }
