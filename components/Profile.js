@@ -20,10 +20,12 @@ class ProfileScreen extends Component {
         this.state = {
           isUserLogin: false,
           activeMenu: 'Profile',
-          user: {}
+          user: {},
+          userGroups: null
         }
     
         this.handleRouteChange = this.handleRouteChange.bind(this);
+        this.getUserGroups = this.getUserGroups.bind(this);
         this.showSettings = this.showSettings.bind(this);
     }
 
@@ -42,18 +44,42 @@ class ProfileScreen extends Component {
                         },
                         isUserLogin: true
                     })
-                })
+                });
+                this.getUserGroups(user.uid);
             } else {
                 return this.props.navigation.navigate('Login');
             }
         });
     }
+
+    getUserGroups (userId) {
+        let keys = [];
+        let result = [];
+        let groupsRef = db.ref('/groups'); 
+        groupsRef.on('value', (data) => {
+            let groups = data.val();
+            Object.keys(groups).map((g,i) => keys.push(g));
+            for (let i=0; i<keys.length; i++) {
+                if (groups[keys[i]]['members'].hasOwnProperty(userId)) {
+                    result.push({
+                        name: groups[keys[i]]['name'],
+                        image: groups[keys[i]]['image'],
+                        total_members: Object.keys(groups[keys[i]]['members']).length,
+                        key: keys[i]
+                    });
+                }
+                if (i === (keys.length-1)) {
+                    this.setState({ userGroups: result });
+                }
+            }
+        }); 
+    }
     
-    handleRouteChange (url) {
+    handleRouteChange (url, groupKey) {
         if (!this.state.isUserLogin) {
           return this.props.navigation.navigate('Login');
         } else {
-          return this.props.navigation.navigate(url);
+          return this.props.navigation.navigate(url, groupKey);
         }
     }
 
@@ -74,7 +100,7 @@ class ProfileScreen extends Component {
     }
 
     render () {
-        let { user } = this.state;
+        let { user, userGroups } = this.state;
         return (
             <Container>
                 <Content>
@@ -96,15 +122,15 @@ class ProfileScreen extends Component {
                         <ListItem itemHeader first>
                             <Text>Member</Text>
                         </ListItem>
-                        {new_groups.map(group => {
+                        { userGroups && userGroups.map((g,i) => {
                             return (
-                                <ListItem key={group.id} avatar>
+                                <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', { group_key: g.key })}>
                                     <Left>
-                                        <Thumbnail square source={group.image} />
+                                        <Thumbnail square source={{ uri: g.image }} />
                                     </Left>
                                     <Body>
-                                        <Text>{group.title}</Text>
-                                        <Text note>{group.total_members} member</Text>
+                                        <Text>{g.name}</Text>
+                                        <Text note>{g.total_members} member</Text>
                                     </Body>
                                 </ListItem>
                             )

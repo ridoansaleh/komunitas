@@ -201,7 +201,7 @@ class NewGroupScreen extends Component {
                         <Textarea
                             rowSpan={5}
                             value={description}
-                            onChangeText={this.handleDescriptionChange}
+                            onChangeText={(description) => this.handleDescriptionChange(description)}
                             onBlur={this.handleDescriptionBlur}
                             bordered
                             style={isDescriptionChanged && !isDescriptionValid ? styles.errorBorder : { paddingTop: 5 }}

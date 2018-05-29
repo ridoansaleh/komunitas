@@ -14,3 +14,9 @@ export const saveGroup = (data) => {
     groupRef.set({...data});
     memberRef.set({ email: data.admin });
 }
+
+export const saveEvent = (data) => {
+    let eventRef = db.ref('/events/'+data.key);
+    delete data.key;
+    eventRef.set({...data});
+}

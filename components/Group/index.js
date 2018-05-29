@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { Container, Content, Text, H3, Tabs, Tab, Button, Icon } from 'native-base';
+import { Container, Content, Text, H3, Tabs, Tab, Button, Icon, Spinner } from 'native-base';
 import Events from './Events';
 import Members from './Members';
 import WaitingList from './WaitingList';
@@ -15,7 +15,9 @@ class GroupScreen extends Component {
 
         this.state = {
             activeMenu: null,
-            isUserLogin: false
+            isUserLogin: false,
+            group: null,
+            groupKey: this.props.navigation.state.params.group_key
         }
 
         this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -28,50 +30,50 @@ class GroupScreen extends Component {
             }
         });
 
-        let groupKey = this.props.navigation.state.params.group_key;
-        let groupRef = db.ref('/groups/' + groupKey);
+        let groupRef = db.ref('/groups/' + this.state.groupKey);
         
         groupRef.on('value', data => {
-            let group = data.val();
-            console.log('Group : ', group);
+            let groupData = data.val();
+            console.log('Group : ', groupData);
+            this.setState({ group: groupData });
         });
     }
 
-    handleRouteChange (url) {
+    handleRouteChange (url, groupKey) {
         if (!this.state.isUserLogin) {
             return this.props.navigation.navigate('Login');
         } else {
-            return this.props.navigation.navigate(url);
+            return this.props.navigation.navigate(url, groupKey);
         }
     }
 
     render () {
-        let { activeMenu, loading } = this.state;
+        let { activeMenu, group, groupKey } = this.state;
         return (
             <Container>
-                <Content>
-                    <View>
-                        <Image style={styles.groupImage} source={groupImage} />
-                        <Button danger small style={styles.addNewEvent}>
-                            <Icon name='add'/>
-                        </Button>
-                        <H3 style={styles.groupName}>{' Grup Mancing Jakarta '}</H3>
-                        <Text style={styles.description}>
-                            {'Grup Mancing Jakarta adalah sebuah komunitas yang menyatukan pemuda-pemuda Jakarta yang menyukai aktivitas memancing.'}
-                        </Text>
-                    </View>
-                    <Tabs initialPage={0}>
-                        <Tab heading="Events">
-                            <Events />
-                        </Tab>
-                        <Tab heading="Member">
-                            <Members />
-                        </Tab>
-                        <Tab heading="Waiting List">
-                            <WaitingList />
-                        </Tab>
-                    </Tabs>
-                </Content>
+                { group &&
+                    <Content>
+                        <View>
+                            <Image style={styles.groupImage} source={groupImage} />
+                            <Button danger small style={styles.addNewEvent} onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
+                                <Icon name='add'/>
+                            </Button>
+                            <H3 style={styles.groupName}> {group.name} </H3>
+                            <Text style={styles.description}> {group.about} </Text>
+                        </View>
+                        <Tabs initialPage={0}>
+                            <Tab heading="Events">
+                                <Events data={group.events} />
+                            </Tab>
+                            <Tab heading="Member">
+                                <Members data={group.members} />
+                            </Tab>
+                            <Tab heading="Waiting List">
+                                <WaitingList data={group.waiting_list} />
+                            </Tab>
+                        </Tabs>
+                    </Content> }
+                { !group && <Spinner color='green' size='large' /> }
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} />
             </Container>
         );

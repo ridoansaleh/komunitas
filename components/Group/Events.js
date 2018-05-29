@@ -4,6 +4,22 @@ import { Content, Text, Card, CardItem, Body, H2 } from 'native-base';
 
 class EventScreen extends Component {
 
+    constructor (props) {
+        super(props);
+
+        this.state = {
+            events: null
+        }
+    }
+
+    componentDidMount () {
+        let data = this.props.data;
+        console.log('status : ',data);
+        if (data) {
+            this.setState({ events: data });
+        }
+    }
+
     render () {
         return (
             <View style={{ padding: 5 }}>
