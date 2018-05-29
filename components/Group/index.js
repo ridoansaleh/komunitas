@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { Container, Content, Text, H3, Tabs, Tab, Button, Icon } from 'native-base';
-import Expo from "expo";
 import Events from './Events';
 import Members from './Members';
 import WaitingList from './WaitingList';
@@ -16,21 +15,10 @@ class GroupScreen extends Component {
 
         this.state = {
             activeMenu: null,
-            isUserLogin: false,
-            loading: true
+            isUserLogin: false
         }
 
         this.handleRouteChange = this.handleRouteChange.bind(this);
-    }
-
-    // WILL delete soon
-    async componentWillMount() {
-        await Expo.Font.loadAsync({
-          'Roboto': require('native-base/Fonts/Roboto.ttf'),
-          'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-          'Ionicons': require("@expo/vector-icons/fonts/Ionicons.ttf")
-        });
-        this.setState({ loading: false });
     }
 
     componentDidMount () {
@@ -38,6 +26,14 @@ class GroupScreen extends Component {
             if (user) {
                 this.setState({ isUserLogin: true });
             }
+        });
+
+        let groupKey = this.props.navigation.state.params.group_key;
+        let groupRef = db.ref('/groups/' + groupKey);
+        
+        groupRef.on('value', data => {
+            let group = data.val();
+            console.log('Group : ', group);
         });
     }
 
@@ -51,9 +47,6 @@ class GroupScreen extends Component {
 
     render () {
         let { activeMenu, loading } = this.state;
-        if (loading) {
-            return <Expo.AppLoading />;
-        }
         return (
             <Container>
                 <Content>
@@ -81,7 +74,7 @@ class GroupScreen extends Component {
                 </Content>
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} />
             </Container>
-        )
+        );
     }
 }
 

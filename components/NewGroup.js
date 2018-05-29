@@ -131,11 +131,13 @@ class NewGroupScreen extends Component {
         this.setState({ ...INITIAL_STATE });
         Alert.alert(
             'Sukses',
-            'Anda berhasil membuat grup baru.',
+            'Horee, Anda berhasil membuat grup baru.',
             [
-              {text: 'Home', onPress: () => console.log('Cancel Pressed')},
+              {text: 'Home', onPress: () => {
+                  return this.props.navigation.navigate('Home');
+              }},
               {text: 'Lihat Grup', onPress: () => {
-                  return this.props.navigation.navigate('Group');
+                  return this.props.navigation.navigate('Group', { group_key: key });
               }}
             ],
             { cancelable: true }

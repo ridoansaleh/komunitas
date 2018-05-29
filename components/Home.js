@@ -59,17 +59,17 @@ class HomeScreen extends Component {
     let categoryRef = db.ref('/categories');
 
     eventRef.on('value', data => {
-      let usr = data.val();
+      let event = data.val();
 
-      if ((Object.keys(usr).length > 0) && (usr.constructor === Object)) {
+      if ((Object.keys(event).length > 0) && (event.constructor === Object)) {
         let eventNames = [];
         let topEvents = [];
-        Object.keys(usr).map((u,i) => eventNames.push(u));
+        Object.keys(event).map((u,i) => eventNames.push(u));
         eventNames.map((e,i) => {
-          groupRef.child(usr[e]['group']).once('value', snap => {
-            let newObj = usr[e]; // i can't manipulate Object from firebase directly, so i create this
-            usr[e]['group_name'] = snap.val().name;
-            usr[e]['group_image'] = snap.val().image;
+          groupRef.child(event[e]['group']).once('value', snap => {
+            let newObj = event[e]; // i can't manipulate Object from firebase directly, so i create this
+            event[e]['group_name'] = snap.val().name;
+            event[e]['group_image'] = snap.val().image;
             topEvents.push(newObj);
             if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
               this.setState({ events: topEvents });
@@ -202,24 +202,24 @@ class HomeScreen extends Component {
             : eventsFetched
               ? this.renderEmptyEvent()
               : <Spinner color='green' size='large' /> }
-          <List>
+          { groupsCategory && <List>
             <ListItem itemHeader first>
               <Text>Kategori Grup</Text>
             </ListItem>
-            { groupsCategory && groupsCategory.map(group => {
+            { groupsCategory.map((c,i) => {
                 return (
-                  <ListItem key={group.id} onPress={() => this.handleRouteChange('Category', group.id)} >
+                  <ListItem key={i} onPress={() => this.handleRouteChange('Category', c.id)} >
                     <Left>
-                      <Icon name={group.icon}/>
+                      <Icon name={c.icon}/>
                     </Left>
                     <Body>
-                      <Text>{group.name}</Text>
+                      <Text>{c.name}</Text>
                     </Body>
                     <Right />
                   </ListItem>
                 ) 
             })}
-          </List>
+          </List> }
         </Content>
         <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} />
       </Container>
