@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { Content, Text, Card, CardItem, Body, H2 } from 'native-base';
+import { auth, db } from '../../firebase/config';
 
 class EventScreen extends Component {
 
@@ -14,42 +15,58 @@ class EventScreen extends Component {
 
     componentDidMount () {
         let data = this.props.data;
-        console.log('status : ',data);
+        let eventsKey = [];
+        let result = [];
+        let totalEvents = 0;
+        let eventsRef = db.ref('/events');
         if (data) {
-            this.setState({ events: data });
+            totalEvents = Object.keys(data).length;
+        }      
+        if (totalEvents > 0) {
+            Object.keys(data).map((d,i) => eventsKey.push(d));
+            eventsRef.on('value', (data) => {
+                let events = data.val();
+                for (let i=0; i<eventsKey.length; i++) {
+                    if (events.hasOwnProperty(eventsKey[i])) {
+                        result.push({
+                            name: events[eventsKey[i]].name,
+                            date: events[eventsKey[i]].date,
+                            location: events[eventsKey[i]].location
+                        });
+                    }
+                    if (i === (eventsKey.length-1)) {
+                        console.log('REsULT : ', result);
+                        this.setState({ events: result });
+                    }
+                }
+            });
         }
     }
 
     render () {
+        let { events } = this.state;
         return (
             <View style={{ padding: 5 }}>
-                <Card>
-                    <CardItem>
-                        <Body>
-                            <H2>#1 Mancing Ikan Paus di Selat Sunda</H2>
-                            <Text style={{ marginTop: 20 }}>{' 12 September 2018 (20.30 WIB) '}</Text>
-                            <Text style={{ marginTop: 20 }}>{' Selat Sunda '}</Text>
-                        </Body>
-                    </CardItem>
-                </Card>
-                <Card>
-                    <CardItem>
-                        <Body>
-                            <H2>#2 Mancing Ikan Paus di Selat Sunda</H2>
-                            <Text style={{ marginTop: 20 }}>{' 12 September 2018 (20.30 WIB) '}</Text>
-                            <Text style={{ marginTop: 20 }}>{' Selat Sunda '}</Text>
-                        </Body>
-                    </CardItem>
-                </Card>
-                <Card>
-                    <CardItem>
-                        <Body>
-                            <H2>#3 Mancing Ikan Paus di Selat Sunda</H2>
-                            <Text style={{ marginTop: 20 }}>{' 12 September 2018 (20.30 WIB) '}</Text>
-                            <Text style={{ marginTop: 20 }}>{' Selat Sunda '}</Text>
-                        </Body>
-                    </CardItem>
-                </Card>
+                { events && events.map((e,i) => {
+                    return (
+                        <Card key={i}>
+                            <CardItem>
+                                <Body>
+                                    <H2>#{(i+1) + ' ' + e.name }</H2>
+                                    <Text style={{ marginTop: 20 }}>{e.date}</Text>
+                                    <Text style={{ marginTop: 20 }}>{e.location}</Text>
+                                </Body>
+                            </CardItem>
+                        </Card> 
+                    );
+                })}
+                { !events && 
+                    <Card>
+                        <CardItem cardBody>
+                            <Text style={{ textAlign: 'center' }}>{ 'Belum ada Event' }</Text>
+                        </CardItem>
+                    </Card>
+                }
             </View>
         );
     }

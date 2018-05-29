@@ -128,7 +128,7 @@ class NewEventScreen extends Component {
         }
         let key = name.split(' ').join('') + quota + description.substring(1,7);
         let data = {
-            key: key,
+            eventKey: key,
             name: name,
             description: description,
             location: location,
@@ -140,8 +140,12 @@ class NewEventScreen extends Component {
             image: 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37',
             members: false
         }
-        // console.log('DATA : ', data);
         database.saveEvent(data);
+        database.addEventToGroup({
+            eventKey: key,
+            groupKey: groupKey, 
+            status: true
+        });
         this.setState({ ...INITIAL_STATE });
         Alert.alert(
             'Sukses',

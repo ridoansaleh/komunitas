@@ -34,7 +34,6 @@ class GroupScreen extends Component {
         
         groupRef.on('value', data => {
             let groupData = data.val();
-            console.log('Group : ', groupData);
             this.setState({ group: groupData });
         });
     }

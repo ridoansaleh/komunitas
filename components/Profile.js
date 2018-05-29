@@ -58,18 +58,21 @@ class ProfileScreen extends Component {
         let groupsRef = db.ref('/groups'); 
         groupsRef.on('value', (data) => {
             let groups = data.val();
-            Object.keys(groups).map((g,i) => keys.push(g));
-            for (let i=0; i<keys.length; i++) {
-                if (groups[keys[i]]['members'].hasOwnProperty(userId)) {
-                    result.push({
-                        name: groups[keys[i]]['name'],
-                        image: groups[keys[i]]['image'],
-                        total_members: Object.keys(groups[keys[i]]['members']).length,
-                        key: keys[i]
-                    });
-                }
-                if (i === (keys.length-1)) {
-                    this.setState({ userGroups: result });
+            let totalGroups = Object.keys(groups).length;
+            if (totalGroups > 0) {
+                Object.keys(groups).map((g,i) => keys.push(g));
+                for (let i=0; i<keys.length; i++) {
+                    if (groups[keys[i]]['members'].hasOwnProperty(userId)) {
+                        result.push({
+                            name: groups[keys[i]]['name'],
+                            image: groups[keys[i]]['image'],
+                            total_members: Object.keys(groups[keys[i]]['members']).length,
+                            key: keys[i]
+                        });
+                    }
+                    if (i === (keys.length-1)) {
+                        this.setState({ userGroups: result });
+                    }
                 }
             }
         }); 
