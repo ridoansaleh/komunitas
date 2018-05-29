@@ -35,7 +35,6 @@ class EventScreen extends Component {
                         });
                     }
                     if (i === (eventsKey.length-1)) {
-                        console.log('REsULT : ', result);
                         this.setState({ events: result });
                     }
                 }
@@ -70,7 +69,6 @@ class EventScreen extends Component {
             </View>
         );
     }
-
 }
 
 export default EventScreen;
