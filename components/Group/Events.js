@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { Content, Text, Card, CardItem, Body, H2 } from 'native-base';
 import { auth, db } from '../../firebase/config';
 
@@ -29,6 +29,7 @@ class EventScreen extends Component {
                 for (let i=0; i<eventsKey.length; i++) {
                     if (events.hasOwnProperty(eventsKey[i])) {
                         result.push({
+                            key: eventsKey[i],
                             name: events[eventsKey[i]].name,
                             date: events[eventsKey[i]].date,
                             location: events[eventsKey[i]].location
@@ -44,6 +45,7 @@ class EventScreen extends Component {
 
     render () {
         let { events } = this.state;
+        let { navigate } = this.props.navigation;
         return (
             <View style={{ padding: 5 }}>
                 { events && events.map((e,i) => {
@@ -51,7 +53,9 @@ class EventScreen extends Component {
                         <Card key={i}>
                             <CardItem>
                                 <Body>
-                                    <H2>#{(i+1) + ' ' + e.name }</H2>
+                                    <TouchableOpacity onPress={() => navigate('Event', { event_key: e.key })}>
+                                        <H2>#{(i+1) + ' ' + e.name }</H2>
+                                    </TouchableOpacity>
                                     <Text style={{ marginTop: 20 }}>{e.date}</Text>
                                     <Text style={{ marginTop: 20 }}>{e.location}</Text>
                                 </Body>

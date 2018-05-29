@@ -67,9 +67,9 @@ class HomeScreen extends Component {
         Object.keys(event).map((u,i) => eventNames.push(u));
         eventNames.map((e,i) => {
           groupRef.child(event[e]['group']).once('value', snap => {
-            let newObj = event[e]; // i can't manipulate Object from firebase directly, so i create this
             event[e]['group_name'] = snap.val().name;
-            event[e]['group_image'] = snap.val().image;
+						event[e]['group_image'] = snap.val().image;
+						let newObj = event[e]; // i can't manipulate Object from firebase directly, so i create this
             topEvents.push(newObj);
             if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
               this.setState({ events: topEvents });

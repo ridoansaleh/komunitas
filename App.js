@@ -11,6 +11,7 @@ import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
 import GroupScreen from './components/Group';
 import NewEventScreen from './components/NewEvent';
+import EventScreen from './components/Event';
 
 let renderTitle = (title) => {
   return <Text style={{ color: 'white' }}>{title}</Text>
@@ -82,6 +83,15 @@ const AppNavigator = StackNavigator(
       screen: NewEventScreen,
       navigationOptions: ({ navigation }) => ({
         headerTitle: renderTitle('Event Baru'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
+    },
+    Event: {
+      screen: EventScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Event'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
