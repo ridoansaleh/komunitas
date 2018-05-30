@@ -11,12 +11,12 @@ class EventScreen extends Component {
         super(props);
 
         this.state = {
-            events: null
+            event: null
         }
     }
 
     render () {
-        let { events } = this.state;
+        let { event } = this.state;
         return (
             <Container>
                 <Content>
@@ -75,8 +75,8 @@ class EventScreen extends Component {
                         </ListItem>
                     </List>
                     <View style={styles.infoBox}>
-                        <Text>15 orang ikut</Text>
-                        <Text>Sisa 6 tempat lagi, buruan !!</Text>
+                        <Text>{' 15 orang ikut '}</Text>
+                        <Text>{' Sisa 6 tempat lagi, buruan !! '}</Text>
                     </View>
                 </Content>
             </Container>

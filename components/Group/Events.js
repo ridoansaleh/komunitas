@@ -11,6 +11,8 @@ class EventScreen extends Component {
         this.state = {
             events: null
         }
+
+        this.handleRouteChange = this.handleRouteChange.bind(this);
     }
 
     componentDidMount () {
@@ -43,9 +45,12 @@ class EventScreen extends Component {
         }
     }
 
+    handleRouteChange (url, eventKey) {
+        return this.props.onMenuChange('Event', { event_key: eventKey }); // we can't access props.navigation from child component
+    }
+
     render () {
         let { events } = this.state;
-        let { navigate } = this.props.navigation;
         return (
             <View style={{ padding: 5 }}>
                 { events && events.map((e,i) => {
@@ -53,7 +58,7 @@ class EventScreen extends Component {
                         <Card key={i}>
                             <CardItem>
                                 <Body>
-                                    <TouchableOpacity onPress={() => navigate('Event', { event_key: e.key })}>
+                                    <TouchableOpacity onPress={() => this.handleRouteChange('Event', e.key)}>
                                         <H2>#{(i+1) + ' ' + e.name }</H2>
                                     </TouchableOpacity>
                                     <Text style={{ marginTop: 20 }}>{e.date}</Text>

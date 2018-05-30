@@ -38,11 +38,11 @@ class GroupScreen extends Component {
         });
     }
 
-    handleRouteChange (url, groupKey) {
+    handleRouteChange (url, paramKey) {
         if (!this.state.isUserLogin) {
             return this.props.navigation.navigate('Login');
         } else {
-            return this.props.navigation.navigate(url, groupKey);
+            return this.props.navigation.navigate(url, paramKey);
         }
     }
 
@@ -62,7 +62,7 @@ class GroupScreen extends Component {
                         </View>
                         <Tabs initialPage={0}>
                             <Tab heading="Events">
-                                <Events data={group.events} />
+                                <Events data={group.events} onMenuChange={this.handleRouteChange} />
                             </Tab>
                             <Tab heading="Member">
                                 <Members data={group.members} />

@@ -82,7 +82,7 @@ class ProfileScreen extends Component {
         if (!this.state.isUserLogin) {
           return this.props.navigation.navigate('Login');
         } else {
-          return this.props.navigation.navigate(url, groupKey);
+          return this.props.navigation.navigate(url, { group_key: groupKey });
         }
     }
 
@@ -127,7 +127,7 @@ class ProfileScreen extends Component {
                         </ListItem>
                         { userGroups && userGroups.map((g,i) => {
                             return (
-                                <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', { group_key: g.key })}>
+                                <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', g.key)}>
                                     <Left>
                                         <Thumbnail square source={{ uri: g.image }} />
                                     </Left>
