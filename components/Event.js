@@ -11,26 +11,59 @@ class EventScreen extends Component {
         super(props);
 
         this.state = {
-            event: null
+            event: null,
+            eventKey: this.props.navigation.state.params.event_key
         }
+    }
+
+    componentDidMount () {
+        let eventRef = db.ref('/events/'+this.state.eventKey);
+        eventRef.on('value', (data) => {
+            let groupName = '';
+            let groupLocation = '';
+            let groupAdmin = '';
+            let result = {};
+            let event = data.val();
+            let groupRef = db.ref('/groups/'+event.group);
+            let total_members = !event.members ? 0 : null;
+            groupRef.on('value', (data) => { 
+                groupName = data.val().name;
+                groupLocation = data.val().location;
+                groupAdmin = data.val().admin
+            });
+            result = {
+                group_name: groupName,
+                group_location: groupLocation,
+                name: event.name,
+                date: event.date,
+                time: event.time,
+                location: event.location,
+                quota: event.quota,
+                host: groupAdmin,
+                total_members: total_members
+            };
+            if (result) {
+                this.setState({ event: result });
+            }
+        })
     }
 
     render () {
         let { event } = this.state;
         return (
             <Container>
-                <Content>
+                { event && <Content>
                     <Grid style={styles.groupBox}>
                         <Col style={{ width: '30%' }}>
                             <Thumbnail square large source={defaultImage} />
                         </Col>
                         <Col style={{ width: '70%' }}>
-                            <H3>{'Grup Komunitas Memancing Buaya'}</H3>
-                            <Text>{'Jakarta'}</Text>
+                            <H3>{event.group_name}</H3>
+                            <Text>{event.group_location}</Text>
                         </Col>
                     </Grid>
                     <View style={styles.eventBox}>
-                        <H1>{ ('Mancing Buaya di Danau Siberia Saat Musim Dingin').toUpperCase() }</H1>
+                        <H1>{ (event.name).toUpperCase() }</H1>
                     </View>
                     <Grid style={styles.joinBox}>
                         <Col style={{ width: '70%' }}>
@@ -53,8 +86,8 @@ class EventScreen extends Component {
                                 <Icon name='ios-clock-outline' />
                             </Left>
                             <Body>
-                                <Text>{' 12 Juni 2018 '}</Text>
-                                <Text note>{' 14.00 - 16.00 WIB '}</Text>
+                                <Text>{event.date}</Text>
+                                <Text note>{event.time}</Text>
                             </Body>
                         </ListItem>
                         <ListItem avatar>
@@ -62,7 +95,7 @@ class EventScreen extends Component {
                                 <Icon name='ios-map-outline' />
                             </Left>
                             <Body>
-                                <Text>{' Pantai Ancol '}</Text>
+                                <Text>{event.location}</Text>
                             </Body>
                         </ListItem>
                         <ListItem avatar>
@@ -70,15 +103,22 @@ class EventScreen extends Component {
                                 <Icon name='ios-person-outline' />
                             </Left>
                             <Body>
-                                <Text>{' Hosted by Andi '}</Text>
+                                <Text>{event.host}</Text>
                             </Body>
                         </ListItem>
                     </List>
-                    <View style={styles.infoBox}>
-                        <Text>{' 15 orang ikut '}</Text>
-                        <Text>{' Sisa 6 tempat lagi, buruan !! '}</Text>
-                    </View>
-                </Content>
+                    { (event.quota > event.total_members) &&
+                        <View style={styles.infoBox}>
+                            { (event.total_members !== 0) && <Text>{event.total_members + ' orang ikut '}</Text> }
+                            <Text>{' Sisa ' + (event.quota - event.total_members) + ' tempat lagi, buruan !! '}</Text>
+                        </View>
+                    }
+                    { (event.quota === event.total_members) &&
+                        <View style={styles.infoBox}>
+                            <Text>{ 'Tidak ada tempat lagi :(' }</Text>
+                        </View>
+                    }
+                </Content>}
             </Container>
         );
     }
