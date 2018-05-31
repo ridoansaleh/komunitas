@@ -57,8 +57,8 @@ class GroupScreen extends Component {
                             <Button danger small style={styles.addNewEvent} onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
                                 <Icon name='add'/>
                             </Button>
-                            <H3 style={styles.groupName}> {group.name} </H3>
-                            <Text style={styles.description}> {group.about} </Text>
+                            <H3 style={styles.groupName}>{group.name}</H3>
+                            <Text style={styles.description}>{group.about}</Text>
                         </View>
                         <Tabs initialPage={0}>
                             <Tab heading="Events">
@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
     description: {
         padding: 5
     }
-  });
+});
 
 export default GroupScreen;

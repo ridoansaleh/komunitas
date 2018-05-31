@@ -154,16 +154,16 @@ class HomeScreen extends Component {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
-  handleRouteChange (url, groupId) {
+  handleRouteChange (url, param) {
     let { navigate } = this.props.navigation;
     if (!this.state.isUserLogin) {
       if (url === 'Category') {
-        return navigate(url, { group_id: groupId });
+        return navigate(url, param);
       } else {
         return navigate('Login');
       }
     } else {
-      return navigate(url, { group_id: groupId });
+      return navigate(url, param);
     }
   }
 
@@ -208,7 +208,7 @@ class HomeScreen extends Component {
             </ListItem>
             { groupsCategory.map((c,i) => {
                 return (
-                  <ListItem key={i} onPress={() => this.handleRouteChange('Category', c.id)} >
+                  <ListItem key={i} onPress={() => this.handleRouteChange('Category', c)} >
                     <Left>
                       <Icon name={c.icon}/>
                     </Left>

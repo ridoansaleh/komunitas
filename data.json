@@ -45,6 +45,7 @@
             "id": 1,
             "name": "Belajar",
             "icon": "ios-people",
+            "image": "",
             "groups": {
                 "matematika": true
             }
@@ -53,6 +54,7 @@
             "id": 2,
             "name": "Travelling",
             "icon": "jet",
+            "image": "",
             "groups": {
                 "jakartasurfing": true
             }
@@ -61,6 +63,7 @@
             "id": 3,
             "name": "Olahraga",
             "icon": "basketball",
+            "image": "",
             "groups": {
                 "futsalmenteng": true
             }
@@ -69,6 +72,7 @@
             "id": 4,
             "name": "Musik",
             "icon": "musical-notes",
+            "image": "",
             "groups": {
                 "dangdutpantura": true
             }
@@ -77,6 +81,7 @@
             "id": 5,
             "name": "Bisnis",
             "icon": "briefcase",
+            "image": "",
             "groups": {
                 "satepadang": true
             }
