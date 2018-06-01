@@ -16,25 +16,85 @@ class GroupScreen extends Component {
         this.state = {
             activeMenu: null,
             isUserLogin: false,
+            isAdmin: false,
+            isMember: false,
             group: null,
             groupKey: this.props.navigation.state.params.group_key
         }
 
         this.handleRouteChange = this.handleRouteChange.bind(this);
+        this.checkIsUserAdmin = this.checkIsUserAdmin.bind(this);
+        this.checkIsUserMember = this.checkIsUserMember.bind(this);
     }
 
+
+
     componentDidMount () {
+        let { groupKey } = this.state;
+        let groupRef = db.ref('/groups/' + this.state.groupKey);
+
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ isUserLogin: true });
+                groupRef.on('value', data => {
+                    let groupData = data.val();
+                    this.checkIsUserAdmin(groupData, user.uid, groupKey);
+                });
+            } else {
+                groupRef.on('value', data => {
+                    let groupData = data.val();
+                    this.setState({ group: groupData });
+                });
             }
         });
+    }
 
-        let groupRef = db.ref('/groups/' + this.state.groupKey);
-        
+    checkIsUserAdmin (groupData, userId, groupKey) {
+        let groupRef = db.ref('/groups/'+groupKey);
+
         groupRef.on('value', data => {
-            let groupData = data.val();
-            this.setState({ group: groupData });
+            let admin = data.val().admin;
+            if (userId === admin) {
+                this.setState({
+                    isUserLogin: true,
+                    isAdmin: true,
+                    isMember: true,
+                    group: groupData
+                });
+            } else {
+                this.checkIsUserMember(groupData, userId, groupKey);
+            }
+        });
+    }
+
+    checkIsUserMember (groupData, userId, groupKey) {
+        let memberRef = db.ref('/groups/'+groupKey+'/members');
+
+        memberRef.on('value', data => {
+            let members = data.val();
+            let memberKeys = [];
+
+            if (members) {
+                Object.keys(members).map((m,i) => memberKeys.push(m));
+            }
+
+            if (memberKeys.length > 0) {
+                for (let i=0; i<memberKeys.length; i++) {
+                    if (userId === memberKeys[i]) {
+                        this.setState({
+                            isUserLogin: true,
+                            isMember: true,
+                            group: groupData
+                        });
+                        break;
+                    }
+                    if ((i === (memberKeys.length-1)) && !this.state.isMember ) {
+                        this.setState({
+                            isUserLogin: true,
+                            group: groupData
+                        });
+                    }
+                }
+            }
         });
     }
 
@@ -47,29 +107,35 @@ class GroupScreen extends Component {
     }
 
     render () {
-        let { activeMenu, group, groupKey } = this.state;
+        let { activeMenu, group, groupKey, isAdmin, isMember } = this.state;
         return (
             <Container>
                 { group &&
                     <Content>
                         <View>
                             <Image style={styles.groupImage} source={groupImage} />
-                            <Button danger small style={styles.addNewEvent} onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
-                                <Icon name='add'/>
-                            </Button>
+                            { isAdmin &&
+                                <Button
+                                  danger small style={styles.addNewEvent}
+                                  onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
+                                    <Icon name='add'/>
+                                </Button> }
                             <H3 style={styles.groupName}>{group.name}</H3>
                             <Text style={styles.description}>{group.about}</Text>
                         </View>
                         <Tabs initialPage={0}>
                             <Tab heading="Events">
-                                <Events data={group.events} onMenuChange={this.handleRouteChange} />
+                                <Events
+                                    data={group.events}
+                                    onMenuChange={this.handleRouteChange}
+                                />
                             </Tab>
                             <Tab heading="Member">
                                 <Members data={group.members} />
                             </Tab>
-                            <Tab heading="Waiting List">
+                            { isAdmin && <Tab heading="Waiting List">
                                 <WaitingList data={group.waiting_list} />
-                            </Tab>
+                            </Tab> }
                         </Tabs>
                     </Content> }
                 { !group && <Spinner color='green' size='large' /> }
