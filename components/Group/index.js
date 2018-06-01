@@ -149,7 +149,21 @@ class GroupScreen extends Component {
 
     handleExitGroup () {
         let { groupKey, userId } = this.state;
-        let groupRef = db.ref('/groups/'+groupKey+'/waiting_list/'+userId).remove();
+        let membersKey = [];
+        let membersRef = db.ref('/groups/'+groupKey+'/members');
+
+        membersRef.on('value', (data) => {
+            if (data.val()) {
+                Object.keys(data.val()).map((m,i) => membersKey.push(m));
+            }
+            if (membersKey && membersKey.length > 1) {
+                db.ref('/groups/'+groupKey+'/members/'+userId).remove();
+            } else {
+                let groupRef = db.ref('/groups/'+groupKey);
+                groupRef.update({ members: false });
+                this.props.navigation.navigate('Group', { group_key: groupKey });
+            }
+        });
     }
 
     handleRouteChange (url, paramKey) {
@@ -174,15 +188,15 @@ class GroupScreen extends Component {
                                   onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
                                     <Icon name='add'/>
                                 </Button> }
-                            { (isMember && !isAdmin) &&
+                            { (!isAdmin && isMember) &&
                                 <Button
                                   small
                                   warning
                                   onPress={() => this.handleExitGroup()}
-                                  style={styles.joinGroup}>
+                                  style={styles.exitGroup}>
                                     <Text>{' Keluar '}</Text>
                                 </Button> }
-                            { (!isUserWaiting && !isAdmin) &&
+                            { (!isAdmin && !isMember && !isUserWaiting) &&
                                 <Button
                                   small
                                   onPress={() => this.handleRequestJoinGroup()}
@@ -228,6 +242,11 @@ const styles = StyleSheet.create({
         top: 10,
         right: 10,
         borderRadius: 5
+    },
+    exitGroup: {
+        position: 'absolute',
+        top: 10,
+        right: 10
     },
     joinGroup: {
         position: 'absolute',
