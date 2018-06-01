@@ -11,6 +11,8 @@ class CategoryScreen extends Component {
         this.state = {
             groups: null
         }
+
+        this.handleRouteChange = this.handleRouteChange.bind(this);
     }
 
     componentDidMount () {
@@ -25,7 +27,10 @@ class CategoryScreen extends Component {
                 for (let i=0; i<groupKeys.length; i++) {
                     db.ref('/groups/' + groupKeys[i]).on('value', (data) => {
                         if (data.val().category === categoryKey) {
-                            groups.push(data.val());
+                            groups.push({
+                                ...data.val(),
+                                groupKey: groupKeys[i]
+                            });
                         }
                         if ((i === (groupKeys.length - 1)) && groups.length) {
                             this.setState({ groups: groups });
@@ -36,6 +41,10 @@ class CategoryScreen extends Component {
                 this.setState({ groups: null });
             }
         });
+    }
+
+    handleRouteChange (url, groupKey) {
+        this.props.navigation.navigate(url, { group_key: groupKey });
     }
 
     render () {
@@ -51,7 +60,10 @@ class CategoryScreen extends Component {
                     <List style={styles.groupList}>
                         { groups && groups.map((g,i) => {
                                 return (
-                                    <ListItem key={i} avatar style={styles.listItem}>
+                                    <ListItem key={i}
+                                      avatar
+                                      style={styles.listItem}
+                                      onPress={() => this.handleRouteChange('Group', g.groupKey)}>
                                         <Left>
                                             <Thumbnail square source={{ uri: g.image }} />
                                         </Left>
