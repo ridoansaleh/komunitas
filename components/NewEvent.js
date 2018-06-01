@@ -155,8 +155,7 @@ class NewEventScreen extends Component {
                   return this.props.navigation.navigate('Group', { group_key: groupKey });
               }},
               {text: 'Lihat Event', onPress: () => {
-                  console.log('Event');
-                //   return this.props.navigation.navigate('Event', { event_key: key });
+                  return this.props.navigation.navigate('Event', { event_key: key });
               }}
             ],
             { cancelable: true }

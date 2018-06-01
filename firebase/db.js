@@ -12,7 +12,7 @@ export const saveGroup = (data) => {
     delete data.key;
     data.member = null;
     groupRef.set({...data});
-    memberRef.set({ email: data.admin });
+    memberRef.set({ status: true });
 }
 
 export const saveEvent = (data) => {

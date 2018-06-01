@@ -1,6 +1,6 @@
 import React,  { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { Container, Content, Segment, Button, Text, List, ListItem, Body, Left, Thumbnail } from 'native-base';
+import { Container, Content, Segment, Button, Text, List, ListItem, Body, Left, Thumbnail, H3 } from 'native-base';
 import { auth, db } from '../firebase/config';
 
 class CategoryScreen extends Component {
@@ -40,17 +40,18 @@ class CategoryScreen extends Component {
 
     render () {
         let { groups } = this.state;
-        let { image } = this.props.navigation.state.params;
+        let { image, name } = this.props.navigation.state.params;
         return (
             <Container>
                 <Content> 
                     <View>
                         <Image source={{ uri: image }} style={styles.categoryImage} />
+                        <H3 style={styles.categoryName}>{name}</H3>
                     </View>
-                    <List>
+                    <List style={styles.groupList}>
                         { groups && groups.map((g,i) => {
                                 return (
-                                    <ListItem key={i} avatar>
+                                    <ListItem key={i} avatar style={styles.listItem}>
                                         <Left>
                                             <Thumbnail square source={{ uri: g.image }} />
                                         </Left>
@@ -79,6 +80,18 @@ const styles = StyleSheet.create({
     categoryImage: {
         height: 200,
         width: '100%'
+    },
+    categoryName: {
+        marginTop: -40,
+        backgroundColor: 'white',
+        opacity: 0.7,
+        padding: 10
+    },
+    groupList: {
+        marginTop: 10
+    },
+    listItem: {
+        marginBottom: 5
     }
 });
 

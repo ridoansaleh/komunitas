@@ -7,7 +7,6 @@ import { db as database } from '../firebase';
 
 const INITIAL_STATE = {
     isUserLogin: false,
-    userEmail: null,
     userId: null,
     name: '',
     isNameValid: false,
@@ -44,7 +43,7 @@ class NewGroupScreen extends Component {
     componentDidMount () {
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ isUserLogin: true, userEmail: user.email, userId: user.uid });
+                this.setState({ isUserLogin: true, userId: user.uid });
             } else {
                 return this.props.navigation.navigate('Login');
             }
@@ -111,7 +110,7 @@ class NewGroupScreen extends Component {
     }
 
     handleSubmit () {
-        let { name, categorySelected, location, description, userEmail, userId } = this.state;
+        let { name, categorySelected, location, description, userId } = this.state;
         let key = (name + this.getFullDate() + location).split(' ').join('').split('a').join('_');
         let data = {
             key: key,
@@ -123,7 +122,7 @@ class NewGroupScreen extends Component {
             created_date: this.getFullDate(),
             active: true,
             member: userId,
-            admin: userEmail,
+            admin: userId,
             waiting_list: false,
             events: false            
         };

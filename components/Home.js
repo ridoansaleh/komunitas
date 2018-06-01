@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
          ListItem, Item, Input, DeckSwiper, Card, CardItem, Thumbnail, View, Spinner } from 'native-base';
 import Expo from "expo";
@@ -65,10 +65,14 @@ class HomeScreen extends Component {
         Object.keys(event).map((u,i) => eventNames.push(u));
         eventNames.map((e,i) => {
           groupRef.child(event[e]['group']).once('value', snap => {
-            event[e]['group_name'] = snap.val().name;
-						event[e]['group_image'] = snap.val().image;
-						let newObj = event[e]; // i can't manipulate Object from firebase directly, so i create this
-            topEvents.push(newObj);
+            topEvents.push({
+              group_name: snap.val().name,
+              group_image: snap.val().image,
+              key: e,
+              name: event[e]['name'],
+              image: event[e]['image'],
+              date: event[e]['date']
+            });
             if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
               this.setState({ events: topEvents });
             }
@@ -110,7 +114,11 @@ class HomeScreen extends Component {
         return navigate('Login');
       }
     } else {
-      return navigate(url, param);
+      if (url === 'Event') {
+        return navigate(url, { event_key: param });
+      } else {
+        return navigate(url, param);
+      }
     }
   }
 
@@ -134,7 +142,9 @@ class HomeScreen extends Component {
                 <Image style={{ height: 300, flex: 1 }} source={{ uri: item.image }} />
               </CardItem>
               <CardItem>
-                <Text>{item.name}</Text>
+                <TouchableOpacity onPress={() => this.handleRouteChange('Event', item.key)}>
+                  <Text>{item.name}</Text>
+                </TouchableOpacity>
               </CardItem>
             </Card>
           }
@@ -201,7 +211,7 @@ class HomeScreen extends Component {
               ? this.renderEmptyEvent()
               : <Spinner color='green' size='large' /> }
           { groupsCategory && <List>
-            <ListItem itemHeader first>
+            <ListItem>
               <Text>Kategori Grup</Text>
             </ListItem>
             { groupsCategory.map((c,i) => {

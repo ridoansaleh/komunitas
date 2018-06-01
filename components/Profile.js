@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Content, ActionSheet, Button, List, ListItem, Left, Body, Right, Thumbnail, Text, H3 } from 'native-base';
+import { StyleSheet } from 'react-native';
+import { Container, Content, ActionSheet, Button, List, ListItem, Left, Body, 
+         Right, Thumbnail, Text, H3, View } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
 import userAvatar from '../data/images/user_avatar.png';
 import Footer from './partials/Footer';
@@ -69,7 +71,7 @@ class ProfileScreen extends Component {
                             key: keys[i]
                         });
                     }
-                    if (i === (keys.length-1)) {
+                    if ((i === (keys.length-1)) && result.length) {
                         this.setState({ userGroups: result });
                     }
                 }
@@ -121,7 +123,7 @@ class ProfileScreen extends Component {
                         </Col>
                     </Grid>
                     <List>
-                        <ListItem itemHeader first>
+                        <ListItem first>
                             <Text>Member</Text>
                         </ListItem>
                         { userGroups && userGroups.map((g,i) => {
@@ -137,13 +139,27 @@ class ProfileScreen extends Component {
                                 </ListItem>
                             )
                         })}
+                        { !userGroups &&
+                            <View style={styles.groupsEmpty}>
+                                <Text>Hi, kamu belum bergabung dengan grup apapun</Text>
+                            </View>
+                        }
                     </List>
                 </Content>
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
             </Container>
         );
     }
-
 }
+
+const styles = StyleSheet.create({
+    groupsEmpty: {
+        margin: 10,
+        padding: 15,
+        borderColor: '#71BBF5',
+        borderWidth: 1,
+        borderRadius: 5
+    }
+});
 
 export default ProfileScreen;
