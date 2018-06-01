@@ -22,9 +22,11 @@ class WaitingListScreen extends Component {
         let result = [];
         let totalUsers = 0;
         let usersRef = db.ref('/users');
+
         if (data) {
             totalUsers = Object.keys(data).length;
         }      
+        
         if (totalUsers > 0) {
             Object.keys(data).map((d,i) => usersKey.push(d));
             usersRef.on('value', (data) => {

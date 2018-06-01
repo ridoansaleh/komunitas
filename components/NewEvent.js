@@ -18,6 +18,8 @@ const getTodayDate = () => {
 }
 
 const INITIAL_STATE = {
+    userKey: '',
+    groupKey: '',
     name: '',
     isNameValid: false,
     isNameChanged: false,
@@ -35,8 +37,7 @@ const INITIAL_STATE = {
     isTimeChanged: false,
     date: getTodayDate(),
     isDateValid: false,
-    isDateChanged: false,
-    groupKey: ''
+    isDateChanged: false
 }
 
 class NewEventScreen extends Component {
@@ -61,7 +62,7 @@ class NewEventScreen extends Component {
     componentDidMount () {
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ isUserLogin: true });
+                this.setState({ isUserLogin: true, userKey: user.uid });
             } else {
                 return this.props.navigation.navigate('Login');
             }
@@ -118,7 +119,7 @@ class NewEventScreen extends Component {
     }
 
     handleSubmit () {
-        let { name, description, location, quota, timeSelected, date, groupKey } = this.state;
+        let { name, description, location, quota, timeSelected, date, groupKey, userKey } = this.state;
         let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         let formatDate = (date) => {
             let year = date.substring(0,4);
@@ -138,8 +139,8 @@ class NewEventScreen extends Component {
             created_date: getTodayDate(),
             group: groupKey,
             image: 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37',
-            members: false
-        }
+            member: userKey
+        };
         database.saveEvent(data);
         database.addEventToGroup({
             eventKey: key,

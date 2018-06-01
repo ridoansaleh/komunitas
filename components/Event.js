@@ -22,29 +22,39 @@ class EventScreen extends Component {
             let groupName = '';
             let groupLocation = '';
             let groupAdmin = '';
+            let totalMembers = 0;
             let result = {};
+            let membersKey = [];
             let event = data.val();
             let groupRef = db.ref('/groups/'+event.group);
-            let total_members = !event.members ? 0 : null;
-            groupRef.on('value', (data) => { 
-                groupName = data.val().name;
-                groupLocation = data.val().location;
-                groupAdmin = data.val().admin
-            });
-            result = {
-                group_name: groupName,
-                group_location: groupLocation,
-                name: event.name,
-                date: event.date,
-                time: event.time,
-                location: event.location,
-                quota: event.quota,
-                host: groupAdmin,
-                total_members: total_members
-            };
-            if (result) {
-                this.setState({ event: result });
+
+            if (event.members) {
+                Object.keys(event.members).map((m,i) => membersKey.push(m));
+                totalMembers = membersKey.length;
             }
+
+            groupRef.on('value', (group) => {
+                let usersRef = db.ref('/users/'+group.val().admin);
+                usersRef.on('value', (user) => {
+                    groupAdmin = user.val().name;
+                    groupName = group.val().name;
+                    groupLocation = group.val().location;
+                    if (groupName && groupAdmin && groupLocation) {
+                        result = {
+                            group_name: groupName,
+                            group_location: groupLocation,
+                            name: event.name,
+                            date: event.date,
+                            time: event.time,
+                            location: event.location,
+                            quota: event.quota,
+                            host: groupAdmin,
+                            total_members: totalMembers
+                        };
+                        this.setState({ event: result });
+                    }
+                });
+            });
         })
     }
 
@@ -127,19 +137,13 @@ class EventScreen extends Component {
 const styles = StyleSheet.create({
     groupBox: {
         marginTop: 0,
-        padding: 15,
-        borderBottomColor: '#E3E3E3',
-        borderBottomWidth: 3
+        padding: 15
     },
     eventBox: {
         padding: 15
     },
     joinBox: {
-        padding: 15,
-        borderBottomColor: '#E3E3E3',
-        borderBottomWidth: 2,
-        borderTopColor: '#E3E3E3',
-        borderTopWidth: 2
+        padding: 15
     },
     infoBox: {
         marginLeft: 5,

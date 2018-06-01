@@ -131,7 +131,6 @@ class GroupScreen extends Component {
                     }
                 }
             } else {
-                console.log('YOU ARE HERE');
                 this.setState({
                     isUserLogin: true,
                     userId: userId,

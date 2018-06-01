@@ -17,8 +17,11 @@ export const saveGroup = (data) => {
 
 export const saveEvent = (data) => {
     let eventRef = db.ref('/events/'+data.eventKey);
+    let memberRef = db.ref('/events/'+data.eventKey+'/members/'+data.member);
     delete data.eventKey;
+    data.member = null;
     eventRef.set({...data});
+    memberRef.set({ status: true });
 }
 
 export const addEventToGroup = (data) => {

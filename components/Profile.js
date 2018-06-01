@@ -35,46 +35,58 @@ class ProfileScreen extends Component {
             if (user) {
                 let ref = db.ref('/users/'+user.uid)
                 ref.once('value', data => {
-                    let usr = data.val()
-                    this.setState({
-                        user: {
-                            name: usr.name,
-                            city: usr.city,
-                            photo: userAvatar, // default image, will be change soon
-                            groups: usr.groups ? usr.groups : {}
-                        },
-                        isUserLogin: true
-                    })
+                    let userData = {
+                        name: data.val().name,
+                        city: data.val().city,
+                        photo: userAvatar, // default image, will be change soon
+                    };
+                    this.getUserGroups(user.uid, userData);
                 });
-                this.getUserGroups(user.uid);
             } else {
                 return this.props.navigation.navigate('Login');
             }
         });
     }
 
-    getUserGroups (userId) {
+    getUserGroups (userId, userData) {
         let keys = [];
         let result = [];
         let groupsRef = db.ref('/groups'); 
+
         groupsRef.on('value', (data) => {
             let groups = data.val();
-            let totalGroups = Object.keys(groups).length;
-            if (totalGroups > 0) {
+
+            if (groups) {
                 Object.keys(groups).map((g,i) => keys.push(g));
+            }
+
+            if (keys.length > 0) {
                 for (let i=0; i<keys.length; i++) {
-                    if (groups[keys[i]]['members'].hasOwnProperty(userId)) {
-                        result.push({
-                            name: groups[keys[i]]['name'],
-                            image: groups[keys[i]]['image'],
-                            total_members: Object.keys(groups[keys[i]]['members']).length,
-                            key: keys[i]
+                    let membersRef = db.ref('/groups/'+keys[i]+'/members');
+                    membersRef.on('value', (data) => {
+                        if (data.val() && data.val().hasOwnProperty(userId)) {
+                            result.push({
+                                name: groups[keys[i]]['name'],
+                                image: groups[keys[i]]['image'],
+                                total_members: Object.keys(groups[keys[i]]['members']).length,
+                                key: keys[i]
+                            });
+                        }
+                    });
+                    if ((i === (keys.length-1)) && result.length) {
+                        this.setState({
+                            isUserLogin: true,
+                            user: userData,
+                            userGroups: result
                         });
                     }
-                    if ((i === (keys.length-1)) && result.length) {
-                        this.setState({ userGroups: result });
-                    }
                 }
+            } else {
+                this.setState({
+                    isUserLogin: true,
+                    user: userData,
+                    userGroups: 0
+                });
             }
         }); 
     }
