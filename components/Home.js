@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Image, StatusBar } from 'react-native';
+import { Image } from 'react-native';
 import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
-         ListItem, Item, Input, Form, DeckSwiper, Card, CardItem, Thumbnail, View,
-         Spinner } from 'native-base';
+         ListItem, Item, Input, DeckSwiper, Card, CardItem, Thumbnail, View, Spinner } from 'native-base';
 import Expo from "expo";
-import { popular_events, groups_category } from '../data/dummies';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 import emptyEvent from '../data/images/no_image.png';
@@ -99,6 +97,23 @@ class HomeScreen extends Component {
     }, error => console.log('error while fetching categories'));
   }
 
+  showSearch () {
+    this.setState({ searchStatus: !this.state.searchStatus });
+  }
+
+  handleRouteChange (url, param) {
+    let { navigate } = this.props.navigation;
+    if (!this.state.isUserLogin) {
+      if (url === 'Category') {
+        return navigate(url, param);
+      } else {
+        return navigate('Login');
+      }
+    } else {
+      return navigate(url, param);
+    }
+  }
+
   renderTopEvents (events) {
     return (
       <View style={{height: 435}}>
@@ -148,23 +163,6 @@ class HomeScreen extends Component {
         </Card>
       </View>
     );
-  }
-
-  showSearch () {
-    this.setState({ searchStatus: !this.state.searchStatus });
-  }
-
-  handleRouteChange (url, param) {
-    let { navigate } = this.props.navigation;
-    if (!this.state.isUserLogin) {
-      if (url === 'Category') {
-        return navigate(url, param);
-      } else {
-        return navigate('Login');
-      }
-    } else {
-      return navigate(url, param);
-    }
   }
 
   render() {

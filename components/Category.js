@@ -2,7 +2,6 @@ import React,  { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { Container, Content, Segment, Button, Text, List, ListItem, Body, Left, Thumbnail } from 'native-base';
 import { auth, db } from '../firebase/config';
-import { groups_category } from '../data/dummies';
 
 class CategoryScreen extends Component {
 
@@ -51,7 +50,7 @@ class CategoryScreen extends Component {
                     <List>
                         { groups && groups.map((g,i) => {
                                 return (
-                                    <ListItem key={i}>
+                                    <ListItem key={i} avatar>
                                         <Left>
                                             <Thumbnail square source={{ uri: g.image }} />
                                         </Left>
