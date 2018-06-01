@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { Content, Text, List, ListItem, Left, Body, Right, Thumbnail } from 'native-base';
+import { Content, Text, List, ListItem, Left, Body, Right, Thumbnail, Button } from 'native-base';
 import { auth, db } from '../../firebase/config';
 
 class WaitingListScreen extends Component {
@@ -9,8 +9,11 @@ class WaitingListScreen extends Component {
         super(props);
 
         this.state = {
+            groupKey: this.props.groupKey,
             waitingList: null
         }
+
+        this.handleConfirmJoinRequest = this.handleConfirmJoinRequest.bind(this);
     }
 
     componentDidMount () {
@@ -29,6 +32,7 @@ class WaitingListScreen extends Component {
                 for (let i=0; i<usersKey.length; i++) {
                     if (users.hasOwnProperty(usersKey[i])) {
                         result.push({
+                            key: usersKey[i],
                             name: users[usersKey[i]].name,
                             image: users[usersKey[i]].photo
                         });
@@ -41,8 +45,29 @@ class WaitingListScreen extends Component {
         }
     }
 
+    handleConfirmJoinRequest (userKey, groupKey) {
+        let waitingRef = db.ref('/groups/'+groupKey+'/waiting_list');
+
+        waitingRef.on('value', data => {
+            let waitingList = data.val();
+            let totalWaiting = [];
+
+            if (waitingList) {
+                Object.keys(waitingList).map((w,i) => totalWaiting.push(w));
+            }
+
+            if (waitingList.length > 1) {
+                db.ref('/groups/'+groupKey+'/waiting_list/'+userKey).remove();
+            } else {
+                db.ref('/groups/'+groupKey).update({ waiting_list: false });
+            }
+        });
+
+        db.ref('/groups/'+groupKey+'/members/'+userKey).set({ status: true });
+    }
+
     render () {
-        let { waitingList } = this.state;
+        let { waitingList, groupKey } = this.state;
         return (
             <View style={{ padding: 5 }}>
                 <List>
@@ -55,6 +80,11 @@ class WaitingListScreen extends Component {
                                 <Body>
                                     <Text>{m.name}</Text>
                                 </Body>
+                                <Right>
+                                    <Button small onPress={() => this.handleConfirmJoinRequest(m.key, groupKey)}>
+                                        <Text>{ 'Konfirmasi' }</Text>
+                                    </Button>
+                                </Right>
                             </ListItem>
                         );
                     })}

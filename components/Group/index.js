@@ -16,8 +16,10 @@ class GroupScreen extends Component {
         this.state = {
             activeMenu: null,
             isUserLogin: false,
+            userId: null,
             isAdmin: false,
             isMember: false,
+            isUserWaiting: false,
             group: null,
             groupKey: this.props.navigation.state.params.group_key
         }
@@ -25,9 +27,10 @@ class GroupScreen extends Component {
         this.handleRouteChange = this.handleRouteChange.bind(this);
         this.checkIsUserAdmin = this.checkIsUserAdmin.bind(this);
         this.checkIsUserMember = this.checkIsUserMember.bind(this);
+        this.checkIsUserWaiting = this.checkIsUserWaiting.bind(this);
+        this.handleRequestJoinGroup = this.handleRequestJoinGroup.bind(this);
+        this.handleExitGroup = this.handleExitGroup.bind(this);
     }
-
-
 
     componentDidMount () {
         let { groupKey } = this.state;
@@ -56,6 +59,7 @@ class GroupScreen extends Component {
             if (userId === admin) {
                 this.setState({
                     isUserLogin: true,
+                    userId: userId,
                     isAdmin: true,
                     isMember: true,
                     group: groupData
@@ -82,20 +86,71 @@ class GroupScreen extends Component {
                     if (userId === memberKeys[i]) {
                         this.setState({
                             isUserLogin: true,
+                            userId: userId,
                             isMember: true,
                             group: groupData
                         });
                         break;
                     }
                     if ((i === (memberKeys.length-1)) && !this.state.isMember ) {
-                        this.setState({
-                            isUserLogin: true,
-                            group: groupData
-                        });
+                        this.checkIsUserWaiting(userId, groupData, groupKey);
                     }
                 }
             }
         });
+    }
+
+    checkIsUserWaiting (userId, groupData, groupKey) {
+        let waitingRef = db.ref('/groups/'+groupKey+'/waiting_list/');
+
+        waitingRef.on('value', data => {
+            let waitingList = data.val();
+            let waitingListKeys = [];
+
+            if (waitingList) {
+                Object.keys(waitingList).map((w,i) => waitingListKeys.push(w));
+            }
+
+            if (waitingListKeys.length > 0) {
+                for (let i=0; i<waitingListKeys.length; i++) {
+                    if (userId === waitingListKeys[i]) {
+                        this.setState({
+                            isUserLogin: true,
+                            userId: userId,
+                            isUserWaiting: true,
+                            group: groupData
+                        });
+                        break;
+                    }
+                    if ((i == (waitingListKeys.length-1)) && !isUserWaiting) {
+                        this.setState({
+                            isUserLogin: true,
+                            userId: userId,
+                            group: groupData
+                        });
+                    }
+                }
+            } else {
+                console.log('YOU ARE HERE');
+                this.setState({
+                    isUserLogin: true,
+                    userId: userId,
+                    group: groupData
+                });
+            }
+        });
+    }
+
+    handleRequestJoinGroup () {
+        let { groupKey, userId } = this.state;
+        let groupRef = db.ref('/groups/'+groupKey+'/waiting_list/'+userId);
+
+        groupRef.set({ status: true });
+    }
+
+    handleExitGroup () {
+        let { groupKey, userId } = this.state;
+        let groupRef = db.ref('/groups/'+groupKey+'/waiting_list/'+userId).remove();
     }
 
     handleRouteChange (url, paramKey) {
@@ -107,7 +162,7 @@ class GroupScreen extends Component {
     }
 
     render () {
-        let { activeMenu, group, groupKey, isAdmin, isMember } = this.state;
+        let { activeMenu, group, groupKey, isAdmin, isMember, isUserWaiting } = this.state;
         return (
             <Container>
                 { group &&
@@ -120,6 +175,25 @@ class GroupScreen extends Component {
                                   onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
                                     <Icon name='add'/>
                                 </Button> }
+                            { (isMember && !isAdmin) &&
+                                <Button
+                                  small
+                                  warning
+                                  onPress={() => this.handleExitGroup()}
+                                  style={styles.joinGroup}>
+                                    <Text>{' Keluar '}</Text>
+                                </Button> }
+                            { (!isUserWaiting && !isAdmin) &&
+                                <Button
+                                  small
+                                  onPress={() => this.handleRequestJoinGroup()}
+                                  style={styles.joinGroup}>
+                                    <Text>{' Bergabung '}</Text>
+                                </Button> }
+                            { isUserWaiting &&
+                                <View style={styles.waiting}>
+                                    <Text style={{ color: 'white' }}>{' Masih Menunggu Persetujuan '}</Text>
+                                </View> }
                             <H3 style={styles.groupName}>{group.name}</H3>
                             <Text style={styles.description}>{group.about}</Text>
                         </View>
@@ -134,7 +208,7 @@ class GroupScreen extends Component {
                                 <Members data={group.members} />
                             </Tab>
                             { isAdmin && <Tab heading="Waiting List">
-                                <WaitingList data={group.waiting_list} />
+                                <WaitingList data={group.waiting_list} groupKey={groupKey} />
                             </Tab> }
                         </Tabs>
                     </Content> }
@@ -155,6 +229,18 @@ const styles = StyleSheet.create({
         top: 10,
         right: 10,
         borderRadius: 5
+    },
+    joinGroup: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        borderWidth: 2
+    },
+    waiting: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'grey'
     },
     groupName: {
         marginTop: -40,
