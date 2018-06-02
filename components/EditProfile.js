@@ -3,12 +3,38 @@ import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Container, Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'native-base';
 import defaultPhoto from '../data/icon/camera.png';
 
+const INITIAL_STATE = {
+    isNameValid: false,
+    isNameChanged: false,
+    isCityValid: false,
+    isCityChanged: false
+}
+
 class EditProfileScreen extends Component {
 
     constructor (props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            ...INITIAL_STATE,
+            userId: this.props.navigation.state.params.user_key
+        };
+
+        this.handleChangeName = this.handleChangeName.bind(this);
+        this.handleChangeCity = this.handleChangeCity.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChangeName (value) {
+
+    }
+
+    handleChangeCity (value) {
+
+    }
+
+    handleSubmit () {
+
     }
 
     render () {
@@ -21,11 +47,17 @@ class EditProfileScreen extends Component {
                     <Form>
                         <Item floatingLabel last>
                             <Label>Nama</Label>
-                            <Input />
+                            <Input
+                                value={name}
+                                onChangeText={(name) => this.handleChangeName(name)}
+                            />
                         </Item>
                         <Item floatingLabel last>
                             <Label>Kota</Label>
-                            <Input />
+                            <Input
+                                value={city}
+                                onChangeText={(city) => this.handleChangeCity(city)}
+                            />
                         </Item>
                         <Button block info style={styles.saveBtn}>
                             <Text>Simpan</Text>
@@ -45,6 +77,17 @@ const styles = StyleSheet.create({
     },
     saveBtn: {
         marginTop: 10
+    },
+    errorBox: {
+        borderBottomWidth : 0
+    },
+    errorMessage: {
+        fontSize: 12,
+        color: '#FF5733'
+    },
+    errorBorder: {
+        borderBottomColor: '#FF5733',
+        borderBottomWidth: 2
     }
 });
 

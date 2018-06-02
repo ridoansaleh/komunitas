@@ -21,6 +21,7 @@ class ProfileScreen extends Component {
         this.state = {
           isUserLogin: false,
           activeMenu: 'Profile',
+          userId: null,
           user: null,
           userGroups: null
         }
@@ -73,26 +74,27 @@ class ProfileScreen extends Component {
                             });
                         }
                         if ((i === (keys.length-1)) && (result.length === 0)) {
-                            this.setState({ isUserLogin: true, user: userData });
+                            this.setState({ isUserLogin: true, userId: userId, user: userData });
                         }
                     });
                     if ((i === (keys.length-1)) && result.length) {
                         this.setState({
                             isUserLogin: true,
+                            userId: userId,
                             user: userData,
                             userGroups: result
                         });
                     }
                 }
             } else {
-                this.setState({ isUserLogin: true, user: userData });
+                this.setState({ isUserLogin: true,  userId: userId, user: userData });
             }
         }); 
     }
     
     handleRouteChange (url, groupKey) {
         if (!this.state.isUserLogin) {
-          return this.props.navigation.navigate('Login');
+          return this.props.navigation.navigate('Login', { user_key: this.state.userId });
         } else {
           return this.props.navigation.navigate(url, { group_key: groupKey });
         }
@@ -105,11 +107,13 @@ class ProfileScreen extends Component {
                 title: 'Pengaturan Profil'
             },
             buttonIndex => {
-                if (buttonIndex === 2) {
+                if (buttonIndex === 0) {
+                    this.props.navigation.navigate('EditProfile');
+                } else if (buttonIndex === 2) {
                     auth.signOut()
                         .then(() => this.props.navigation.navigate('Home') )
                         .catch((error) => console.log('Error: cant logout ', error) );
-                }
+                } 
             }
         )
     }
@@ -119,14 +123,14 @@ class ProfileScreen extends Component {
         return (
             <Container>
                 <Content>
-                    { user && <Grid style={{marginTop: 0, padding: 30, backgroundColor: '#E3E3E3'}}>
+                    { user && <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
                         <Col style={{width: '35%', alignContent: 'center'}}>
                             <Thumbnail large source={{ uri: user.photo }}/>
                         </Col>
                         <Col style={{width: '65%'}}>
                             <H3>{user.name}</H3>
                             <Text>{user.city}</Text>
-                            <Button style={{marginTop: 5}} onPress={this.showSettings}>
+                            <Button  bordered small style={{ marginTop: 10 }} onPress={this.showSettings}>
                                 <Text>{'Settings'}</Text>
                             </Button> 
                         </Col>
