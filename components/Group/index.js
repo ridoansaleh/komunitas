@@ -34,7 +34,7 @@ class GroupScreen extends Component {
 
     componentDidMount () {
         let { groupKey } = this.state;
-        let groupRef = db.ref('/groups/' + this.state.groupKey);
+        let groupRef = db.ref('/groups/'+groupKey);
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -96,6 +96,13 @@ class GroupScreen extends Component {
                         this.checkIsUserWaiting(userId, groupData, groupKey);
                     }
                 }
+            } else {
+                this.setState({
+                    isUserLogin: true,
+                    userId: userId,
+                    isMember: false,
+                    group: groupData
+                });
             }
         });
     }
