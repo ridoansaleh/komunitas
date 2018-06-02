@@ -21,7 +21,7 @@ class ProfileScreen extends Component {
         this.state = {
           isUserLogin: false,
           activeMenu: 'Profile',
-          user: {},
+          user: null,
           userGroups: null
         }
     
@@ -38,7 +38,7 @@ class ProfileScreen extends Component {
                     let userData = {
                         name: data.val().name,
                         city: data.val().city,
-                        photo: userAvatar, // default image, will be change soon
+                        photo: data.val().photo,
                     };
                     this.getUserGroups(user.uid, userData);
                 });
@@ -70,6 +70,12 @@ class ProfileScreen extends Component {
                                 image: groups[keys[i]]['image'],
                                 total_members: Object.keys(groups[keys[i]]['members']).length,
                                 key: keys[i]
+                            });
+                        } else {
+                            this.setState({
+                                isUserLogin: true,
+                                user: userData,
+                                userGroups: 0
                             });
                         }
                     });
@@ -120,17 +126,15 @@ class ProfileScreen extends Component {
         return (
             <Container>
                 <Content>
-                    <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
-                        <Col style={{ width: '35%', alignContent: 'center' }}>
-                            <Thumbnail large source={user.photo} />
+                    <Grid style={{marginTop: 0, padding: 30, backgroundColor: '#E3E3E3'}}>
+                        <Col style={{width: '35%', alignContent: 'center'}}>
+                            <Thumbnail large source={user && user.photo}/>
                         </Col>
-                        <Col style={{ width: '65%' }}>
-                            <H3>{user.name}</H3>
-                            <Text>{user.city}</Text>
-                            <Button
-                                style={{ marginTop: 5 }}
-                                onPress={this.showSettings}>
-                                <Text>Settings</Text>
+                        <Col style={{width: '65%'}}>
+                            <H3>{user ? user.name : ''}</H3>
+                            <Text>{user ? user.city : ''}</Text>
+                            <Button style={{marginTop: 5}} onPress={this.showSettings}>
+                                <Text>{'Settings'}</Text>
                             </Button> 
                         </Col>
                     </Grid>

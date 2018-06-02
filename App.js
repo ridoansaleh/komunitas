@@ -7,6 +7,7 @@ import HomeScreen from './components/Home';
 import WhatsNewScreen from './components/WhatsNew';
 import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
+import EditProfileScreen from './components/EditProfile';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
 import GroupScreen from './components/Group';
@@ -65,6 +66,15 @@ const AppNavigator = StackNavigator(
       screen: ProfileScreen,
       navigationOptions: ({ navigation }) => ({
         headerTitle: renderTitle('Profil'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
+    },
+    EditProfile: {
+      screen: EditProfileScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Edit Profil'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }
