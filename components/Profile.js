@@ -71,12 +71,9 @@ class ProfileScreen extends Component {
                                 total_members: Object.keys(groups[keys[i]]['members']).length,
                                 key: keys[i]
                             });
-                        } else {
-                            this.setState({
-                                isUserLogin: true,
-                                user: userData,
-                                userGroups: 0
-                            });
+                        }
+                        if ((i === (keys.length-1)) && (result.length === 0)) {
+                            this.setState({ isUserLogin: true, user: userData });
                         }
                     });
                     if ((i === (keys.length-1)) && result.length) {
@@ -88,11 +85,7 @@ class ProfileScreen extends Component {
                     }
                 }
             } else {
-                this.setState({
-                    isUserLogin: true,
-                    user: userData,
-                    userGroups: 0
-                });
+                this.setState({ isUserLogin: true, user: userData });
             }
         }); 
     }
@@ -126,18 +119,18 @@ class ProfileScreen extends Component {
         return (
             <Container>
                 <Content>
-                    <Grid style={{marginTop: 0, padding: 30, backgroundColor: '#E3E3E3'}}>
+                    { user && <Grid style={{marginTop: 0, padding: 30, backgroundColor: '#E3E3E3'}}>
                         <Col style={{width: '35%', alignContent: 'center'}}>
-                            <Thumbnail large source={user && user.photo}/>
+                            <Thumbnail large source={{ uri: user.photo }}/>
                         </Col>
                         <Col style={{width: '65%'}}>
-                            <H3>{user ? user.name : ''}</H3>
-                            <Text>{user ? user.city : ''}</Text>
+                            <H3>{user.name}</H3>
+                            <Text>{user.city}</Text>
                             <Button style={{marginTop: 5}} onPress={this.showSettings}>
                                 <Text>{'Settings'}</Text>
                             </Button> 
                         </Col>
-                    </Grid>
+                    </Grid> }
                     <List>
                         <ListItem first>
                             <Text>Member</Text>
