@@ -4,8 +4,10 @@ import { Container, Content, Form, Item, Label, Input, Text, Button, Thumbnail }
 import defaultPhoto from '../data/icon/camera.png';
 
 const INITIAL_STATE = {
+    name: '',
     isNameValid: false,
     isNameChanged: false,
+    city: '',
     isCityValid: false,
     isCityChanged: false
 }
@@ -38,6 +40,7 @@ class EditProfileScreen extends Component {
     }
 
     render () {
+        let { name, isNameValid, isNameChanged, city, isCityValid, isCityChanged } = this.state; 
         return (
             <Container>
                 <Content padder={true}>

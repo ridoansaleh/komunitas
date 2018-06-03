@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item, Input, Label, Toast } from 'native-base';
+import { StyleSheet, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
+import { Container, View, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
 import { auth as authenticate } from '../firebase';
 import { auth } from '../firebase/config';
 
@@ -20,7 +20,7 @@ class LoginScreen extends Component {
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
-        this.showToastMessage = this.showToastMessage.bind(this);
+        this.showDialogMessage = this.showDialogMessage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -52,20 +52,37 @@ class LoginScreen extends Component {
             })
             .catch(error => {
                 if (error.code === 'auth/wrong-password') {
-                    this.showToastMessage('Email atau password salah')
+                    this.showDialogMessage(
+                        'Tidak Valid',
+                        'Email atau password Anda salah. Ingin mengatur ulang password ?',
+                        'Lupa password',
+                        'Reset'
+                    );
                 } else {
-                    this.showToastMessage('Akun tidak ditemukan')
+                    this.showDialogMessage(
+                        'Error',
+                        'Akun ini tidak ada. Apakah Anda ingin membuat akun baru ?',
+                        'Daftar',
+                        'SignUp'
+                    );
                 }
             });
     }
 
-    showToastMessage (message) {
-        Toast.show({
-            text: message,
-            textStyle: { color: 'yellow' },
-            buttonText: 'Close',
-            duration: 3000
-        })
+    showDialogMessage (title, message, action, url) {
+        Alert.alert(
+            title,
+            message,
+            [
+              {text: 'Tutup', onPress: () => {
+                  console.log('Tutup diaglog');
+              }},
+              {text: action, onPress: () => {
+                  return this.props.navigation.navigate(url);
+              }}
+            ],
+            { cancelable: true }
+        );
     }
 
     handleRouteChanges () {
@@ -81,38 +98,38 @@ class LoginScreen extends Component {
         return (
             <Container>
                 <Content padder={true} style={styles.content}>
-                <Form>
-                    <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
-                        <Label>Email</Label>
-                        <Input
-                            value={email}
-                            onChangeText={(email) => this.handleChangeEmail(email)}
-                        />
-                    </Item>
-                    {
-                        !isEmailValid && isEmailChanged &&
-                        <Item style={styles.errorBox}>
-                            <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                    <Form>
+                        <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
+                            <Label>Email</Label>
+                            <Input
+                                value={email}
+                                onChangeText={(email) => this.handleChangeEmail(email)}
+                            />
                         </Item>
-                    }
-                    <Item floatingLabel last>
-                        <Label>Password</Label>
-                        <Input
-                            value={password}
-                            onChangeText={(password) => this.handleChangePassword(password)}  
-                            secureTextEntry={true}
-                        />
-                    </Item>
-                    { (isEmailValid && isPasswordValid) && <Button block info style={styles.loginBtn} onPress={this.handleSubmit}>
-                        <Text> Masuk </Text>
-                    </Button> }
-                    { (!isEmailValid || !isPasswordValid) && <Button block info style={styles.loginBtn} disabled>
-                        <Text> Masuk </Text>
-                    </Button> }
-                </Form>
-                <TouchableOpacity onPress={this.handleRouteChanges}>
-                    <Text style={styles.signupText}>Belum punya akun? Daftar di sini</Text>
-                </TouchableOpacity>
+                        {
+                            !isEmailValid && isEmailChanged &&
+                            <Item style={styles.errorBox}>
+                                <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            </Item>
+                        }
+                        <Item floatingLabel last>
+                            <Label>Password</Label>
+                            <Input
+                                value={password}
+                                onChangeText={(password) => this.handleChangePassword(password)}  
+                                secureTextEntry={true}
+                            />
+                        </Item>
+                        { (isEmailValid && isPasswordValid) && <Button block info style={styles.loginBtn} onPress={this.handleSubmit}>
+                            <Text> Masuk </Text>
+                        </Button> }
+                        { (!isEmailValid || !isPasswordValid) && <Button block info style={styles.loginBtn} disabled>
+                            <Text> Masuk </Text>
+                        </Button> }
+                    </Form>
+                    <TouchableOpacity onPress={this.handleRouteChanges}>
+                        <Text style={styles.signupText}>Belum punya akun? Daftar di sini</Text>
+                    </TouchableOpacity>
                 </Content>
             </Container>
         );
