@@ -109,6 +109,8 @@ class ProfileScreen extends Component {
             buttonIndex => {
                 if (buttonIndex === 0) {
                     this.props.navigation.navigate('EditProfile', this.state.userId);
+                } else if (buttonIndex === 1) {
+                        this.props.navigation.navigate('ChangePassword');
                 } else if (buttonIndex === 2) {
                     auth.signOut()
                         .then(() => this.props.navigation.navigate('Home') )

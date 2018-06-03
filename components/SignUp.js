@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity, Modal, TouchableHighlight, Alert, CameraRoll } from 'react-native';
-import { 
-    Container, Header, Button, Text, Content, Form, Item,
-    Input, Label, Toast, Icon, ListItem, CheckBox, Body,
-    Spinner, Thumbnail, Picker
-} from 'native-base';
+import { Container, Header, Button, Text, Content, Form, Item,
+         Input, Label, Toast, Icon, ListItem, CheckBox, Body,
+         Spinner, Thumbnail, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import defaultPhoto from '../data/icon/camera.png';
 import { auth, db } from '../firebase';

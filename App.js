@@ -8,6 +8,7 @@ import WhatsNewScreen from './components/WhatsNew';
 import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import EditProfileScreen from './components/EditProfile';
+import ChangePasswordScreen from './components/ChangePassword';
 import ResetPasswordScreen from './components/ResetPassword';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
@@ -76,6 +77,15 @@ const AppNavigator = StackNavigator(
       screen: EditProfileScreen,
       navigationOptions: ({ navigation }) => ({
         headerTitle: renderTitle('Edit Profil'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
+    },
+    ChangePassword: {
+      screen: ChangePasswordScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Ubah Password'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }

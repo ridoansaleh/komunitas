@@ -46,6 +46,11 @@ class LoginScreen extends Component {
             .then(data => {
                 auth.onAuthStateChanged(user => {
                     if (user) {
+                        try {
+                            AsyncStorage.setItem('_pass', password);
+                        } catch (error) {
+                            console.log('Error while set storage : ',error);
+                        }
                         return this.props.navigation.navigate('Profile');
                     }
                 });
