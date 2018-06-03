@@ -8,6 +8,7 @@ import WhatsNewScreen from './components/WhatsNew';
 import NotificationScreen from './components/Notification';
 import ProfileScreen from './components/Profile';
 import EditProfileScreen from './components/EditProfile';
+import ResetPasswordScreen from './components/ResetPassword';
 import NewGroupScreen from './components/NewGroup';
 import CategoryScreen from './components/Category';
 import GroupScreen from './components/Group';
@@ -75,6 +76,15 @@ const AppNavigator = StackNavigator(
       screen: EditProfileScreen,
       navigationOptions: ({ navigation }) => ({
         headerTitle: renderTitle('Edit Profil'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
+      })
+    },
+    ResetPassword: {
+      screen: ResetPasswordScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Reset Password'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }

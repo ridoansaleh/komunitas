@@ -56,7 +56,7 @@ class LoginScreen extends Component {
                         'Tidak Valid',
                         'Email atau password Anda salah. Ingin mengatur ulang password ?',
                         'Lupa password',
-                        'Reset'
+                        'ResetPassword'
                     );
                 } else {
                     this.showDialogMessage(
