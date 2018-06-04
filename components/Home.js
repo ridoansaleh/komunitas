@@ -26,6 +26,8 @@ class HomeScreen extends Component {
     this.handleRouteChange = this.handleRouteChange.bind(this);
     this.renderTopEvents = this.renderTopEvents.bind(this);
     this.renderEmptyEvent = this.renderEmptyEvent.bind(this);
+    this.fetchTopEvents = this.fetchTopEvents.bind(this);
+    this.fetchCategories = this.fetchCategories.bind(this);
   }
 
   async componentWillMount() {
@@ -40,51 +42,56 @@ class HomeScreen extends Component {
   componentDidMount () {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.setState({ isUserLogin: true });
+        this.fetchTopEvents(true);
+      } else {
+        this.fetchTopEvents(false);
       }
     });
+  }
 
-    /*
-    Uncomment this line to see if there are no event yet
-    this.setState({
-      events: 0,
-      eventsFetched: true
-    });
-    */
-
+  fetchTopEvents (loginStatus) {
     let eventRef = db.ref('/events');
     let groupRef = db.ref('/groups');
-    let categoryRef = db.ref('/categories');
 
-    eventRef.on('value', data => {
-      let event = data.val();
+    groupRef.on('value', (data) => {
+      let groups = data.val();
+      
+      if (groups) {
+        eventRef.on('value', data => {
+          let event = data.val();
+          let eventNames = [];
+          let topEvents = [];
 
-      if ((Object.keys(event).length > 0) && (event.constructor === Object)) {
-        let eventNames = [];
-        let topEvents = [];
-        Object.keys(event).map((u,i) => eventNames.push(u));
-        eventNames.map((e,i) => {
-          groupRef.child(event[e]['group']).once('value', snap => {
-            topEvents.push({
-              group_name: snap.val().name,
-              group_image: snap.val().image,
-              key: e,
-              name: event[e]['name'],
-              image: event[e]['image'],
-              date: event[e]['date']
+          if ((Object.keys(event).length > 0) && (event.constructor === Object)) {
+            Object.keys(event).map((u,i) => eventNames.push(u));
+            eventNames.map((e,i) => {
+              groupRef.child(event[e]['group']).once('value', snap => {
+                topEvents.push({
+                  group_name: snap.val().name,
+                  group_image: snap.val().image,
+                  key: e,
+                  name: event[e]['name'],
+                  image: event[e]['image'],
+                  date: event[e]['date']
+                });
+                if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
+                  this.fetchCategories(loginStatus, topEvents, true);
+                }
+              })
             });
-            if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
-              this.setState({ events: topEvents });
-            }
-          })
-        });
+          } else {
+            this.fetchCategories(loginStatus, null, true);
+          }
+        }, error => console.log('error while fetching events'));
       } else {
-        this.setState({
-          events: 0,
-          eventsFetched: true
-        });
+        this.fetchCategories(loginStatus, null, true);
       }
-    }, error => console.log('error while fetching events'));
+
+    });
+  }
+
+  fetchCategories (loginStatus, eventData, isEventFetched) {
+    let categoryRef = db.ref('/categories');
 
     categoryRef.on('value', data => {
       let categories = data.val();
@@ -95,7 +102,12 @@ class HomeScreen extends Component {
         let newObj = categories[c];
         result.push(newObj);
         if (result.length === categoryNames.length) {
-          this.setState({ groupsCategory: result });
+          this.setState({
+            isUserLogin: loginStatus,
+            events: eventData,
+            eventsFetched: isEventFetched,
+            groupsCategory: result
+          });
         }
       });
     }, error => console.log('error while fetching categories'));
@@ -170,7 +182,7 @@ class HomeScreen extends Component {
             <Image style={{ height: 300, flex: 1 }} source={emptyEvent} />
           </CardItem>
           <CardItem>
-            <Text>{'Kamu dapat membuat event, caranya gampang. Terlebih dahulu kamu harus punya akun dan membuat Grup baru. Buruan!!'}</Text>
+            <Text>{'Kamu dapat membuat event, caranya gampang. Terlebih dahulu kamu harus punya akun dan membuat Grup baru. Buruan !'}</Text>
           </CardItem>
         </Card>
       </View>

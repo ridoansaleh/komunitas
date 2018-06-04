@@ -19,21 +19,24 @@ class CategoryScreen extends Component {
         let { name } = this.props.navigation.state.params;
         let categoryKey = name.toLowerCase();
         let groupsRef = db.ref('/groups');
-        let groups = [];
+        let groupsKey = [];
+        let result = [];
 
         groupsRef.on('value', (data) => {
-            let groupKeys = Object.keys(data.val());
-            if (groupKeys.length > 0) {
-                for (let i=0; i<groupKeys.length; i++) {
-                    db.ref('/groups/' + groupKeys[i]).on('value', (data) => {
+            let groupList = data.val();
+
+            if (groupList) {
+                Object.keys(groupList).map((g,i) => groupsKey.push(g));
+                for (let i=0; i<groupsKey.length; i++) {
+                    db.ref('/groups/' + groupsKey[i]).on('value', (data) => {
                         if (data.val().category === categoryKey) {
-                            groups.push({
+                            result.push({
                                 ...data.val(),
-                                groupKey: groupKeys[i]
+                                groupKey: groupsKey[i]
                             });
                         }
-                        if ((i === (groupKeys.length - 1)) && groups.length) {
-                            this.setState({ groups: groups });
+                        if ((i === (groupsKey.length - 1)) && result.length) {
+                            this.setState({ groups: result });
                         }
                     });
                 }

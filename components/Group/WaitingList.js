@@ -25,7 +25,7 @@ class WaitingListScreen extends Component {
 
         if (data) {
             totalUsers = Object.keys(data).length;
-        }      
+        }
         
         if (totalUsers > 0) {
             Object.keys(data).map((d,i) => usersKey.push(d));
@@ -39,7 +39,7 @@ class WaitingListScreen extends Component {
                             image: users[usersKey[i]].photo
                         });
                     }
-                    if (i === (usersKey.length-1)) {
+                    if ((i === (usersKey.length-1)) && result.length) {
                         this.setState({ waitingList: result });
                     }
                 }
