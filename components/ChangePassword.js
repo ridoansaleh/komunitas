@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Alert, AsyncStorage } from 'react-native';
 import { Container, Content, Form, Item, Label, Input, Text, Button } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ErrorStyles } from '../css/error';
 import { auth } from '../firebase';
 
 const INITIAL_STATE = {
@@ -105,7 +106,7 @@ class ChangePasswordScreen extends Component {
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content style={styles.content}>
                     <Form>
-                        <Item floatingLabel last style={isPasswordChanged && !isPasswordValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isPasswordChanged && !isPasswordValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Password</Label>
                             <Input
                                 value={password}
@@ -115,11 +116,11 @@ class ChangePasswordScreen extends Component {
                         </Item>
                         {
                             !isPasswordValid && isPasswordChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Password Anda salah' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Password Anda salah' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isNewPasswordChanged && !isNewPasswordValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isNewPasswordChanged && !isNewPasswordValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Password Baru</Label>
                             <Input
                                 value={new_password}
@@ -129,11 +130,11 @@ class ChangePasswordScreen extends Component {
                         </Item>
                         {
                             !isNewPasswordValid && isNewPasswordChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isRetypePasswordChanged && !isRetypePasswordValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isRetypePasswordChanged && !isRetypePasswordValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Konfirmasi Password Baru</Label>
                             <Input
                                 value={retype_password}
@@ -143,8 +144,8 @@ class ChangePasswordScreen extends Component {
                         </Item>
                         {
                             !isRetypePasswordValid && isRetypePasswordChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Konfirmasi password harus sama dengan password baru' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Konfirmasi password harus sama dengan password baru' }</Text>
                             </Item>
                         }
                         { (isPasswordValid && isRetypePasswordValid) &&
@@ -171,17 +172,6 @@ const styles = StyleSheet.create({
     },
     changeBtn: {
         marginTop: 10
-    },
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
     }
 });
 

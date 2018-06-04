@@ -4,6 +4,7 @@ import { Container, Header, Button, Text, Content, Form, Item,
          Input, Label, Toast, Icon, ListItem, CheckBox, Body,
          Spinner, Thumbnail, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ErrorStyles } from '../css/error';
 import defaultPhoto from '../data/icon/camera.png';
 import { auth, db } from '../firebase';
 
@@ -183,7 +184,7 @@ class SignUpScreen extends Component {
                                 onChangeText={(name) => this.handleChangeName(name)}
                             />
                         </Item>
-                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Email</Label>
                             <Input
                                 value={email}
@@ -192,11 +193,11 @@ class SignUpScreen extends Component {
                         </Item>
                         {
                             !isEmailValid && isEmailChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Email tidak valid' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isCityChanged && !isCityValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isCityChanged && !isCityValid ? ErrorStyles.errorBorder : {}}>
                             <Label>City</Label>
                             <Input
                                 value={city}
@@ -205,11 +206,11 @@ class SignUpScreen extends Component {
                         </Item>
                         {
                             !isCityValid && isCityChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Nama kota terlalu pendek' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Nama kota terlalu pendek' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isPassword1Changed && !isPassword1Valid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isPassword1Changed && !isPassword1Valid ? ErrorStyles.errorBorder : {}}>
                             <Label>Kata Sandi</Label>
                             <Input
                                 value={password1}
@@ -219,11 +220,11 @@ class SignUpScreen extends Component {
                         </Item>
                         {
                             !isPassword1Valid && isPassword1Changed &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isPassword2Changed && !isPassword2Valid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isPassword2Changed && !isPassword2Valid ? ErrorStyles.errorBorder : {}}>
                             <Label>Konfirmasi Kata Sandi</Label>
                             { isPassword1Valid && 
                                 <Input
@@ -239,11 +240,11 @@ class SignUpScreen extends Component {
                         </Item>
                         {
                             !isPassword2Valid && isPassword2Changed &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Konfirmasi password harus sama dengan sebelumnya' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Konfirmasi password harus sama dengan sebelumnya' }</Text>
                             </Item>
                         }
-                        <ListItem style={styles.errorBox} onPress={() => this.handlePasswordCheck()}>
+                        <ListItem style={ErrorStyles.errorBox} onPress={() => this.handlePasswordCheck()}>
                             <CheckBox checked={ isPasswordChecked ? true : false } />
                             <Body>
                                 <Text>Lihat Password</Text>
@@ -275,17 +276,6 @@ const styles = StyleSheet.create({
     loginText: {
         marginTop: 20,
         textAlign: 'center'
-    },
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
     }
 });
 

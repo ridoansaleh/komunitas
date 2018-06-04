@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
 import { Container, View, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
+import { ErrorStyles } from '../css/error';
 import { auth as authenticate } from '../firebase';
 import { auth } from '../firebase/config';
 
@@ -104,7 +105,7 @@ class LoginScreen extends Component {
             <Container>
                 <Content padder={true} style={styles.content}>
                     <Form>
-                        <Item floatingLabel style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel style={isEmailChanged && !isEmailValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Email</Label>
                             <Input
                                 value={email}
@@ -113,8 +114,8 @@ class LoginScreen extends Component {
                         </Item>
                         {
                             !isEmailValid && isEmailChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Email tidak valid' }</Text>
                             </Item>
                         }
                         <Item floatingLabel last>
@@ -153,17 +154,6 @@ const styles = StyleSheet.create({
     signupText: {
         marginTop: 20,
         textAlign: 'center'
-    },
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
     }
 });
 

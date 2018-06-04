@@ -3,6 +3,7 @@ import { StyleSheet, Alert } from 'react-native';
 import { Content, Form, Item, Picker, Textarea, Label, Input, Text, Button } from 'native-base';
 import DatePicker from 'react-native-datepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ErrorStyles } from '../css/error';
 import { auth, db } from '../firebase/config';
 import { db as database } from '../firebase';
 
@@ -171,7 +172,7 @@ class NewEventScreen extends Component {
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
                     <Form>
-                        <Item floatingLabel last style={isNameChanged && !isNameValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isNameChanged && !isNameValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Nama</Label>
                             <Input
                                 value={name}
@@ -180,8 +181,8 @@ class NewEventScreen extends Component {
                         </Item>
                         {
                             !isNameValid && isNameChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Tidak boleh kosong, kurang dari 10 karakter atau karakter spesial' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Tidak boleh kosong, kurang dari 10 karakter atau karakter spesial' }</Text>
                             </Item>
                         }
                         <Textarea
@@ -189,15 +190,15 @@ class NewEventScreen extends Component {
                             value={description}
                             onChangeText={(description) => this.handleChangeDescription(description)}
                             bordered
-                            style={isDescriptionChanged && !isDescriptionValid ? styles.errorBorder : { paddingTop: 5 }}
+                            style={isDescriptionChanged && !isDescriptionValid ? ErrorStyles.errorBorder : { paddingTop: 5 }}
                             placeholder="Deskripsi" />
                         {
                             !isDescriptionValid && isDescriptionChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Deskripsi minimal mengandung 30 karakter' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Deskripsi minimal mengandung 30 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isLocationChanged && !isLocationValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isLocationChanged && !isLocationValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Lokasi</Label>
                             <Input
                                 value={location}
@@ -206,11 +207,11 @@ class NewEventScreen extends Component {
                         </Item>
                         {
                             !isLocationValid && isLocationChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Lokasi harus diisi dan minimal 4 karakter' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Lokasi harus diisi dan minimal 4 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isQuotaChanged && !isQuotaValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isQuotaChanged && !isQuotaValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Kuota</Label>
                             <Input
                                 value={quota}
@@ -219,11 +220,11 @@ class NewEventScreen extends Component {
                         </Item>
                         {
                             !isQuotaValid && isQuotaChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Kuota harus diisi dan hanya menerima angka' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Kuota harus diisi dan hanya menerima angka' }</Text>
                             </Item>
                         }
-                        <Item last style={isTimeChanged && !isTimeValid ? styles.errorBorder : {}}>
+                        <Item last style={isTimeChanged && !isTimeValid ? ErrorStyles.errorBorder : {}}>
                             <Picker
                                 mode="dropdown"
                                 selectedValue={timeSelected}
@@ -238,8 +239,8 @@ class NewEventScreen extends Component {
                         </Item>
                         {
                             !isTimeValid && isTimeChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Jam event harus dipilih' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Jam event harus dipilih' }</Text>
                             </Item>
                         }
                         <DatePicker
@@ -263,8 +264,8 @@ class NewEventScreen extends Component {
                         />
                         {
                             !isDateValid && isDateChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Tanggal event harus dipilih dan tidak boleh hari ini' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Tanggal event harus dipilih dan tidak boleh hari ini' }</Text>
                             </Item>
                         }
                         { isNameValid && isDescriptionValid && isLocationValid && isQuotaValid && isTimeValid && isDateValid &&
@@ -283,17 +284,6 @@ class NewEventScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
-    },
     errorDate: {
         borderColor: '#FF5733',
         width: '100%',

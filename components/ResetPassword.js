@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Alert } from 'react-native';
 import { Container, Content, Form, Item, Label, Input, Text, Button } from 'native-base';
+import { ErrorStyles } from '../css/error';
 import { auth } from '../firebase';
 
 const INITIAL_STATE = {
@@ -66,7 +67,7 @@ class ResetPasswordScreen extends Component {
             <Container>
                 <Content style={styles.content}>
                     <Form>
-                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Email</Label>
                             <Input
                                 value={email}
@@ -75,8 +76,8 @@ class ResetPasswordScreen extends Component {
                         </Item>
                         {
                             !isEmailValid && isEmailChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Email tidak valid' }</Text>
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Email tidak valid' }</Text>
                             </Item>
                         }
                         { isEmailValid && <Button block info style={styles.resetBtn} onPress={this.handleSubmit}>
@@ -101,17 +102,6 @@ const styles = StyleSheet.create({
     },
     resetBtn: {
         marginTop: 10
-    },
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
     }
 });
 

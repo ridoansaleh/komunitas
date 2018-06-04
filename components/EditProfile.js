@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Container, Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'native-base';
+import { ErrorStyles } from '../css/error';
 import { db } from '../firebase/config';
 import defaultPhoto from '../data/icon/camera.png';
 
@@ -85,7 +86,7 @@ class EditProfileScreen extends Component {
                         <Thumbnail large source={defaultPhoto} />
                     </TouchableOpacity>
                     <Form>
-                        <Item floatingLabel last style={isNameChanged && !isNameValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isNameChanged && !isNameValid ? ErrorErrorStyles.errorBorder : {}}>
                             <Label>Nama</Label>
                             <Input
                                 value={name}
@@ -94,11 +95,11 @@ class EditProfileScreen extends Component {
                         </Item>
                         {
                             !isNameValid && isNameChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Nama minimal terdiri dari 3 karakter' }</Text>
+                            <Item style={ErrorErrorStyles.errorBox}>
+                                <Text style={ErrorErrorStyles.errorMessage}>{ 'Nama minimal terdiri dari 3 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isCityChanged && !isCityValid ? styles.errorBorder : {}}>
+                        <Item floatingLabel last style={isCityChanged && !isCityValid ? ErrorErrorStyles.errorBorder : {}}>
                             <Label>Kota</Label>
                             <Input
                                 value={city}
@@ -107,8 +108,8 @@ class EditProfileScreen extends Component {
                         </Item>
                         {
                             !isCityValid && isCityChanged &&
-                            <Item style={styles.errorBox}>
-                                <Text style={styles.errorMessage}>{ 'Kota minimal terdiri dari 4 karakter' }</Text>
+                            <Item style={ErrorErrorStyles.errorBox}>
+                                <Text style={ErrorErrorStyles.errorMessage}>{ 'Kota minimal terdiri dari 4 karakter' }</Text>
                             </Item>
                         }
                         { (isNameValid && isCityValid) &&
@@ -134,17 +135,6 @@ const styles = StyleSheet.create({
     },
     saveBtn: {
         marginTop: 10
-    },
-    errorBox: {
-        borderBottomWidth : 0
-    },
-    errorMessage: {
-        fontSize: 12,
-        color: '#FF5733'
-    },
-    errorBorder: {
-        borderBottomColor: '#FF5733',
-        borderBottomWidth: 2
     }
 });
 
