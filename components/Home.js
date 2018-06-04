@@ -110,6 +110,8 @@ class HomeScreen extends Component {
     if (!this.state.isUserLogin) {
       if (url === 'Category') {
         return navigate(url, param);
+      } else if (url === 'Event') {
+        return navigate(url, { event_key: param });
       } else {
         return navigate('Login');
       }

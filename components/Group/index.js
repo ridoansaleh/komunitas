@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Alert } from 'react-native';
 import { Container, Content, Text, H3, Tabs, Tab, Button, Icon, Spinner } from 'native-base';
 import Events from './Events';
 import Members from './Members';
@@ -30,6 +30,7 @@ class GroupScreen extends Component {
         this.checkIsUserWaiting = this.checkIsUserWaiting.bind(this);
         this.handleRequestJoinGroup = this.handleRequestJoinGroup.bind(this);
         this.handleExitGroup = this.handleExitGroup.bind(this);
+        this.showDialogMessage = this.showDialogMessage.bind(this);
     }
 
     componentDidMount () {
@@ -97,12 +98,7 @@ class GroupScreen extends Component {
                     }
                 }
             } else {
-                this.setState({
-                    isUserLogin: true,
-                    userId: userId,
-                    isMember: false,
-                    group: groupData
-                });
+                this.checkIsUserWaiting(userId, groupData, groupKey);
             }
         });
     }
@@ -129,7 +125,7 @@ class GroupScreen extends Component {
                         });
                         break;
                     }
-                    if ((i == (waitingListKeys.length-1)) && !isUserWaiting) {
+                    if ((i == (waitingListKeys.length-1)) && !this.state.isUserWaiting) {
                         this.setState({
                             isUserLogin: true,
                             userId: userId,
@@ -148,10 +144,16 @@ class GroupScreen extends Component {
     }
 
     handleRequestJoinGroup () {
-        let { groupKey, userId } = this.state;
-        let groupRef = db.ref('/groups/'+groupKey+'/waiting_list/'+userId);
-
-        groupRef.set({ status: true });
+        if (this.state.isUserLogin) {
+            let { groupKey, userId } = this.state;
+            db.ref('/groups/'+groupKey+'/waiting_list/'+userId).set({ status: true });
+            this.setState({ isUserWaiting: true });
+        } else {
+            this.showDialogMessage(
+                'Info',
+                'Anda belum login. Apakah Anda ingin login atau belum punya akun ?'
+            );
+        }
     }
 
     handleExitGroup () {
@@ -173,11 +175,29 @@ class GroupScreen extends Component {
         });
     }
 
+    showDialogMessage (title, message) {
+        Alert.alert(
+            title,
+            message,
+            [
+              {text: 'Tutup', onPress: () => console.log('Tutup diaglog')},
+              {text: 'Login', onPress: () => this.props.navigation.navigate('Login')},
+              {text: 'Daftar', onPress: () => this.props.navigation.navigate('SignUp')}
+            ],
+            { cancelable: true }
+        );
+    }
+
     handleRouteChange (url, paramKey) {
+        let { navigate } = this.props.navigation;
         if (!this.state.isUserLogin) {
-            return this.props.navigation.navigate('Login');
+            if (url === 'Event') {
+                return navigate(url, paramKey);
+            } else {
+                return navigate('Login');
+            }
         } else {
-            return this.props.navigation.navigate(url, paramKey);
+            return navigate(url, paramKey);
         }
     }
 
@@ -274,7 +294,7 @@ const styles = StyleSheet.create({
         padding: 10
     },
     description: {
-        padding: 5
+        padding: 15
     }
 });
 

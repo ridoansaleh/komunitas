@@ -183,7 +183,7 @@ class EventScreen extends Component {
                     <View style={styles.eventBox}>
                         <H1>{ (event.name).toUpperCase() }</H1>
                     </View>
-                    { (event.quota > event.total_members) &&
+                    { ((event.quota > event.total_members) && isUserLogin) &&
                         <Grid style={styles.joinBox}>
                             <Col style={{ width: '70%' }}>
                                 <Text>Apakah kamu ingin ikut ?</Text>
