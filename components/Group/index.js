@@ -170,14 +170,17 @@ class GroupScreen extends Component {
             if (data.val()) {
                 Object.keys(data.val()).map((m,i) => membersKey.push(m));
             }
-            if (membersKey && membersKey.length > 1) {
+        });
+
+        if (membersKey) {
+            if (membersKey.length > 1) {
                 db.ref('/groups/'+groupKey+'/members/'+userId).remove();
             } else {
                 let groupRef = db.ref('/groups/'+groupKey);
                 groupRef.update({ members: false });
-                this.props.navigation.navigate('Group', { group_key: groupKey });
             }
-        });
+            this.props.navigation.navigate('Group', { group_key: groupKey });
+        }
     }
 
     showDialogMessage (title, message) {
