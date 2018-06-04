@@ -121,33 +121,40 @@ class EventScreen extends Component {
     }
 
     handleCancelJoinEvent (isUserMember, userKey) {
+        let { eventKey } = this.state;
+
         if (!isUserMember) {
             this.showAlertMessage('Peringatan', 'Kamu BELUM ikut event ini !');
         } else {
-            let membersRef = db.ref('/events/'+this.state.eventKey+'/members/'+userKey);
+            let eventKeys = [];
+            let membersRef = db.ref('/events/'+eventKey+'/members/'+userKey);
 
             membersRef.on('value', (data) => {
-                let eventKeys = [];
                 if (data.val()) {
                     Object.keys(data.val()).map((e,i) => eventKeys.push(e));
                 }
+            });
+
+            if (eventKeys) {
                 if (eventKeys.length > 1) {
-                    db.ref('/events/'+this.state.eventKey+'/members/'+userKey).remove();
+                    db.ref('/events/'+eventKey+'/members/'+userKey).remove();
                     this.setState({ isUserMember: false });
                 } else {
-                    let eventRef = db.ref('/events/'+this.state.eventKey);
+                    let eventRef = db.ref('/events/'+eventKey);
                     eventRef.update({ members: false });
                     this.setState({ isUserMember: false });
                 }
-            });
+            }
         }
     }
 
     handleRequestJoinEvent (isUserMember, userKey) {
+        let { eventKey } = this.state;
+
         if (isUserMember) {
             this.showAlertMessage('Peringatan', 'Kamu SUDAH ikut event ini !');
         } else {
-            let eventRef = db.ref('/events/'+this.state.eventKey+'/members/'+userKey);
+            let eventRef = db.ref('/events/'+eventKey+'/members/'+userKey);
             eventRef.set({ status: true });
             this.setState({ isUserMember: true });
         }
