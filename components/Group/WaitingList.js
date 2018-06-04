@@ -14,6 +14,7 @@ class WaitingListScreen extends Component {
         }
 
         this.handleConfirmJoinRequest = this.handleConfirmJoinRequest.bind(this);
+        this.handleRouteChange = this.handleRouteChange.bind(this);
     }
 
     componentDidMount () {
@@ -48,24 +49,29 @@ class WaitingListScreen extends Component {
     }
 
     handleConfirmJoinRequest (userKey, groupKey) {
+        let totalWaiting = [];
         let waitingRef = db.ref('/groups/'+groupKey+'/waiting_list');
 
         waitingRef.on('value', data => {
             let waitingList = data.val();
-            let totalWaiting = [];
-
             if (waitingList) {
                 Object.keys(waitingList).map((w,i) => totalWaiting.push(w));
             }
+        });
 
-            if (waitingList.length > 1) {
+        if (totalWaiting) {
+            if (totalWaiting.length > 1) {
                 db.ref('/groups/'+groupKey+'/waiting_list/'+userKey).remove();
             } else {
                 db.ref('/groups/'+groupKey).update({ waiting_list: false });
             }
-        });
-
+        }
         db.ref('/groups/'+groupKey+'/members/'+userKey).set({ status: true });
+        this.handleRouteChange('Group', { group_key: groupKey });   
+    }
+
+    handleRouteChange (url, param) {
+        return this.props.onMenuChange(url, param);
     }
 
     render () {

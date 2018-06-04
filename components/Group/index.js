@@ -146,8 +146,13 @@ class GroupScreen extends Component {
     handleRequestJoinGroup () {
         if (this.state.isUserLogin) {
             let { groupKey, userId } = this.state;
-            db.ref('/groups/'+groupKey+'/waiting_list/'+userId).set({ status: true });
-            this.setState({ isUserWaiting: true });
+            db.ref('/groups/'+groupKey+'/waiting_list/'+userId).set({ status: true })
+                .then(() => {
+                    console.log('Succeed');
+                })
+                .catch((error) => {
+                    console.log('Error');
+                });
         } else {
             this.showDialogMessage(
                 'Info',
@@ -248,7 +253,11 @@ class GroupScreen extends Component {
                                 <Members data={group.members} />
                             </Tab>
                             { isAdmin && <Tab heading="Waiting List">
-                                <WaitingList data={group.waiting_list} groupKey={groupKey} />
+                                <WaitingList
+                                    data={group.waiting_list}
+                                    groupKey={groupKey}
+                                    onMenuChange={this.handleRouteChange}
+                                />
                             </Tab> }
                         </Tabs>
                     </Content> }

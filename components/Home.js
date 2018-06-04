@@ -62,7 +62,7 @@ class HomeScreen extends Component {
           let eventNames = [];
           let topEvents = [];
 
-          if ((Object.keys(event).length > 0) && (event.constructor === Object)) {
+          if (event) {
             Object.keys(event).map((u,i) => eventNames.push(u));
             eventNames.map((e,i) => {
               groupRef.child(event[e]['group']).once('value', snap => {
