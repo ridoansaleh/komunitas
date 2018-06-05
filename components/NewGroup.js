@@ -4,6 +4,7 @@ import { Content, Button, Text, Form, Item, Label, Input, Textarea, Picker } fro
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ErrorStyles } from '../css/error';
 import { auth, db } from '../firebase/config';
+import { getFullDate } from '../utils';
 import { db as database } from '../firebase';
 
 const INITIAL_STATE = {
@@ -37,7 +38,6 @@ class NewGroupScreen extends Component {
         this.handleNameBlur = this.handleNameBlur.bind(this);
         this.handleLocationBlur = this.handleLocationBlur.bind(this);
         this.handleDescriptionBlur = this.handleDescriptionBlur.bind(this);
-        this.getFullDate = this.getFullDate.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -101,18 +101,9 @@ class NewGroupScreen extends Component {
         }
     }
 
-    getFullDate () {
-        let today = new Date();
-        let day = today.getDate();
-        let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        let month = monthNames[today.getMonth()];
-        let year = today.getFullYear();
-        return day+' '+month+' '+year
-    }
-
     handleSubmit () {
         let { name, categorySelected, location, description, userId } = this.state;
-        let key = (name + this.getFullDate() + location).split(' ').join('').split('a').join('_');
+        let key = (name + getFullDate() + location).split(' ').join('').split('a').join('_');
         let data = {
             key: key,
             name: name,
@@ -120,7 +111,7 @@ class NewGroupScreen extends Component {
             category: categorySelected,
             location: location,
             about: description,
-            created_date: this.getFullDate(),
+            created_date: getFullDate(),
             active: true,
             member: userId,
             admin: userId,

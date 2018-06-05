@@ -4,6 +4,7 @@ import { Container, Header, Button, Text, Content, Form, Item,
          Input, Label, Toast, Icon, ListItem, CheckBox, Body,
          Spinner, Thumbnail, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
 import defaultPhoto from '../data/icon/camera.png';
 import { auth, db } from '../firebase';
@@ -44,7 +45,6 @@ class SignUpScreen extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
-        this.getFullDate = this.getFullDate.bind(this);
         this._showCamera = this._showCamera.bind(this);
     }
 
@@ -88,15 +88,6 @@ class SignUpScreen extends Component {
         }
     }
 
-    getFullDate () {
-        let today = new Date();
-        let day = today.getDate();
-        let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        let month = monthNames[today.getMonth()];
-        let year = today.getFullYear();
-        return day+' '+month+' '+year
-    }
-
     handleSubmit () {
         let { name, email, city, password1, password2 } = this.state;
         this.setState({ isSpinnerLoading: true });
@@ -106,7 +97,7 @@ class SignUpScreen extends Component {
                     id: authUser.uid,
                     name: name,
                     email: email,
-                    join_date: this.getFullDate(),
+                    join_date: getFullDate(),
                     city: city,
                     photo: '-'
                 });

@@ -5,18 +5,8 @@ import DatePicker from 'react-native-datepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ErrorStyles } from '../css/error';
 import { auth, db } from '../firebase/config';
+import { getFullDate, getTodayDate } from '../utils';
 import { db as database } from '../firebase';
-
-const getTodayDate = () => {
-    let today = new Date();
-    let day = today.getDate();
-    let month = today.getMonth();
-    let year = today.getFullYear();
-    if (month < 10) {
-        month = '0'+(month+1)
-    }
-    return year + '-' + (month) + '-' + day;
-}
 
 const INITIAL_STATE = {
     userKey: '',
@@ -57,6 +47,7 @@ class NewEventScreen extends Component {
         this.handleChangeQuota = this.handleChangeQuota.bind(this);
         this.handleChangeTime = this.handleChangeTime.bind(this);
         this.handleChangeDate = this.handleChangeDate.bind(this);
+        this.sendNotification = this.sendNotification.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -119,6 +110,40 @@ class NewEventScreen extends Component {
         }
     }
 
+    sendNotification (eventName, eventDate) {
+        let { userKey, groupKey } = this.state;
+
+        let membersRef = db.ref('/groups/'+this.state.groupKey+'/members');
+        let notifKey = userKey.substring(2,7) + (Math.random()).toString().substring(2,5) + groupKey.substring(1,4);
+        let notiRef = db.ref('/notifications/'+notifKey);
+        let groupRef = db.ref('/groups/'+groupKey); 
+        let membersKey = [];
+        let groupName = null;
+
+        groupRef.on('value', (data) => {
+            groupName = data.val().name;
+        });
+
+        membersRef.on('value', (data) => {
+            let members = data.val();
+            if (members) {
+                Object.keys(members).map((m,i) => membersKey.push(m));
+            }
+        });
+
+        if (groupName && membersKey.length) {
+            notiRef.set({
+                sender: groupKey,
+                receivers: false,
+                text: 'Grup '+ groupName +' telah membuat event baru, yaitu ' + eventName + ' untuk tanggal '+eventDate,
+                time: getFullDate(),
+            });
+            for (let i=0; i<membersKey.length; i++) {
+                db.ref('/notifications/'+notifKey+'/receivers/'+membersKey[i]).set({ read: false });
+            }
+        }
+    }
+
     handleSubmit () {
         let { name, description, location, quota, timeSelected, date, groupKey, userKey } = this.state;
         let monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -129,18 +154,19 @@ class NewEventScreen extends Component {
             return day + ' ' + month + ' ' + year;
         }
         let key = name.split(' ').join('') + quota + description.substring(1,7);
+        let eventDate = formatDate(date);
         let data = {
-            eventKey: key,
-            name: name,
-            description: description,
-            location: location,
-            quota: quota,
-            time: timeSelected,
-            date: formatDate(date),
-            created_date: getTodayDate(),
-            group: groupKey,
-            image: 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37',
-            member: userKey
+            'eventKey': key,
+            'name': name,
+            'description': description,
+            'location': location,
+            'quota': quota,
+            'time': timeSelected,
+            'date': eventDate,
+            'created_date': getTodayDate(),
+            'group': groupKey,
+            'image': 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/swim_group.jpg?alt=media&token=1644145f-d542-4a86-a92f-07c4b4033b37',
+            'member': userKey
         };
         database.saveEvent(data);
         database.addEventToGroup({
@@ -148,20 +174,22 @@ class NewEventScreen extends Component {
             groupKey: groupKey, 
             status: true
         });
-        this.setState({ ...INITIAL_STATE });
-        Alert.alert(
-            'Sukses',
-            'Horee, Anda berhasil membuat event baru.',
-            [
-              {text: 'Kembali', onPress: () => {
-                  return this.props.navigation.navigate('Group', { group_key: groupKey });
-              }},
-              {text: 'Lihat Event', onPress: () => {
-                  return this.props.navigation.navigate('Event', { event_key: key });
-              }}
-            ],
-            { cancelable: true }
-        );
+        this.sendNotification(name, eventDate);
+        this.setState({ ...INITIAL_STATE }, () => {
+            Alert.alert(
+                'Sukses',
+                'Horee, Anda berhasil membuat event baru.',
+                [
+                  {text: 'Kembali', onPress: () => {
+                      return this.props.navigation.navigate('Group', { group_key: groupKey });
+                  }},
+                  {text: 'Lihat Event', onPress: () => {
+                      return this.props.navigation.navigate('Event', { event_key: key });
+                  }}
+                ],
+                { cancelable: true }
+            );
+        });
     }
 
     render () {
