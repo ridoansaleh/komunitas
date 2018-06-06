@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import { Footer, FooterTab, Button, Icon, Text } from 'native-base';
+import { Footer, FooterTab, Button, Icon, Badge, Text } from 'native-base';
+import { hidden } from 'ansi-colors';
 
 class FooterScreen extends Component {
 
@@ -15,7 +16,7 @@ class FooterScreen extends Component {
     }
 
     render () {
-        let activeMenu = this.props.activeMenu;
+        let { activeMenu, notif } = this.props;
         return (
             <Footer>
                 <FooterTab>
@@ -34,9 +35,13 @@ class FooterScreen extends Component {
                         <Text style={styles.text}>Baru</Text>
                     </Button>
                     <Button
-                      onPress={() => this.handleRouteChange('Notification')}
-                      active={activeMenu === 'Notification' ? true : false }
-                      vertical>
+                        onPress={() => this.handleRouteChange('Notification')}
+                        active={activeMenu === 'Notification' ? true : false }
+                        badge={notif ? true : false}
+                        vertical>
+                        <Badge style={notif ? styles.show : styles.hide}>
+                            <Text>{notif}</Text>
+                        </Badge>
                         <Icon name="notifications" />
                         <Text style={styles.text}>Notifikasi</Text>
                     </Button>
@@ -56,6 +61,12 @@ class FooterScreen extends Component {
 const styles = StyleSheet.create({
     text: {
         fontSize: 9.5
+    }, 
+    hide: {
+        display: 'none'
+    },
+    show: {
+        display: 'flex'
     }
 })
 

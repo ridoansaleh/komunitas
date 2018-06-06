@@ -50,7 +50,7 @@ class LoginScreen extends Component {
                         try {
                             AsyncStorage.setItem('_pass', password);
                         } catch (error) {
-                            console.log('Error while set storage : ',error);
+                            console.log('Error while set _pass on storage');
                         }
                         return this.props.navigation.navigate('Profile');
                     }

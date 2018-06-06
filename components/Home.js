@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
          ListItem, Item, Input, DeckSwiper, Card, CardItem, Thumbnail, View, Spinner } from 'native-base';
 import Expo from "expo";
@@ -19,7 +19,8 @@ class HomeScreen extends Component {
       activeMenu: 'Home',
       events: null,
       eventsFetched: false,
-      groupsCategory: null
+      groupsCategory: null,
+      totalNotif: 0
     }
 
     this.showSearch = this.showSearch.bind(this);
@@ -28,6 +29,7 @@ class HomeScreen extends Component {
     this.renderEmptyEvent = this.renderEmptyEvent.bind(this);
     this.fetchTopEvents = this.fetchTopEvents.bind(this);
     this.fetchCategories = this.fetchCategories.bind(this);
+    this.fetchNotifications = this.fetchNotifications.bind(this);
   }
 
   async componentWillMount() {
@@ -42,14 +44,56 @@ class HomeScreen extends Component {
   componentDidMount () {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.fetchTopEvents(true);
+        this.fetchNotifications(user.uid);
       } else {
         this.fetchTopEvents(false);
       }
     });
   }
 
-  fetchTopEvents (loginStatus) {
+  fetchNotifications (userKey) {
+    let notiRef = db.ref('/notifications');
+    let notifsKey = [];
+    
+    notiRef.on('value', (data) => {
+        let notifications = data.val();
+        let result = [];
+
+        if (notifications) {
+          Object.keys(notifications).map((n,i) => notifsKey.push(n));
+        }
+        
+        if (notifsKey.length) {
+          let notif = 0;
+          for (let i=0; i<notifsKey.length; i++) {
+            db.ref('/notifications/'+notifsKey[i]+'/receivers').on('value', (data) => {
+              if (data.val().hasOwnProperty(userKey)) {
+                db.ref('/notifications/'+notifsKey[i]+'/receivers/'+userKey).on('value', (data) => {
+                    let status = data.val().read;
+                    if (!status) {
+                        notif++;
+                    }
+                });
+              } else {
+                  this.fetchTopEvents(true, 0);
+              }
+            });
+            if ((i === (notifsKey.length-1)) && (notif > 0)) {
+              this.fetchTopEvents(true, notif);
+              try {
+                AsyncStorage.setItem('_totalNotif', notif.toString());
+              } catch (error) {
+                console.log('Error while set totalNotif on storage');
+              }
+            }
+          }
+        } else {
+          this.fetchTopEvents(true, 0);
+        }
+    });
+  }
+
+  fetchTopEvents (loginStatus, notif) {
     let eventRef = db.ref('/events');
     let groupRef = db.ref('/groups');
 
@@ -75,22 +119,21 @@ class HomeScreen extends Component {
                   date: event[e]['date']
                 });
                 if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
-                  this.fetchCategories(loginStatus, topEvents, true);
+                  this.fetchCategories(loginStatus, topEvents, true, notif);
                 }
               })
             });
           } else {
-            this.fetchCategories(loginStatus, null, true);
+            this.fetchCategories(loginStatus, null, true, notif);
           }
         }, error => console.log('error while fetching events'));
       } else {
-        this.fetchCategories(loginStatus, null, true);
+        this.fetchCategories(loginStatus, null, true, notif);
       }
-
     });
   }
 
-  fetchCategories (loginStatus, eventData, isEventFetched) {
+  fetchCategories (loginStatus, eventData, isEventFetched, notif) {
     let categoryRef = db.ref('/categories');
 
     categoryRef.on('value', data => {
@@ -106,7 +149,8 @@ class HomeScreen extends Component {
             isUserLogin: loginStatus,
             events: eventData,
             eventsFetched: isEventFetched,
-            groupsCategory: result
+            groupsCategory: result,
+            totalNotif: notif
           });
         }
       });
@@ -190,7 +234,7 @@ class HomeScreen extends Component {
   }
 
   render() {
-    let { groupsCategory, loading, searchStatus, events, eventsFetched, activeMenu } = this.state;
+    let { groupsCategory, loading, searchStatus, events, eventsFetched, activeMenu, totalNotif } = this.state;
     if (loading) {
       return <Expo.AppLoading />;
     }
@@ -243,7 +287,7 @@ class HomeScreen extends Component {
             })}
           </List> }
         </Content>
-        <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} />
+        <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif}/>
       </Container>
     );
   }

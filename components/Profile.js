@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content, ActionSheet, Button, List, ListItem, Left, Body, 
          Right, Thumbnail, Text, H3, View } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
@@ -23,7 +23,8 @@ class ProfileScreen extends Component {
           activeMenu: 'Profile',
           userId: null,
           user: null,
-          userGroups: null
+          userGroups: null,
+          totalNotif: 0
         }
     
         this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -41,15 +42,16 @@ class ProfileScreen extends Component {
                         city: data.val().city,
                         photo: data.val().photo,
                     };
-                    this.getUserGroups(user.uid, userData);
+                    AsyncStorage.getItem('_totalNotif').then(notif => {
+                        let _notif = parseInt(notif) || 0;
+                        this.getUserGroups(user.uid, userData, _notif);
+                    });
                 });
-            } else {
-                return this.props.navigation.navigate('Login');
             }
         });
     }
 
-    getUserGroups (userId, userData) {
+    getUserGroups (userId, userData, notif) {
         let keys = [];
         let result = [];
         let groupsRef = db.ref('/groups'); 
@@ -73,21 +75,33 @@ class ProfileScreen extends Component {
                                 key: keys[i]
                             });
                         }
-                        if ((i === (keys.length-1)) && (result.length === 0)) {
-                            this.setState({ isUserLogin: true, userId: userId, user: userData });
-                        }
                     });
                     if ((i === (keys.length-1)) && result.length) {
                         this.setState({
                             isUserLogin: true,
                             userId: userId,
                             user: userData,
-                            userGroups: result
+                            userGroups: result,
+                            totalNotif: notif
+                        });
+                    } else if ((i === (keys.length-1)) && (result.length === 0)) {
+                        this.setState({
+                            sUserLogin: true,
+                            userId: userId,
+                            user: userData,
+                            userGroups: null,
+                            totalNotif: notif
                         });
                     }
                 }
             } else {
-                this.setState({ isUserLogin: true,  userId: userId, user: userData });
+                this.setState({
+                    isUserLogin: true,
+                    userId: userId,
+                    user: userData,
+                    userGroups: null,
+                    totalNotif: notif
+                });
             }
         }); 
     }
@@ -121,7 +135,7 @@ class ProfileScreen extends Component {
     }
 
     render () {
-        let { user, userGroups } = this.state;
+        let { user, userGroups, totalNotif } = this.state;
         return (
             <Container>
                 <Content>
@@ -161,7 +175,7 @@ class ProfileScreen extends Component {
                         }
                     </List>
                 </Content>
-                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
+                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} notif={totalNotif} />
             </Container>
         );
     }

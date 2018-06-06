@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Image, Dimensions } from 'react-native';
+import { StyleSheet, Image, Dimensions, AsyncStorage } from 'react-native';
 import { Container, Content, ListItem, CheckBox, Text, Body, H2 } from 'native-base';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import Footer from './partials/Footer';
@@ -19,7 +19,8 @@ class WhatsNewScreen extends Component {
       groups: null,
       isGroupFetched: false,
       isNearGroups: true,
-      isAllGroups: false
+      isAllGroups: false,
+      totalNotif: 0
     }
 
     this.fetchGroups = this.fetchGroups.bind(this);
@@ -30,12 +31,15 @@ class WhatsNewScreen extends Component {
   componentDidMount () {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.fetchGroups(user.uid, true, 'near');
+        AsyncStorage.getItem('_totalNotif').then(notif => {
+          let _notif = parseInt(notif) || 0;
+          this.fetchGroups(user.uid, true, 'near', _notif);
+        });
       }
     });
   }
 
-  fetchGroups (userKey, loginStatus, groupLocation) {
+  fetchGroups (userKey, loginStatus, groupLocation, notif) {
     let groupsRef = db.ref('/groups');
     let userRef = db.ref('/users/'+userKey);
     let groups = null;
@@ -66,7 +70,8 @@ class WhatsNewScreen extends Component {
                 groups: result,
                 isGroupFetched: true,
                 isNearGroups: groupLocation === 'near' ? true : false,
-                isAllGroups: groupLocation === 'all' ? true : false
+                isAllGroups: groupLocation === 'all' ? true : false,
+                totalNotif: notif
               });
             } else if ((i === (groupsKey.length-1)) && result.length === 0) {
               this.setState({
@@ -75,7 +80,8 @@ class WhatsNewScreen extends Component {
                 groups: null,
                 isGroupFetched: true,
                 isNearGroups: groupLocation === 'near' ? true : false,
-                isAllGroups: groupLocation === 'all' ? true : false
+                isAllGroups: groupLocation === 'all' ? true : false,
+                totalNotif: notif
               });
             }
           }
@@ -91,7 +97,8 @@ class WhatsNewScreen extends Component {
                 groups: result,
                 isGroupFetched: true,
                 isNearGroups: groupLocation === 'near' ? true : false,
-                isAllGroups: groupLocation === 'all' ? true : false
+                isAllGroups: groupLocation === 'all' ? true : false,
+                totalNotif: notif
               });
             } else if ((i === (groupsKey.length-1)) && result.length === 0) {
               this.setState({
@@ -100,7 +107,8 @@ class WhatsNewScreen extends Component {
                 groups: null,
                 isGroupFetched: true,
                 isNearGroups: groupLocation === 'near' ? true : false,
-                isAllGroups: groupLocation === 'all' ? true : false
+                isAllGroups: groupLocation === 'all' ? true : false,
+                totalNotif: notif
               });
             }
           }
@@ -113,14 +121,15 @@ class WhatsNewScreen extends Component {
         groups: null,
         isGroupFetched: true,
         isNearGroups: groupLocation === 'near' ? true : false,
-        isAllGroups: groupLocation === 'all' ? true : false
+        isAllGroups: groupLocation === 'all' ? true : false,
+        totalNotif: notif
       });
     }
   }
 
   changeGroupCategory (param) {
-    let { userId, isUserLogin } = this.state;
-    this.fetchGroups(userId, isUserLogin, param);
+    let { userId, isUserLogin, totalNotif } = this.state;
+    this.fetchGroups(userId, isUserLogin, param, totalNotif);
   }
 
   handleRouteChange (url) {
@@ -132,7 +141,7 @@ class WhatsNewScreen extends Component {
   }
 
   render() {
-    let { isUserLogin, groups, isGroupFetched, isNearGroups, isAllGroups } = this.state;
+    let { isUserLogin, groups, isGroupFetched, isNearGroups, isAllGroups, totalNotif } = this.state;
     return (
       <Container>
         <Content padder={true}>
@@ -177,7 +186,7 @@ class WhatsNewScreen extends Component {
             </Grid>
           }
         </Content>
-        <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
+        <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} notif={totalNotif} />
       </Container>
     );
   }

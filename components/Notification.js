@@ -12,7 +12,8 @@ class NotificationScreen extends Component {
           isUserLogin: false,
           activeMenu: 'Notification',
           notifications: null,
-          isNotificationFetched: false
+          isNotificationFetched: false,
+          totalNotif: 0
         }
         
         this.fetchNotifications = this.fetchNotifications.bind(this);
@@ -40,10 +41,16 @@ class NotificationScreen extends Component {
             }
             
             if (notifsKey.length) {
-                let totalNotif = 0;
+                let notif = 0;
                 for (let i=0; i<notifsKey.length; i++) {
                     db.ref('/notifications/'+notifsKey[i]+'/receivers').on('value', (data) => {
                         if (data.val().hasOwnProperty(userKey)) {
+                            db.ref('/notifications/'+notifsKey[i]+'/receivers/'+userKey).on('value', (data) => {
+                                let status = data.val().read;
+                                if (!status) {
+                                    notif++;
+                                }
+                            });
                             db.ref('/notifications/'+notifsKey[i]).on('value', (data) => {
                                 let groupName = null;
                                 let groupImage = null;
@@ -60,12 +67,12 @@ class NotificationScreen extends Component {
                                     });
                                 }
                             });
-                            totalNotif++;
                         } else {
                             this.setState({
                                 isUserLogin: true,
                                 notifications: null,
                                 isNotificationFetched: true,
+                                totalNotif: 0
                             });
                         }
                     });
@@ -73,7 +80,8 @@ class NotificationScreen extends Component {
                         this.setState({
                             isUserLogin: true,
                             notifications: result,
-                            isNotificationFetched: true
+                            isNotificationFetched: true,
+                            totalNotif: notif
                         });
                     }
                 }
@@ -81,7 +89,8 @@ class NotificationScreen extends Component {
                 this.setState({
                     isUserLogin: true,
                     notifications: null,
-                    isNotificationFetched: true
+                    isNotificationFetched: true,
+                    totalNotif: 0
                 });
             }
         });
@@ -96,7 +105,7 @@ class NotificationScreen extends Component {
     }
 
     render () {
-        let { isUserLogin, isNotificationFetched, notifications } = this.state;
+        let { activeMenu, isUserLogin, isNotificationFetched, notifications, totalNotif } = this.state;
         return (
             <Container>
                 <Content>
@@ -129,7 +138,7 @@ class NotificationScreen extends Component {
                         }
                     </List>
                 </Content>
-                <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
+                <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif} />
             </Container>
         );
     }
