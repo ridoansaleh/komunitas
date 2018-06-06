@@ -61,19 +61,26 @@ class NotificationScreen extends Component {
                                 }
                             });
                             totalNotif++;
+                        } else {
+                            this.setState({
+                                isUserLogin: true,
+                                notifications: null,
+                                isNotificationFetched: true,
+                            });
                         }
                     });
-                    if (i === (notifsKey.length-1)) {
+                    if ((i === (notifsKey.length-1)) && result.length > 0) {
                         this.setState({
                             isUserLogin: true,
-                            isNotificationFetched: true,
-                            notifications: result
+                            notifications: result,
+                            isNotificationFetched: true
                         });
                     }
                 }
             } else {
                 this.setState({
                     isUserLogin: true,
+                    notifications: null,
                     isNotificationFetched: true
                 });
             }
