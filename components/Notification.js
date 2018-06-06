@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
-import { avatars } from '../data/dummies';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 
@@ -11,16 +10,72 @@ class NotificationScreen extends Component {
     
         this.state = {
           isUserLogin: false,
-          activeMenu: 'Notification'
+          activeMenu: 'Notification',
+          notifications: null,
+          isNotificationFetched: false
         }
-    
+        
+        this.fetchNotifications = this.fetchNotifications.bind(this);
         this.handleRouteChange = this.handleRouteChange.bind(this);
     }
 
     componentDidMount () {
         auth.onAuthStateChanged(user => {
             if (user) {
-                this.setState({ isUserLogin: true });
+                this.fetchNotifications(true, user.uid);
+            }
+        });
+    }
+
+    fetchNotifications (loginStatus, userKey) {
+        let notiRef = db.ref('/notifications');
+        let notifsKey = [];
+        
+        notiRef.on('value', (data) => {
+            let notifications = data.val();
+            let result = [];
+
+            if (notifications) {
+                Object.keys(notifications).map((n,i) => notifsKey.push(n));
+            }
+            
+            if (notifsKey.length) {
+                let totalNotif = 0;
+                for (let i=0; i<notifsKey.length; i++) {
+                    db.ref('/notifications/'+notifsKey[i]+'/receivers').on('value', (data) => {
+                        if (data.val().hasOwnProperty(userKey)) {
+                            db.ref('/notifications/'+notifsKey[i]).on('value', (data) => {
+                                let groupName = null;
+                                let groupImage = null;
+                                db.ref('/groups/'+data.val().sender).on('value', (group) => {
+                                    groupName = group.val().name;
+                                    groupImage = group.val().image;
+                                });
+                                if (groupName && groupImage) {
+                                    result.push({
+                                        'groupName': groupName,
+                                        'groupImage': groupImage,
+                                        'text': data.val().text,
+                                        'time': data.val().time
+                                    });
+                                }
+                            });
+                            totalNotif++;
+                        }
+                    });
+                    if (i === (notifsKey.length-1)) {
+                        this.setState({
+                            isUserLogin: true,
+                            isNotificationFetched: true,
+                            notifications: result
+                        });
+                    }
+                }
+            } else {
+                this.setState({
+                    isUserLogin: true,
+                    isNotificationFetched: true
+                });
             }
         });
     }
@@ -34,6 +89,7 @@ class NotificationScreen extends Component {
     }
 
     render () {
+        let { isUserLogin, isNotificationFetched, notifications } = this.state;
         return (
             <Container>
                 <Content>
@@ -41,22 +97,29 @@ class NotificationScreen extends Component {
                         <ListItem itemHeader first>
                             <Text>Notifikasi</Text>
                         </ListItem>
-                        { avatars.map( avt => {
+                        { notifications && notifications.map((n,i) => {
                             return (
-                                <ListItem key={avt.id} avatar>
+                                <ListItem key={i} avatar>
                                     <Left>
-                                        <Thumbnail source={avt.image} />
+                                        <Thumbnail source={{ uri: n.groupImage }}/>
                                     </Left>
                                     <Body>
-                                        <Text>{avt.actor}</Text>
-                                        <Text note>{avt.information}</Text>
+                                        <Text>{n.groupName}</Text>
+                                        <Text note>{n.text}</Text>
                                     </Body>
                                     <Right>
-                                        <Text note>{avt.time}</Text>
+                                        <Text note>{n.time}</Text>
                                     </Right>
                                 </ListItem>
                             )
                         })}
+                        { (isNotificationFetched && !notifications) &&
+                            <ListItem>
+                                <Body>
+                                    <Text>{' Tidak ada Notifikasi '}</Text>
+                                </Body>
+                            </ListItem>
+                        }
                     </List>
                 </Content>
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} />
