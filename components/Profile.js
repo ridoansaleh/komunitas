@@ -86,7 +86,7 @@ class ProfileScreen extends Component {
                         });
                     } else if ((i === (keys.length-1)) && (result.length === 0)) {
                         this.setState({
-                            sUserLogin: true,
+                            isUserLogin: true,
                             userId: userId,
                             user: userData,
                             userGroups: null,
@@ -127,7 +127,13 @@ class ProfileScreen extends Component {
                         this.props.navigation.navigate('ChangePassword');
                 } else if (buttonIndex === 2) {
                     auth.signOut()
-                        .then(() => this.props.navigation.navigate('Home') )
+                        .then(() => {
+                            let data = ['_pass', '_totalNotif'];
+                            AsyncStorage.multiRemove(data, (error) => {
+                                error && console.log(error);
+                            });
+                            this.props.navigation.navigate('Home') 
+                        })
                         .catch((error) => console.log('Error: cant logout ', error) );
                 } 
             }
