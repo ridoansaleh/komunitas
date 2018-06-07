@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { AsyncStorage } from 'react-native';
 import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
@@ -41,14 +42,13 @@ class NotificationScreen extends Component {
             }
             
             if (notifsKey.length) {
-                let notif = 0;
                 for (let i=0; i<notifsKey.length; i++) {
                     db.ref('/notifications/'+notifsKey[i]+'/receivers').on('value', (data) => {
                         if (data.val().hasOwnProperty(userKey)) {
                             db.ref('/notifications/'+notifsKey[i]+'/receivers/'+userKey).on('value', (data) => {
                                 let status = data.val().read;
                                 if (!status) {
-                                    notif++;
+                                    db.ref('/notifications/'+notifsKey[i]+'/receivers/'+userKey).update({ read: true });
                                 }
                             });
                             db.ref('/notifications/'+notifsKey[i]).on('value', (data) => {
@@ -69,7 +69,7 @@ class NotificationScreen extends Component {
                             });
                         } else {
                             this.setState({
-                                isUserLogin: true,
+                                isUserLogin: loginStatus,
                                 notifications: null,
                                 isNotificationFetched: true,
                                 totalNotif: 0
@@ -77,17 +77,18 @@ class NotificationScreen extends Component {
                         }
                     });
                     if ((i === (notifsKey.length-1)) && result.length > 0) {
+                        AsyncStorage.removeItem('_totalNotif');
                         this.setState({
-                            isUserLogin: true,
+                            isUserLogin: loginStatus,
                             notifications: result,
                             isNotificationFetched: true,
-                            totalNotif: notif
+                            totalNotif: 0
                         });
                     }
                 }
             } else {
                 this.setState({
-                    isUserLogin: true,
+                    isUserLogin: loginStatus,
                     notifications: null,
                     isNotificationFetched: true,
                     totalNotif: 0

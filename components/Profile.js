@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, AsyncStorage } from 'react-native';
-import { Container, Content, ActionSheet, Button, List, ListItem, Left, Body, 
-         Right, Thumbnail, Text, H3, View } from 'native-base';
+import { Container, Content, ActionSheet, Button, List, ListItem,
+         Left, Body, Thumbnail, Text, H3, View } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
-import userAvatar from '../data/images/user_avatar.png';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 

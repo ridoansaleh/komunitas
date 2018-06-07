@@ -57,7 +57,6 @@ class HomeScreen extends Component {
     
     notiRef.on('value', (data) => {
         let notifications = data.val();
-        let result = [];
 
         if (notifications) {
           Object.keys(notifications).map((n,i) => notifsKey.push(n));
@@ -72,6 +71,8 @@ class HomeScreen extends Component {
                     let status = data.val().read;
                     if (!status) {
                         notif++;
+                    } else {
+                      this.fetchTopEvents(true, 0);
                     }
                 });
               } else {
