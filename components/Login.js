@@ -52,7 +52,7 @@ class LoginScreen extends Component {
                         } catch (error) {
                             console.log('Error while set _pass on storage');
                         }
-                        return this.props.navigation.navigate('Profile');
+                        return this.props.navigation.navigate('Home');
                     }
                 });
             })

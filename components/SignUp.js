@@ -4,10 +4,12 @@ import { Container, Header, Button, Text, Content, Form, Item,
          Input, Label, Toast, Icon, ListItem, CheckBox, Body,
          Spinner, Thumbnail, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ImagePicker } from 'expo';
 import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
 import defaultPhoto from '../data/icon/camera.png';
 import { auth, db } from '../firebase';
+import { st } from '../firebase/config';
 
 const INITIAL_STATE = {
     name: '', 
@@ -25,7 +27,8 @@ const INITIAL_STATE = {
     isPassword2Valid: false,
     isPassword2Changed: false,
     isPasswordChecked: false,
-    isSpinnerLoading: false
+    isSpinnerLoading: false,
+    userPhoto: null
 }
 
 class SignUpScreen extends Component {
@@ -35,7 +38,6 @@ class SignUpScreen extends Component {
 
         this.state = { ...INITIAL_STATE }
         
-        this.handlePhotoUploadOptions = this.handlePhotoUploadOptions.bind(this);
         this.handleRouteChanges = this.handleRouteChanges.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
         this.handleChangeCity = this.handleChangeCity.bind(this);
@@ -45,7 +47,7 @@ class SignUpScreen extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
-        this._showCamera = this._showCamera.bind(this);
+        this.choosePhoto = this.choosePhoto.bind(this);
     }
 
     handleRouteChanges () {
@@ -90,6 +92,7 @@ class SignUpScreen extends Component {
 
     handleSubmit () {
         let { name, email, city, password1, password2 } = this.state;
+        let photoRef = st.child('/images/photo'+(Math.random().toString()).substring(2,7));
         this.setState({ isSpinnerLoading: true });
         auth.doCreateUserWithEmailAndPassword(email, password1)
             .then(authUser => {
@@ -127,30 +130,19 @@ class SignUpScreen extends Component {
         this.setState({ isPasswordChecked: !this.state.isPasswordChecked });
     }
 
-    _showCamera () {
-        CameraRoll.getPhotos({
-            first: 20,
-            assetType: 'Photos',
-          })
-          .then(r => {
-            this.setState({ photos: r.edges });
-          })
-          .catch((err) => {
-             //Error Loading Images
-          });
-    }
-
-    handlePhotoUploadOptions () {
-        let that = this;
-        Alert.alert(
-            'Photo Profil',
-            'Bagaimana Anda mengupload photo ?',
-            [
-              {text: 'Camera', onPress: () => this._showCamera() },
-              {text: 'Gallery', onPress: () => console.log('open gallery')},
-            ],
-            { cancelable: true }
-        )
+    choosePhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          base64: true,
+        });
+        if (!result.cancelled) {
+            let photoRef = st.child('/images/photo-'+(result.uri).substring(170));
+            this.setState({ userPhoto: result.uri }, () => {
+                photoRef.putString(result.base64).then(function(snapshot) {
+                    console.log('Uploaded a raw string >> ', snapshot);
+                });
+            });
+        }
     }
 
     render() {
@@ -158,14 +150,15 @@ class SignUpScreen extends Component {
             name, email, city, password1, password2, isNameValid,
             isEmailValid, isEmailChanged, isCityValid, isCityChanged, 
             isPassword1Valid, isPassword1Changed, isPassword2Valid, 
-            isPassword2Changed, isPasswordChecked, isSpinnerLoading
+            isPassword2Changed, isPasswordChecked, isSpinnerLoading, userPhoto
         } = this.state;
 
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
-                    <TouchableOpacity style={{ width: '30%', marginLeft: '35%', marginRight: '35%' }} onPress={this.handlePhotoUploadOptions}>
-                        <Thumbnail large source={defaultPhoto} />
+                    <TouchableOpacity style={{ width: '30%', marginLeft: '35%', marginRight: '35%' }} onPress={this.choosePhoto}>
+                    { !userPhoto && <Thumbnail large source={defaultPhoto} /> }
+                    { userPhoto && <Thumbnail large source={{ uri: userPhoto }} /> }
                     </TouchableOpacity>
                     <Form>
                         <Item floatingLabel last>
@@ -241,13 +234,13 @@ class SignUpScreen extends Component {
                                 <Text>Lihat Password</Text>
                             </Body>
                         </ListItem>
-                        { isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
+                        { userPhoto && isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
                             <Button block info style={styles.signupBtn} onPress={this.handleSubmit}>
                                 { isSpinnerLoading && <Spinner color='green' /> }
                                 { !isSpinnerLoading && <Text> Daftar </Text> }
                             </Button> }
-                        { (!isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
-                            <Button disabled block style={styles.signupBtn} onPress={this.handleSubmit}>
+                        { ( !userPhoto || !isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
+                            <Button disabled block style={styles.signupBtn}>
                                 <Text> Daftar </Text>
                             </Button> }
                     </Form>
