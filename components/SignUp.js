@@ -5,6 +5,7 @@ import { Container, Header, Button, Text, Content, Form, Item,
          Spinner, Thumbnail, Picker } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
+import uuid from 'uuid';
 import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
 import defaultPhoto from '../data/icon/camera.png';
@@ -48,6 +49,8 @@ class SignUpScreen extends Component {
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
+        this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
+        this.uploadImageAsync = this.uploadImageAsync.bind(this);
     }
 
     handleRouteChanges () {
@@ -90,9 +93,37 @@ class SignUpScreen extends Component {
         }
     }
 
+    choosePhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          aspect: [4, 3]
+        });
+        this.handlePhotoPicked(result);
+    }
+
+    handlePhotoPicked = async result => {
+        try {
+            if (!result.cancelled) {
+                uploadUrl = await this.uploadImageAsync(result.uri);
+                this.setState({ userPhoto: uploadUrl });
+            }
+        } catch (e) {
+            console.log('Error while trying to upload user photo');
+        } finally {
+            console.log('Photo have been uploaded');
+        }
+    }
+
+    uploadImageAsync = async (uri) => {
+        let response = await fetch(uri);
+        let blob = await response.blob();
+        let ref = st.child(uuid.v4());  
+        let snapshot = await ref.put(blob);
+        return snapshot.downloadURL;
+    }
+
     handleSubmit () {
-        let { name, email, city, password1, password2 } = this.state;
-        let photoRef = st.child('/images/photo'+(Math.random().toString()).substring(2,7));
+        let { name, email, city, password1, userPhoto } = this.state;
         this.setState({ isSpinnerLoading: true });
         auth.doCreateUserWithEmailAndPassword(email, password1)
             .then(authUser => {
@@ -102,7 +133,7 @@ class SignUpScreen extends Component {
                     email: email,
                     join_date: getFullDate(),
                     city: city,
-                    photo: '-'
+                    photo: userPhoto
                 });
                 this.setState({ ...INITIAL_STATE });
                 this.showToastMessage('Kamu berhasil signup, silahkan login!');
@@ -130,21 +161,6 @@ class SignUpScreen extends Component {
         this.setState({ isPasswordChecked: !this.state.isPasswordChecked });
     }
 
-    choosePhoto = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-          allowsEditing: false,
-          base64: true,
-        });
-        if (!result.cancelled) {
-            let photoRef = st.child('/images/photo-'+(result.uri).substring(170));
-            this.setState({ userPhoto: result.uri }, () => {
-                photoRef.putString(result.base64).then(function(snapshot) {
-                    console.log('Uploaded a raw string >> ', snapshot);
-                });
-            });
-        }
-    }
-
     render() {
         let { 
             name, email, city, password1, password2, isNameValid,
@@ -156,9 +172,9 @@ class SignUpScreen extends Component {
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
-                    <TouchableOpacity style={{ width: '30%', marginLeft: '35%', marginRight: '35%' }} onPress={this.choosePhoto}>
-                    { !userPhoto && <Thumbnail large source={defaultPhoto} /> }
-                    { userPhoto && <Thumbnail large source={{ uri: userPhoto }} /> }
+                    <TouchableOpacity style={styles.photoBox} onPress={this.choosePhoto}>
+                        { !userPhoto && <Thumbnail large source={defaultPhoto} /> }
+                        { userPhoto && <Thumbnail large source={{ uri: userPhoto }} /> }
                     </TouchableOpacity>
                     <Form>
                         <Item floatingLabel last>
@@ -254,6 +270,11 @@ class SignUpScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+    photoBox: {
+        width: '30%',
+        marginLeft: '35%',
+        marginRight: '35%'
+    },
     signupBtn: {
         marginTop: 20
     },
