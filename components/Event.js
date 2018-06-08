@@ -58,11 +58,13 @@ class EventScreen extends Component {
                 usersRef.on('value', (user) => {
                     groupAdmin = user.val().name;
                     groupName = group.val().name;
+                    groupImage = group.val().image;
                     groupLocation = group.val().location;
-                    if (groupName && groupAdmin && groupLocation) {
+                    if (groupName && groupAdmin && groupLocation && groupImage) {
                         result = {
                             group_name: groupName,
                             group_location: groupLocation,
+                            group_image: groupImage,
                             name: event.name,
                             date: event.date,
                             time: event.time,
@@ -180,7 +182,7 @@ class EventScreen extends Component {
                 { event && <Content>
                     <Grid style={styles.groupBox}>
                         <Col style={{ width: '30%' }}>
-                            <Thumbnail square large source={defaultImage} />
+                            <Thumbnail square large source={{ uri: event.group_image }} />
                         </Col>
                         <Col style={{ width: '70%' }}>
                             <H3>{event.group_name}</H3>
