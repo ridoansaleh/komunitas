@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, TouchableHighlight, Alert, CameraRoll } from 'react-native';
-import { Container, Header, Button, Text, Content, Form, Item,
-         Input, Label, Toast, Icon, ListItem, CheckBox, Body,
-         Spinner, Thumbnail, Picker } from 'native-base';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Button, Text, Content, Form, Item,
+         Input, Label, Toast, ListItem, CheckBox, Body,
+         Spinner, Thumbnail } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
