@@ -225,7 +225,7 @@ class GroupScreen extends Component {
                 { group &&
                     <Content>
                         <View>
-                            <Image style={styles.groupImage} source={groupImage} />
+                            <Image style={styles.groupImage} source={{ uri: group.image }} />
                             { isAdmin &&
                                 <Button
                                   danger small style={styles.addNewEvent}

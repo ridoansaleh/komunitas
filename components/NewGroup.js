@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, Alert } from 'react-native';
-import { Content, Button, Text, Form, Item, Label, Input, Textarea, Picker } from 'native-base';
+import { StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { Content, Button, Text, Form, Item, Label, Input, Textarea, Picker, Thumbnail } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ImagePicker } from 'expo';
+import uuid from 'uuid';
 import { ErrorStyles } from '../css/error';
-import { auth, db } from '../firebase/config';
+import defaultPhoto from '../data/images/group.png';
+import { auth, db, st } from '../firebase/config';
 import { getFullDate } from '../utils';
 import { db as database } from '../firebase';
 
@@ -21,7 +24,8 @@ const INITIAL_STATE = {
     isLocationChanged: false,
     description: '',
     isDescriptionValid: false,
-    isDescriptionChanged: false
+    isDescriptionChanged: false,
+    groupPhoto: null
 }
 
 class NewGroupScreen extends Component {
@@ -38,6 +42,9 @@ class NewGroupScreen extends Component {
         this.handleNameBlur = this.handleNameBlur.bind(this);
         this.handleLocationBlur = this.handleLocationBlur.bind(this);
         this.handleDescriptionBlur = this.handleDescriptionBlur.bind(this);
+        this.choosePhoto = this.choosePhoto.bind(this);
+        this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
+        this.uploadImageAsync = this.uploadImageAsync.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -101,13 +108,42 @@ class NewGroupScreen extends Component {
         }
     }
 
+    choosePhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          aspect: [4, 3]
+        });
+        this.handlePhotoPicked(result);
+    }
+
+    handlePhotoPicked = async result => {
+        try {
+            if (!result.cancelled) {
+                uploadUrl = await this.uploadImageAsync(result.uri);
+                this.setState({ groupPhoto: uploadUrl });
+            }
+        } catch (e) {
+            console.log('Error while trying to upload user photo');
+        } finally {
+            console.log('Photo have been uploaded');
+        }
+    }
+
+    uploadImageAsync = async (uri) => {
+        let response = await fetch(uri);
+        let blob = await response.blob();
+        let ref = st.child(uuid.v4());  
+        let snapshot = await ref.put(blob);
+        return snapshot.downloadURL;
+    }
+
     handleSubmit () {
-        let { name, categorySelected, location, description, userId } = this.state;
+        let { name, categorySelected, location, description, userId, groupPhoto } = this.state;
         let key = (name + getFullDate() + location).split(' ').join('').split('a').join('_');
         let data = {
             key: key,
             name: name,
-            image: 'https://firebasestorage.googleapis.com/v0/b/komunitas-3baa3.appspot.com/o/fishing.jpg?alt=media&token=00ffc3d9-5abe-49dc-bdc2-970e362b949d',
+            image: groupPhoto,
             category: categorySelected,
             location: location,
             about: description,
@@ -137,11 +173,15 @@ class NewGroupScreen extends Component {
 
     render () {
         let { name, isNameValid, isNameChanged, categorySelected, isCategoryValid, isCategoryChanged, location,
-              isLocationValid, isLocationChanged, description, isDescriptionValid, isDescriptionChanged } = this.state;
+              isLocationValid, isLocationChanged, description, isDescriptionValid, isDescriptionChanged, groupPhoto } = this.state;
         return (
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
                     <Form>
+                        <TouchableOpacity style={styles.photoBox} onPress={this.choosePhoto}>
+                            { !groupPhoto && <Thumbnail large source={defaultPhoto} /> }
+                            { groupPhoto && <Thumbnail large source={{ uri: groupPhoto }} /> }
+                        </TouchableOpacity>
                         <Item floatingLabel last style={isNameChanged && !isNameValid ? ErrorStyles.errorBorder : {}}>
                             <Label>Nama Grup</Label>
                             <Input
@@ -203,11 +243,11 @@ class NewGroupScreen extends Component {
                                 <Text style={ErrorStyles.errorMessage}>{ 'Deskripsi minimal mengandung 30 karakter' }</Text>
                             </Item>
                         }
-                        { isNameValid && isCategoryValid && isLocationValid && isDescriptionValid &&
+                        { groupPhoto && isNameValid && isCategoryValid && isLocationValid && isDescriptionValid &&
                             <Button block info style={{ marginTop: 5 }} onPress={this.handleSubmit} >
                                 <Text> Submit </Text>
                             </Button> }
-                        { (!isNameValid || !isCategoryValid || !isLocationValid || !isDescriptionValid) &&
+                        { (!groupPhoto || !isNameValid || !isCategoryValid || !isLocationValid || !isDescriptionValid) &&
                             <Button block disabled style={{ marginTop: 5 }}>
                                 <Text> Submit </Text>
                             </Button> }
@@ -218,6 +258,13 @@ class NewGroupScreen extends Component {
     }
 }
 
-const styles = StyleSheet.create({ });
+const styles = StyleSheet.create({
+    photoBox: {
+        width: '20%',
+        marginLeft: '40%',
+        marginRight: '40%',
+        marginTop: 30
+    }
+});
 
 export default NewGroupScreen;

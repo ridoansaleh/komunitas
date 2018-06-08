@@ -45,12 +45,12 @@ class SignUpScreen extends Component {
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword1 = this.handleChangePassword1.bind(this);
         this.handleChangePassword2 = this.handleChangePassword2.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
         this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
         this.uploadImageAsync = this.uploadImageAsync.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleRouteChanges () {
