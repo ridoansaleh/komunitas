@@ -20,7 +20,8 @@ class HomeScreen extends Component {
       events: null,
       eventsFetched: false,
       groupsCategory: null,
-      totalNotif: 0
+      totalNotif: 0,
+      group: ''
     }
 
     this.showSearch = this.showSearch.bind(this);
@@ -30,6 +31,8 @@ class HomeScreen extends Component {
     this.fetchTopEvents = this.fetchTopEvents.bind(this);
     this.fetchCategories = this.fetchCategories.bind(this);
     this.fetchNotifications = this.fetchNotifications.bind(this);
+    this.handleGroupChange = this.handleGroupChange.bind(this);
+    this.searchGroup = this.searchGroup.bind(this);
   }
 
   async componentWillMount() {
@@ -162,6 +165,17 @@ class HomeScreen extends Component {
     this.setState({ searchStatus: !this.state.searchStatus });
   }
 
+  handleGroupChange (value) {
+    this.setState({ group: value });
+  }
+
+  searchGroup () {
+    let { group } = this.state;
+    if (group) {
+      this.props.navigation.navigate('SearchResult', { search: group });
+    }
+  }
+
   handleRouteChange (url, param) {
     let { navigate } = this.props.navigation;
     if (!this.state.isUserLogin) {
@@ -235,7 +249,7 @@ class HomeScreen extends Component {
   }
 
   render() {
-    let { groupsCategory, loading, searchStatus, events, eventsFetched, activeMenu, totalNotif } = this.state;
+    let { groupsCategory, loading, searchStatus, events, eventsFetched, activeMenu, totalNotif, group } = this.state;
     if (loading) {
       return <Expo.AppLoading />;
     }
@@ -245,8 +259,11 @@ class HomeScreen extends Component {
           (<Header style={{ marginTop: 25 }} searchBar rounded>
             <Item regular>
               <Icon name='md-arrow-back' onPress={this.showSearch} />
-              <Input placeholder='Contoh: Jakarta Memancing'/>
-              <Icon name='search' />
+              <Input
+                value={group}
+                onChangeText={this.handleGroupChange}
+                placeholder='Contoh: Jakarta Memancing'/>
+              <Icon name='search' onPress={() => this.searchGroup()} />
             </Item>
           </Header>)
         }

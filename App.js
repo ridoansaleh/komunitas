@@ -15,6 +15,7 @@ import CategoryScreen from './components/Category';
 import GroupScreen from './components/Group';
 import NewEventScreen from './components/NewEvent';
 import EventScreen from './components/Event';
+import SearchResultScreen from './components/SearchResult';
 
 let renderTitle = (title) => {
   return <Text style={{ color: 'white' }}>{title}</Text>
@@ -44,6 +45,15 @@ const AppNavigator = StackNavigator(
       screen: HomeScreen,
       navigationOptions: ({ navigation }) => ({
         header: null
+      })
+    },
+    SearchResult: {
+      screen: SearchResultScreen,
+      navigationOptions: ({ navigation }) => ({
+        headerTitle: renderTitle('Hasil Pencarian'),
+        headerStyle: {
+          backgroundColor: '#316ED0'
+        }
       })
     },
     WhatsNew: {
