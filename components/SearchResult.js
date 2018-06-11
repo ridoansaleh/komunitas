@@ -13,8 +13,6 @@ class SearchResultScreen extends Component {
             search: this.props.navigation.state.params.search,
             isFetching: true
         };
-
-        this.handleRouteChange = this.handleRouteChange.bind();
     }
 
     componentDidMount () {
@@ -87,22 +85,21 @@ class SearchResultScreen extends Component {
         });
     }
 
-    handleRouteChange () {
-        console.log('handle route change');
-    }
-
     render () {
-        let { result, isFetching } = this.state;
+        let { search, result, isFetching } = this.state;
         return (
             <Container>
                 <Content padder={true}>
                     { !isFetching && <List>
                         <ListItem first>
-                            <Text>Hasil Pencarian Grup</Text>
+                            <Text>Hasil Pencarian untuk "{search}"</Text>
                         </ListItem>
                         { result && result.map((g,i) => {
                             return (
-                                <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', g.key)}>
+                                <ListItem
+                                  key={i}
+                                  avatar
+                                  onPress={() => this.props.navigation.navigate('Group', { group_key: g.key })}>
                                     <Left>
                                         <Thumbnail square source={{ uri: g.image }} />
                                     </Left>

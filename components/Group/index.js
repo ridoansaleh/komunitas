@@ -6,7 +6,6 @@ import Members from './Members';
 import WaitingList from './WaitingList';
 import Footer from '../partials/Footer';
 import { auth, db } from '../../firebase/config';
-import groupImage from '../../data/images/new/fishing.jpg';
 
 class GroupScreen extends Component {
 
