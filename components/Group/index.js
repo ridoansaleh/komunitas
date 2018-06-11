@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, Alert, AsyncStorage } from 'react-native';
-import { Container, Content, Text, H3, Tabs, Tab, Button, Icon, Spinner } from 'native-base';
+import { StyleSheet, Image, Alert, AsyncStorage } from 'react-native';
+import { Container, Content, View, Text, H3, Tabs, Tab, Button, Icon, Spinner } from 'native-base';
 import Events from './Events';
 import Members from './Members';
 import WaitingList from './WaitingList';
@@ -19,6 +19,7 @@ class GroupScreen extends Component {
             isAdmin: false,
             isMember: false,
             isUserWaiting: false,
+            isFetching: true,
             group: null,
             groupKey: this.props.navigation.state.params.group_key,
             totalNotif: 0
@@ -49,7 +50,10 @@ class GroupScreen extends Component {
             } else {
                 groupRef.on('value', data => {
                     let groupData = data.val();
-                    this.setState({ group: groupData });
+                    this.setState({
+                        group: groupData,
+                        isFetching: false
+                    });
                 });
             }
         });
@@ -66,6 +70,7 @@ class GroupScreen extends Component {
                     userId: userId,
                     isAdmin: true,
                     isMember: true,
+                    isFetching: false,
                     group: groupData,
                     totalNotif: notif
                 });
@@ -93,12 +98,13 @@ class GroupScreen extends Component {
                             isUserLogin: true,
                             userId: userId,
                             isMember: true,
+                            isFetching: false,
                             group: groupData,
                             totalNotif: notif
                         });
                         break;
                     }
-                    if ((i === (memberKeys.length-1)) && !this.state.isMember ) {
+                    if ((i === (memberKeys.length-1)) && !this.state.isMember) {
                         this.checkIsUserWaiting(userId, groupData, groupKey, notif);
                     }
                 }
@@ -126,6 +132,7 @@ class GroupScreen extends Component {
                             isUserLogin: true,
                             userId: userId,
                             isUserWaiting: true,
+                            isFetching: false,
                             group: groupData,
                             totalNotif: notif
                         });
@@ -134,6 +141,7 @@ class GroupScreen extends Component {
                     if ((i == (waitingListKeys.length-1)) && !this.state.isUserWaiting) {
                         this.setState({
                             isUserLogin: true,
+                            isFetching: false,
                             userId: userId,
                             group: groupData,
                             totalNotif: notif
@@ -143,6 +151,7 @@ class GroupScreen extends Component {
             } else {
                 this.setState({
                     isUserLogin: true,
+                    isFetching: false,
                     userId: userId,
                     group: groupData,
                     totalNotif: notif
@@ -218,32 +227,32 @@ class GroupScreen extends Component {
     }
 
     render () {
-        let { activeMenu, group, groupKey, isAdmin, isMember, isUserWaiting, totalNotif } = this.state;
+        let { activeMenu, group, groupKey, isAdmin, isMember, isUserWaiting, isFetching, totalNotif } = this.state;
         return (
             <Container>
-                { group &&
+                { (!isFetching && group) &&
                     <Content>
                         <View>
                             <Image style={styles.groupImage} source={{ uri: group.image }} />
                             { isAdmin &&
                                 <Button
-                                  danger small style={styles.addNewEvent}
-                                  onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
+                                danger small style={styles.addNewEvent}
+                                onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
                                     <Icon name='add'/>
                                 </Button> }
                             { (!isAdmin && isMember) &&
                                 <Button
-                                  small
-                                  warning
-                                  onPress={() => this.handleExitGroup()}
-                                  style={styles.exitGroup}>
+                                small
+                                warning
+                                onPress={() => this.handleExitGroup()}
+                                style={styles.exitGroup}>
                                     <Text>{' Keluar '}</Text>
                                 </Button> }
                             { (!isAdmin && !isMember && !isUserWaiting) &&
                                 <Button
-                                  small
-                                  onPress={() => this.handleRequestJoinGroup()}
-                                  style={styles.joinGroup}>
+                                small
+                                onPress={() => this.handleRequestJoinGroup()}
+                                style={styles.joinGroup}>
                                     <Text>{' Bergabung '}</Text>
                                 </Button> }
                             { isUserWaiting &&
@@ -272,14 +281,24 @@ class GroupScreen extends Component {
                             </Tab> }
                         </Tabs>
                     </Content> }
-                { !group && <Spinner color='green' size='large' /> }
-                <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif} />
+                { isFetching &&
+                    <View style={styles.container}>
+                        <Spinner color='green' size='large'/> 
+                    </View>
+                }
+                { !isFetching && <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif} /> }
             </Container>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF'
+    },
     groupImage: {
         height: 200,
         width: '100%'
