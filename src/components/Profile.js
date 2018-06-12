@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content, ActionSheet, Button, List, ListItem,
          Left, Body, Thumbnail, Text, H3, View, Spinner } from 'native-base';
-import { Col, Grid } from "react-native-easy-grid";
+import { Col, Grid } from 'react-native-easy-grid';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 
@@ -149,14 +149,14 @@ class ProfileScreen extends Component {
             <Container>
                 <Content>
                     { (!isFetching && user) &&
-                        <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
-                            <Col style={{width: '35%', alignContent: 'center'}}>
+                        <Grid style={styles.profileBox}>
+                            <Col size={1} style={styles.profileLeft}>
                                 <Thumbnail large source={{ uri: user.photo }}/>
                             </Col>
-                            <Col style={{width: '65%'}}>
+                            <Col size={2}>
                                 <H3>{user.name}</H3>
                                 <Text>{user.city}</Text>
-                                <Button  bordered small style={{ marginTop: 10 }} onPress={this.showSettings}>
+                                <Button bordered small style={styles.settingButton} onPress={this.showSettings}>
                                     <Text>{'Settings'}</Text>
                                 </Button> 
                             </Col>
@@ -195,6 +195,20 @@ class ProfileScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+    profileBox: {
+        marginTop: 0,
+        paddingTop: 30,
+        paddingRight: 15,
+        paddingBottom: 30,
+        paddingLeft: 15,
+        backgroundColor: '#E3E3E3'
+    },
+    profileLeft: {
+        alignContent: 'center'
+    },
+    settingButton: {
+        marginTop: 10
+    },
     groupsEmpty: {
         margin: 10,
         padding: 15,
