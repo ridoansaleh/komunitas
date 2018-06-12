@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Container, Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'native-base';
+import { Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'native-base';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { ErrorStyles } from '../css/error';
-import { db } from '../firebase/config';
-import { st } from '../firebase/config';
+import { db, st } from '../firebase/config';
 import defaultPhoto from '../data/icon/camera.png';
 
 const INITIAL_STATE = {
@@ -129,7 +129,7 @@ class EditProfileScreen extends Component {
     render () {
         let { photo, name, isNameValid, isNameChanged, city, isCityValid, isCityChanged } = this.state;
         return (
-            <Container>
+            <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true} style={styles.content}>
                     <TouchableOpacity style={styles.photoUploadBox} onPress={this.choosePhoto}>
                         { !photo && <Thumbnail large source={defaultPhoto} /> }
@@ -172,7 +172,7 @@ class EditProfileScreen extends Component {
                             </Button> }
                     </Form>
                 </Content>
-            </Container>
+            </KeyboardAwareScrollView>
         );
     }
 }

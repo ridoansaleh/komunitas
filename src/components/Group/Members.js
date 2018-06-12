@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { Content, Text, List, ListItem, Left, Body, Right, Thumbnail } from 'native-base';
-import { auth, db } from '../../firebase/config';
+import { StyleSheet, View } from 'react-native';
+import { Text, List, ListItem, Left, Body, Thumbnail } from 'native-base';
+import { db } from '../../firebase/config';
 
 class MemberScreen extends Component {
 
@@ -48,7 +48,10 @@ class MemberScreen extends Component {
                 <List>
                     { members && members.map((m,i) => {
                         return (
-                            <ListItem key={i} avatar>
+                            <ListItem
+                              key={i}
+                              avatar
+                              style={styles.list}>
                                 <Left>
                                     <Thumbnail square source={{ uri: m.image }} />
                                 </Left>
@@ -70,5 +73,11 @@ class MemberScreen extends Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    list: {
+        marginBottom: 5
+    }
+});
 
 export default MemberScreen;
