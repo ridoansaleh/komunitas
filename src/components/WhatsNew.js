@@ -5,7 +5,7 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 class WhatsNewScreen extends Component {
 
@@ -141,7 +141,7 @@ class WhatsNewScreen extends Component {
   }
 
   render() {
-    let { isUserLogin, groups, isGroupFetched, isNearGroups, isAllGroups, totalNotif } = this.state;
+    let { groups, isGroupFetched, isNearGroups, isAllGroups, totalNotif } = this.state;
     return (
       <Container>
         <Content padder={true}>

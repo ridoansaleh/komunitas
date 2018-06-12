@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content, ActionSheet, Button, List, ListItem,
-         Left, Body, Thumbnail, Text, H3, View } from 'native-base';
+         Left, Body, Thumbnail, Text, H3, View, Spinner } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
@@ -19,6 +19,7 @@ class ProfileScreen extends Component {
     
         this.state = {
           isUserLogin: false,
+          isFetching: true,
           activeMenu: 'Profile',
           userId: null,
           user: null,
@@ -78,14 +79,16 @@ class ProfileScreen extends Component {
                     if ((i === (keys.length-1)) && result.length) {
                         this.setState({
                             isUserLogin: true,
+                            isFetching: false,
                             userId: userId,
                             user: userData,
                             userGroups: result,
                             totalNotif: notif
                         });
-                    } else if ((i === (keys.length-1)) && (result.length === 0)) {
+                    } else if ((i === (keys.length-1)) && !result.length) {
                         this.setState({
                             isUserLogin: true,
+                            isFetching: false,
                             userId: userId,
                             user: userData,
                             userGroups: null,
@@ -96,6 +99,7 @@ class ProfileScreen extends Component {
             } else {
                 this.setState({
                     isUserLogin: true,
+                    isFetching: false,
                     userId: userId,
                     user: userData,
                     userGroups: null,
@@ -140,45 +144,49 @@ class ProfileScreen extends Component {
     }
 
     render () {
-        let { user, userGroups, totalNotif } = this.state;
+        let { user, userGroups, totalNotif, isFetching } = this.state;
         return (
             <Container>
                 <Content>
-                    { user && <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
-                        <Col style={{width: '35%', alignContent: 'center'}}>
-                            <Thumbnail large source={{ uri: user.photo }}/>
-                        </Col>
-                        <Col style={{width: '65%'}}>
-                            <H3>{user.name}</H3>
-                            <Text>{user.city}</Text>
-                            <Button  bordered small style={{ marginTop: 10 }} onPress={this.showSettings}>
-                                <Text>{'Settings'}</Text>
-                            </Button> 
-                        </Col>
-                    </Grid> }
-                    <List>
-                        <ListItem first>
-                            <Text>Member</Text>
-                        </ListItem>
-                        { userGroups && userGroups.map((g,i) => {
-                            return (
-                                <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', g.key)}>
-                                    <Left>
-                                        <Thumbnail square source={{ uri: g.image }} />
-                                    </Left>
-                                    <Body>
-                                        <Text>{g.name}</Text>
-                                        <Text note>{g.total_members} member</Text>
-                                    </Body>
-                                </ListItem>
-                            )
-                        })}
-                        { !userGroups &&
-                            <View style={styles.groupsEmpty}>
-                                <Text>Hi, kamu belum bergabung dengan grup apapun</Text>
-                            </View>
-                        }
-                    </List>
+                    { (!isFetching && user) &&
+                        <Grid style={{ marginTop: 0, padding: 30, backgroundColor: '#E3E3E3' }}>
+                            <Col style={{width: '35%', alignContent: 'center'}}>
+                                <Thumbnail large source={{ uri: user.photo }}/>
+                            </Col>
+                            <Col style={{width: '65%'}}>
+                                <H3>{user.name}</H3>
+                                <Text>{user.city}</Text>
+                                <Button  bordered small style={{ marginTop: 10 }} onPress={this.showSettings}>
+                                    <Text>{'Settings'}</Text>
+                                </Button> 
+                            </Col>
+                        </Grid>
+                    }
+                    { !isFetching &&
+                        <List>
+                            <ListItem first>
+                                <Text>Member</Text>
+                            </ListItem>
+                            { userGroups && userGroups.map((g,i) => {
+                                return (
+                                    <ListItem key={i} avatar onPress={() => this.handleRouteChange('Group', g.key)}>
+                                        <Left>
+                                            <Thumbnail square source={{ uri: g.image }} />
+                                        </Left>
+                                        <Body>
+                                            <Text>{g.name}</Text>
+                                            <Text note>{g.total_members} member</Text>
+                                        </Body>
+                                    </ListItem>
+                                )
+                            })}
+                            { !userGroups &&
+                                <View style={styles.groupsEmpty}>
+                                    <Text>Hi, kamu belum bergabung dengan grup apapun</Text>
+                                </View>
+                            }
+                        </List> }
+                    { isFetching && <Spinner color='green' size='large' /> }
                 </Content>
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={this.state.activeMenu} notif={totalNotif} />
             </Container>

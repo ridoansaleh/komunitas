@@ -1,25 +1,23 @@
 import React, { Component } from 'react';
 import { Root, Text } from 'native-base';
 import { StackNavigator } from 'react-navigation';
-import SignUpScreen from './components/SignUp';
-import LoginScreen from './components/Login';
-import HomeScreen from './components/Home';
-import WhatsNewScreen from './components/WhatsNew';
-import NotificationScreen from './components/Notification';
-import ProfileScreen from './components/Profile';
-import EditProfileScreen from './components/EditProfile';
-import ChangePasswordScreen from './components/ChangePassword';
-import ResetPasswordScreen from './components/ResetPassword';
-import NewGroupScreen from './components/NewGroup';
-import CategoryScreen from './components/Category';
-import GroupScreen from './components/Group';
-import NewEventScreen from './components/NewEvent';
-import EventScreen from './components/Event';
-import SearchResultScreen from './components/SearchResult';
+import SignUpScreen from './src/components/SignUp';
+import LoginScreen from './src/components/Login';
+import HomeScreen from './src/components/Home';
+import WhatsNewScreen from './src/components/WhatsNew';
+import NotificationScreen from './src/components/Notification';
+import ProfileScreen from './src/components/Profile';
+import EditProfileScreen from './src/components/EditProfile';
+import ChangePasswordScreen from './src/components/ChangePassword';
+import ResetPasswordScreen from './src/components/ResetPassword';
+import NewGroupScreen from './src/components/NewGroup';
+import CategoryScreen from './src/components/Category';
+import GroupScreen from './src/components/Group';
+import NewEventScreen from './src/components/NewEvent';
+import EventScreen from './src/components/Event';
+import SearchResultScreen from './src/components/SearchResult';
 
-let renderTitle = (title) => {
-  return <Text style={{ color: 'white' }}>{title}</Text>
-}
+let renderTitle = title => <Text style={{ color: 'white' }}>{title}</Text>
 
 const AppNavigator = StackNavigator(
   {

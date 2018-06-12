@@ -236,23 +236,23 @@ class GroupScreen extends Component {
                             <Image style={styles.groupImage} source={{ uri: group.image }} />
                             { isAdmin &&
                                 <Button
-                                danger small style={styles.addNewEvent}
-                                onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
+                                  danger small style={styles.addNewEvent}
+                                  onPress={() => this.handleRouteChange('NewEvent', { group_key: groupKey })} >
                                     <Icon name='add'/>
                                 </Button> }
                             { (!isAdmin && isMember) &&
                                 <Button
-                                small
-                                warning
-                                onPress={() => this.handleExitGroup()}
-                                style={styles.exitGroup}>
+                                  small
+                                  warning
+                                  onPress={() => this.handleExitGroup()}
+                                  style={styles.exitGroup}>
                                     <Text>{' Keluar '}</Text>
                                 </Button> }
                             { (!isAdmin && !isMember && !isUserWaiting) &&
                                 <Button
-                                small
-                                onPress={() => this.handleRequestJoinGroup()}
-                                style={styles.joinGroup}>
+                                  small
+                                  onPress={() => this.handleRequestJoinGroup()}
+                                  style={styles.joinGroup}>
                                     <Text>{' Bergabung '}</Text>
                                 </Button> }
                             { isUserWaiting &&

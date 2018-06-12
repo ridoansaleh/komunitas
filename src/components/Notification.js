@@ -106,7 +106,7 @@ class NotificationScreen extends Component {
     }
 
     render () {
-        let { activeMenu, isUserLogin, isNotificationFetched, notifications, totalNotif } = this.state;
+        let { activeMenu, isNotificationFetched, notifications, totalNotif } = this.state;
         return (
             <Container>
                 <Content>

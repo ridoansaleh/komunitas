@@ -6,7 +6,7 @@ import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { ErrorStyles } from '../css/error';
 import defaultPhoto from '../data/images/group.png';
-import { auth, db, st } from '../firebase/config';
+import { auth, st } from '../firebase/config';
 import { getFullDate } from '../utils';
 import { db as database } from '../firebase';
 
