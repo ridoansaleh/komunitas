@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List, 
          ListItem, Item, Input, DeckSwiper, Card, CardItem, Thumbnail, View, Spinner } from 'native-base';
 import Expo from "expo";
@@ -197,11 +197,11 @@ class HomeScreen extends Component {
 
   renderTopEvents (events) {
     return (
-      <View style={{height: 435}}>
+      <View style={styles.cardWrapper}>
         <DeckSwiper
           dataSource={events}
           renderItem={item =>
-            <Card style={{ elevation: 3 }}>
+            <Card style={styles.cardBlock}>
               <CardItem>
                 <Left>
                   <Thumbnail source={{ uri: item.group_image}} />
@@ -212,7 +212,7 @@ class HomeScreen extends Component {
                 </Left>
               </CardItem>
               <CardItem cardBody>
-                <Image style={{ height: 300, flex: 1 }} source={{ uri: item.image }} />
+                <Image style={styles.cardImage} source={{ uri: item.image }} />
               </CardItem>
               <CardItem>
                 <TouchableOpacity onPress={() => this.handleRouteChange('Event', item.key)}>
@@ -228,7 +228,7 @@ class HomeScreen extends Component {
 
   renderEmptyEvent () {
     return (
-      <View style={{height: 435}}>
+      <View style={styles.cardWrapper}>
         <Card>
           <CardItem>
             <Left>
@@ -238,7 +238,7 @@ class HomeScreen extends Component {
             </Left>
           </CardItem>
           <CardItem cardBody>
-            <Image style={{ height: 300, flex: 1 }} source={emptyEvent} />
+            <Image style={styles.cardImage} source={emptyEvent} />
           </CardItem>
           <CardItem>
             <Text>{'Kamu dapat membuat event, caranya gampang. Terlebih dahulu kamu harus punya akun dan membuat Grup baru. Buruan !'}</Text>
@@ -256,7 +256,7 @@ class HomeScreen extends Component {
     return (
       <Container>
         { searchStatus &&
-          (<Header style={{ marginTop: 25 }} searchBar rounded>
+          (<Header style={styles.header} searchBar rounded>
             <Item regular>
               <Icon name='md-arrow-back' onPress={this.showSearch} />
               <Input
@@ -268,15 +268,15 @@ class HomeScreen extends Component {
           </Header>)
         }
         { !searchStatus &&
-          (<Header style={{ marginTop: 25}}>
+          (<Header style={styles.header}>
             <Left>
-              <Icon name='add' style={{color: '#FFFFFF'}} onPress={() => this.handleRouteChange('NewGroup')} />
+              <Icon name='add' style={styles.white} onPress={() => this.handleRouteChange('NewGroup')} />
             </Left>
-            <Body style={{ alignItems: 'center' }}>
+            <Body style={styles.headerTitle}>
               <Title>Komunitas</Title>
             </Body>
             <Right>
-              <Icon name='search' style={{color: '#FFFFFF'}} onPress={this.showSearch} />
+              <Icon name='search' style={styles.white} onPress={this.showSearch} />
             </Right>
           </Header>)
         }
@@ -310,5 +310,27 @@ class HomeScreen extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    marginTop: 25
+  },
+  headerTitle: {
+    alignItems: 'center'
+  },
+  cardWrapper: {
+    height: 435
+  },
+  cardBlock: {
+    elevation: 3
+  },
+  cardImage: {
+    height: 300,
+    flex: 1
+  },
+  white: {
+    color: '#FFFFFF'
+  }
+});
 
 export default HomeScreen;
