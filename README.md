@@ -31,7 +31,7 @@ Here are a few screenshots of Komunitas app :
 
 ## Home 
 
-<img src='./docs/images/Home.jpg'/> <img src='HomeCategory.jpg'/>
+<img src='./docs/images/Home.jpg'/> <img src='./docs/images/HomeCategory.jpg'/>
 
 ## WhatsNew 
 
@@ -55,7 +55,7 @@ Here are a few screenshots of Komunitas app :
 
 ## Search
 
-<img src='./docs/images/Search.jpg'/> <img src='SearchResult.jpg'/>
+<img src='./docs/images/Search.jpg'/> <img src='./docs/images/SearchResult.jpg'/>
 
 ## New Group
 
