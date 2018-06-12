@@ -147,7 +147,7 @@ const AppNavigator = StackNavigator(
     Group: {
       screen: GroupScreen,
       navigationOptions: ({ navigation }) => ({
-        headerTitle: renderTitle('Group'),
+        headerTitle: renderTitle('Grup'),
         headerStyle: {
           backgroundColor: '#316ED0'
         }

@@ -260,9 +260,9 @@ class NewGroupScreen extends Component {
 
 const styles = StyleSheet.create({
     photoBox: {
-        width: '20%',
-        marginLeft: '40%',
-        marginRight: '40%',
+        width: '25%',
+        marginLeft: '37.5%',
+        marginRight: '37.5%',
         marginTop: 30
     }
 });

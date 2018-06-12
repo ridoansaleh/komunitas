@@ -210,7 +210,7 @@ class EventScreen extends Component {
                                 </TouchableOpacity>
                             </Col>
                         </Grid> }
-                    <List>
+                    <List style={{ marginBottom: 10 }}>
                         <ListItem avatar>
                             <Left>
                                 <Icon name='ios-clock-outline' />
