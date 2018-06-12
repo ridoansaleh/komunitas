@@ -4,7 +4,6 @@ import { Container, Content, View, Text, H3, Tabs, Tab, Button, Icon, Spinner } 
 import Events from './Events';
 import Members from './Members';
 import WaitingList from './WaitingList';
-import Footer from '../partials/Footer';
 import { auth, db } from '../../firebase/config';
 
 class GroupScreen extends Component {
@@ -21,8 +20,7 @@ class GroupScreen extends Component {
             isUserWaiting: false,
             isFetching: true,
             group: null,
-            groupKey: this.props.navigation.state.params.group_key,
-            totalNotif: 0
+            groupKey: this.props.navigation.state.params.group_key
         }
 
         this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -42,10 +40,7 @@ class GroupScreen extends Component {
             if (user) {
                 groupRef.on('value', data => {
                     let groupData = data.val();
-                    AsyncStorage.getItem('_totalNotif').then(notif => {
-                        let _notif = parseInt(notif) || 0;
-                        this.checkIsUserAdmin(groupData, user.uid, groupKey, _notif);
-                    });
+                    this.checkIsUserAdmin(groupData, user.uid, groupKey);
                 });
             } else {
                 groupRef.on('value', data => {
@@ -59,7 +54,7 @@ class GroupScreen extends Component {
         });
     }
 
-    checkIsUserAdmin (groupData, userId, groupKey, notif) {
+    checkIsUserAdmin (groupData, userId, groupKey) {
         let groupRef = db.ref('/groups/'+groupKey);
 
         groupRef.on('value', data => {
@@ -71,16 +66,15 @@ class GroupScreen extends Component {
                     isAdmin: true,
                     isMember: true,
                     isFetching: false,
-                    group: groupData,
-                    totalNotif: notif
+                    group: groupData
                 });
             } else {
-                this.checkIsUserMember(groupData, userId, groupKey, notif);
+                this.checkIsUserMember(groupData, userId, groupKey);
             }
         });
     }
 
-    checkIsUserMember (groupData, userId, groupKey, notif) {
+    checkIsUserMember (groupData, userId, groupKey) {
         let memberRef = db.ref('/groups/'+groupKey+'/members');
 
         memberRef.on('value', data => {
@@ -99,22 +93,21 @@ class GroupScreen extends Component {
                             userId: userId,
                             isMember: true,
                             isFetching: false,
-                            group: groupData,
-                            totalNotif: notif
+                            group: groupData
                         });
                         break;
                     }
                     if ((i === (memberKeys.length-1)) && !this.state.isMember) {
-                        this.checkIsUserWaiting(userId, groupData, groupKey, notif);
+                        this.checkIsUserWaiting(userId, groupData, groupKey);
                     }
                 }
             } else {
-                this.checkIsUserWaiting(userId, groupData, groupKey, notif);
+                this.checkIsUserWaiting(userId, groupData, groupKey);
             }
         });
     }
 
-    checkIsUserWaiting (userId, groupData, groupKey, notif) {
+    checkIsUserWaiting (userId, groupData, groupKey) {
         let waitingRef = db.ref('/groups/'+groupKey+'/waiting_list/');
 
         waitingRef.on('value', data => {
@@ -133,8 +126,7 @@ class GroupScreen extends Component {
                             userId: userId,
                             isUserWaiting: true,
                             isFetching: false,
-                            group: groupData,
-                            totalNotif: notif
+                            group: groupData
                         });
                         break;
                     }
@@ -143,8 +135,7 @@ class GroupScreen extends Component {
                             isUserLogin: true,
                             isFetching: false,
                             userId: userId,
-                            group: groupData,
-                            totalNotif: notif
+                            group: groupData
                         });
                     }
                 }
@@ -153,8 +144,7 @@ class GroupScreen extends Component {
                     isUserLogin: true,
                     isFetching: false,
                     userId: userId,
-                    group: groupData,
-                    totalNotif: notif
+                    group: groupData
                 });
             }
         });
@@ -227,7 +217,7 @@ class GroupScreen extends Component {
     }
 
     render () {
-        let { activeMenu, group, groupKey, isAdmin, isMember, isUserWaiting, isFetching, totalNotif } = this.state;
+        let { group, groupKey, isAdmin, isMember, isUserWaiting, isFetching } = this.state;
         return (
             <Container>
                 { (!isFetching && group) &&
@@ -286,7 +276,6 @@ class GroupScreen extends Component {
                         <Spinner color='green' size='large'/> 
                     </View>
                 }
-                { !isFetching && <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif} /> }
             </Container>
         );
     }

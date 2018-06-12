@@ -35,7 +35,7 @@ class HomeScreen extends Component {
     this.searchGroup = this.searchGroup.bind(this);
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     await Expo.Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
