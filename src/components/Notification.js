@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AsyncStorage } from 'react-native';
-import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
+import { Container, Content, List, ListItem, Left, Body, Right, Thumbnail, Text, Spinner } from 'native-base';
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
 
@@ -13,7 +13,7 @@ class NotificationScreen extends Component {
           isUserLogin: false,
           activeMenu: 'Notification',
           notifications: null,
-          isNotificationFetched: false,
+          isFetching: true,
           totalNotif: 0
         }
         
@@ -71,7 +71,7 @@ class NotificationScreen extends Component {
                             this.setState({
                                 isUserLogin: loginStatus,
                                 notifications: null,
-                                isNotificationFetched: true,
+                                isFetching: false,
                                 totalNotif: 0
                             });
                         }
@@ -81,7 +81,7 @@ class NotificationScreen extends Component {
                         this.setState({
                             isUserLogin: loginStatus,
                             notifications: result,
-                            isNotificationFetched: true,
+                            isFetching: false,
                             totalNotif: 0
                         });
                     }
@@ -90,7 +90,7 @@ class NotificationScreen extends Component {
                 this.setState({
                     isUserLogin: loginStatus,
                     notifications: null,
-                    isNotificationFetched: true,
+                    isFetching: false,
                     totalNotif: 0
                 });
             }
@@ -106,38 +106,38 @@ class NotificationScreen extends Component {
     }
 
     render () {
-        let { activeMenu, isNotificationFetched, notifications, totalNotif } = this.state;
+        let { activeMenu, isFetching, notifications, totalNotif } = this.state;
         return (
             <Container>
                 <Content>
-                    <List>
-                        <ListItem itemHeader first>
-                            <Text>Notifikasi</Text>
-                        </ListItem>
-                        { notifications && notifications.map((n,i) => {
-                            return (
-                                <ListItem key={i} avatar>
-                                    <Left>
-                                        <Thumbnail source={{ uri: n.groupImage }}/>
-                                    </Left>
+                    { !isFetching &&
+                        <List>
+                            { notifications && notifications.map((n,i) => {
+                                return (
+                                    <ListItem key={i} avatar>
+                                        <Left>
+                                            <Thumbnail source={{ uri: n.groupImage }}/>
+                                        </Left>
+                                        <Body>
+                                            <Text>{n.groupName}</Text>
+                                            <Text note>{n.text}</Text>
+                                        </Body>
+                                        <Right>
+                                            <Text note>{n.time}</Text>
+                                        </Right>
+                                    </ListItem>
+                                )
+                            })}
+                            { !notifications &&
+                                <ListItem>
                                     <Body>
-                                        <Text>{n.groupName}</Text>
-                                        <Text note>{n.text}</Text>
+                                        <Text>{' Tidak ada notifikasi '}</Text>
                                     </Body>
-                                    <Right>
-                                        <Text note>{n.time}</Text>
-                                    </Right>
                                 </ListItem>
-                            )
-                        })}
-                        { (isNotificationFetched && !notifications) &&
-                            <ListItem>
-                                <Body>
-                                    <Text>{' Tidak ada Notifikasi '}</Text>
-                                </Body>
-                            </ListItem>
-                        }
-                    </List>
+                            }
+                        </List>
+                    }
+                    { isFetching && <Spinner color='green' size='large' /> }
                 </Content>
                 <Footer onMenuChange={this.handleRouteChange} activeMenu={activeMenu} notif={totalNotif} />
             </Container>
