@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Button, Text, Content, Form, Item,
-         Input, Label, Toast, ListItem, CheckBox, Body,
-         Spinner, Thumbnail } from 'native-base';
+         Input, Label, Toast, Spinner, Thumbnail, Icon } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
@@ -13,23 +12,24 @@ import { auth, db } from '../firebase';
 import { st } from '../firebase/config';
 
 const INITIAL_STATE = {
-    name: '', 
-    email: '', 
-    city: '',
-    password1: '', 
-    password2: '',
+    userPhoto: null,
+    name: '',
+    isNameChanged: false,
     isNameValid: false,
-    isEmailValid: false,
+    email: '', 
     isEmailChanged: false,
-    isCityValid: false,
+    isEmailValid: false,
+    city: '',
     isCityChanged: false,
-    isPassword1Valid: false,
+    isCityValid: false,
+    password1: '',
     isPassword1Changed: false,
+    isPassword1Valid: false,
+    password2: '',
     isPassword2Valid: false,
     isPassword2Changed: false,
-    isPasswordChecked: false,
-    isSpinnerLoading: false,
-    userPhoto: null
+    isPasswordShow: false,
+    isSpinnerLoading: false
 }
 
 class SignUpScreen extends Component {
@@ -46,7 +46,7 @@ class SignUpScreen extends Component {
         this.handleChangePassword1 = this.handleChangePassword1.bind(this);
         this.handleChangePassword2 = this.handleChangePassword2.bind(this);
         this.showToastMessage = this.showToastMessage.bind(this);
-        this.handlePasswordCheck = this.handlePasswordCheck.bind(this);
+        this.handleShowPassword = this.handleShowPassword.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
         this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
         this.uploadImageAsync = this.uploadImageAsync.bind(this);
@@ -58,7 +58,11 @@ class SignUpScreen extends Component {
     }
 
     handleChangeName (value) {
-        this.setState({ name: value, isNameValid: true });
+        if (/^[a-zA-Z\ ]+$/.test(value)) {
+            this.setState({ name: value, isNameValid: true, isNameChanged: true });
+        } else {
+            this.setState({ name: value, isNameValid: false, isNameChanged: true });
+        }
     }
 
     handleChangeEmail (value) {
@@ -157,16 +161,15 @@ class SignUpScreen extends Component {
         })
     }
 
-    handlePasswordCheck () {
-        this.setState({ isPasswordChecked: !this.state.isPasswordChecked });
+    handleShowPassword () {
+        this.setState({ isPasswordShow: !this.state.isPasswordShow });
     }
 
     render() {
         let { 
-            name, email, city, password1, password2, isNameValid,
-            isEmailValid, isEmailChanged, isCityValid, isCityChanged, 
-            isPassword1Valid, isPassword1Changed, isPassword2Valid, 
-            isPassword2Changed, isPasswordChecked, isSpinnerLoading, userPhoto
+            userPhoto, name, isNameValid, isNameChanged, email, isEmailValid, isEmailChanged,
+            city, isCityValid, isCityChanged, password1, isPassword1Valid, isPassword1Changed,
+            password2, isPassword2Valid, isPassword2Changed, isPasswordShow, isSpinnerLoading
         } = this.state;
 
         return (
@@ -177,85 +180,101 @@ class SignUpScreen extends Component {
                         { userPhoto && <Thumbnail large source={{ uri: userPhoto }} /> }
                     </TouchableOpacity>
                     <Form>
-                        <Item floatingLabel last>
+                        <Item
+                          floatingLabel
+                          last
+                          error={(isNameChanged && !isNameValid) ? true : false}>
                             <Label>Nama</Label>
                             <Input
                                 value={name}
                                 onChangeText={(name) => this.handleChangeName(name)}
                             />
+                            { (isNameChanged && !isNameValid) && <Icon style={{ marginBottom: 10 }} name='close-circle' /> }
                         </Item>
-                        <Item floatingLabel last style={isEmailChanged && !isEmailValid ? ErrorStyles.errorBorder : {}}>
+                        {
+                            (!isNameValid && isNameChanged) &&
+                            <Item style={ErrorStyles.errorBox}>
+                                <Text style={ErrorStyles.errorMessage}>{ 'Nama tidak boleh angka atau karakter spesial' }</Text>
+                            </Item>
+                        }
+                        <Item
+                          floatingLabel
+                          last
+                          error={(isEmailChanged && !isEmailValid) ? true : false}>
                             <Label>Email</Label>
                             <Input
                                 value={email}
                                 onChangeText={(email) => this.handleChangeEmail(email)}
                             />
+                            { (isEmailChanged && !isEmailValid) && <Icon style={{ marginBottom: 10 }} name='close-circle' /> }
                         </Item>
                         {
-                            !isEmailValid && isEmailChanged &&
+                            (!isEmailValid && isEmailChanged) &&
                             <Item style={ErrorStyles.errorBox}>
                                 <Text style={ErrorStyles.errorMessage}>{ 'Email tidak valid' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isCityChanged && !isCityValid ? ErrorStyles.errorBorder : {}}>
-                            <Label>City</Label>
+                        <Item
+                          floatingLabel
+                          last
+                          error={(isCityChanged && !isCityValid) ? true : false}>
+                            <Label>Kota</Label>
                             <Input
                                 value={city}
                                 onChangeText={(city) => this.handleChangeCity(city)}
                             />
+                            { (isCityChanged && !isCityValid) && <Icon style={{ marginBottom: 10 }} name='close-circle' /> }
                         </Item>
                         {
-                            !isCityValid && isCityChanged &&
+                            (!isCityValid && isCityChanged) &&
                             <Item style={ErrorStyles.errorBox}>
                                 <Text style={ErrorStyles.errorMessage}>{ 'Nama kota terlalu pendek' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isPassword1Changed && !isPassword1Valid ? ErrorStyles.errorBorder : {}}>
+                        <Item
+                          floatingLabel
+                          last
+                          error={(isPassword1Changed && !isPassword1Valid) ? true : false}>
                             <Label>Kata Sandi</Label>
                             <Input
                                 value={password1}
                                 onChangeText={(password1) => this.handleChangePassword1(password1)}
-                                secureTextEntry={ isPasswordChecked ? false : true }
-                            />
+                                secureTextEntry={ isPasswordShow ? false : true } />
+                            <Icon
+                              active
+                              onPress={() => this.handleShowPassword()}
+                              name={!isPasswordShow ? 'ios-eye-off-outline' : 'ios-eye-outline'} />
                         </Item>
                         {
-                            !isPassword1Valid && isPassword1Changed &&
+                            (!isPassword1Valid && isPassword1Changed) &&
                             <Item style={ErrorStyles.errorBox}>
                                 <Text style={ErrorStyles.errorMessage}>{ 'Password minimal terdiri dari 8 karakter' }</Text>
                             </Item>
                         }
-                        <Item floatingLabel last style={isPassword2Changed && !isPassword2Valid ? ErrorStyles.errorBorder : {}}>
+                        <Item
+                          floatingLabel
+                          last
+                          error={(isPassword2Changed && !isPassword2Valid) ? true : false}>
                             <Label>Konfirmasi Kata Sandi</Label>
-                            { isPassword1Valid && 
-                                <Input
-                                    value={password2}
-                                    onChangeText={(password2) => this.handleChangePassword2(password2)}
-                                    secureTextEntry={ isPasswordChecked ? false : true }
-                                /> }
-                            { !isPassword1Valid && 
-                                <Input 
-                                    disabled
-                                    value={''}
-                                /> }
+                            <Input
+                                value={password2}
+                                onChangeText={(password2) => this.handleChangePassword2(password2)}
+                                secureTextEntry={true}
+                            />
+                            { (isPassword2Changed && !isPassword2Valid) && <Icon name='close-circle' /> }
                         </Item>
                         {
-                            !isPassword2Valid && isPassword2Changed &&
+                            (!isPassword2Valid && isPassword2Changed) &&
                             <Item style={ErrorStyles.errorBox}>
                                 <Text style={ErrorStyles.errorMessage}>{ 'Konfirmasi password harus sama dengan sebelumnya' }</Text>
                             </Item>
                         }
-                        <ListItem style={ErrorStyles.errorBox} onPress={() => this.handlePasswordCheck()}>
-                            <CheckBox checked={ isPasswordChecked ? true : false } />
-                            <Body>
-                                <Text>Lihat Password</Text>
-                            </Body>
-                        </ListItem>
-                        { userPhoto && isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid &&
+                        { (userPhoto && isNameValid && isEmailValid && isPassword1Valid && isPassword2Valid) &&
                             <Button block info style={styles.signupBtn} onPress={this.handleSubmit}>
                                 { isSpinnerLoading && <Spinner color='green' /> }
                                 { !isSpinnerLoading && <Text> Daftar </Text> }
                             </Button> }
-                        { ( !userPhoto || !isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
+                        { (!userPhoto || !isNameValid || !isEmailValid || !isPassword1Valid || !isPassword2Valid) &&
                             <Button disabled block style={styles.signupBtn}>
                                 <Text> Daftar </Text>
                             </Button> }
