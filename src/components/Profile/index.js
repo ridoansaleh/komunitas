@@ -3,8 +3,8 @@ import { StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content, ActionSheet, Button, List, ListItem,
          Left, Body, Thumbnail, Text, H3, View, Spinner } from 'native-base';
 import { Col, Grid } from 'react-native-easy-grid';
-import Footer from './partials/Footer';
-import { auth, db } from '../firebase/config';
+import Footer from '../partials/Footer';
+import { auth, db } from '../../firebase/config';
 
 const BUTTONS = [
     { text: "Edit Profil", icon: "md-cog", iconColor: "#2c8ef4" },

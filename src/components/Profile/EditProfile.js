@@ -4,9 +4,9 @@ import { Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'nati
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
-import { ErrorStyles } from '../css/error';
-import { db, st } from '../firebase/config';
-import defaultPhoto from '../images/camera.png';
+import { ErrorStyles } from '../../css/error';
+import { db, st } from '../../firebase/config';
+import defaultPhoto from '../../images/camera.png';
 
 const INITIAL_STATE = {
     photo: null,

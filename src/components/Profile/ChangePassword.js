@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Alert, AsyncStorage } from 'react-native';
-import { Container, Content, Form, Item, Label, Input, Text, Button } from 'native-base';
+import { Content, Form, Item, Label, Input, Text, Button } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { ErrorStyles } from '../css/error';
-import { auth } from '../firebase';
+import { ErrorStyles } from '../../css/error';
+import { auth } from '../../firebase';
 
 const INITIAL_STATE = {
     password: '',
