@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { ErrorStyles } from '../css/error';
-import defaultPhoto from '../data/images/group.png';
+import defaultPhoto from '../images/group.png';
 import { auth, st } from '../firebase/config';
 import { getFullDate } from '../utils';
 import { db as database } from '../firebase';

@@ -6,7 +6,7 @@ import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { ErrorStyles } from '../css/error';
 import { db, st } from '../firebase/config';
-import defaultPhoto from '../data/icon/camera.png';
+import defaultPhoto from '../images/camera.png';
 
 const INITIAL_STATE = {
     photo: null,

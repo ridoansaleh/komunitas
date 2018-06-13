@@ -8,7 +8,7 @@ import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
-import defaultPhoto from '../data/icon/camera.png';
+import defaultPhoto from '../images/camera.png';
 import { auth, db } from '../firebase';
 import { st } from '../firebase/config';
 

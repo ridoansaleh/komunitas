@@ -3,7 +3,6 @@ import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { Container, Content, Text, List, ListItem, Left, Thumbnail, Icon, Body, H1, H3 } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
 import { auth, db } from '../firebase/config';
-import defaultImage from '../data/images/new/hunting.jpg';
 
 class EventScreen extends Component {
 

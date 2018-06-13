@@ -5,7 +5,7 @@ import { Container, Header, Left, Body, Right, Title, Content, Icon, Text, List,
 import Expo from "expo";
 import Footer from './partials/Footer';
 import { auth, db } from '../firebase/config';
-import emptyEvent from '../data/images/no_image.png';
+import emptyEvent from '../images/no_image.png';
 
 class HomeScreen extends Component {
 
