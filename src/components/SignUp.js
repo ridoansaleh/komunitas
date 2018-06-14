@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Button, Text, Content, Form, Item,
+import { Button, Text, Content, Form, Item, View,
          Input, Label, Toast, Spinner, Thumbnail, Icon } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as Progress from 'react-native-progress';
 import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
-import defaultPhoto from '../images/camera.png';
+import defaultPhoto from '../images/add_photo.png';
 import { auth, db } from '../firebase';
-import { st } from '../firebase/config';
+import { st, fbs } from '../firebase/config';
 
 const INITIAL_STATE = {
     userPhoto: null,
+    uploadProgress: 0,
     name: '',
     isNameChanged: false,
     isNameValid: false,
@@ -48,7 +50,6 @@ class SignUpScreen extends Component {
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handleShowPassword = this.handleShowPassword.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
-        this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
         this.uploadImageAsync = this.uploadImageAsync.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -98,32 +99,42 @@ class SignUpScreen extends Component {
     }
 
     choosePhoto = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
           allowsEditing: false,
           aspect: [4, 3]
         });
-        this.handlePhotoPicked(result);
-    }
-
-    handlePhotoPicked = async result => {
-        try {
-            if (!result.cancelled) {
-                uploadUrl = await this.uploadImageAsync(result.uri);
-                this.setState({ userPhoto: uploadUrl });
-            }
-        } catch (e) {
-            console.log('Error while trying to upload user photo');
-        } finally {
-            console.log('Photo have been uploaded');
-        }
+        
+        !result.cancelled
+          ? this.uploadImageAsync(result.uri)
+          : 0
     }
 
     uploadImageAsync = async (uri) => {
         let response = await fetch(uri);
         let blob = await response.blob();
         let ref = st.child(uuid.v4());  
-        let snapshot = await ref.put(blob);
-        return snapshot.downloadURL;
+        let uploadTask = ref.put(blob);
+
+        uploadTask.on('state_changed', (snapshot) => {
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            this.setState({ uploadProgress: progress });
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+                case fbs.TaskState.PAUSED:
+                    console.log('Upload is paused');
+                    break;
+                case fbs.TaskState.RUNNING:
+                    console.log('Upload is running');
+                    break;
+            }
+        }, (error) => {
+            console.log(error);
+        }, () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                console.log('File available at', downloadURL);
+                this.setState({ userPhoto: downloadURL });
+            });
+        });
     }
 
     handleSubmit () {
@@ -167,7 +178,7 @@ class SignUpScreen extends Component {
 
     render() {
         let { 
-            userPhoto, name, isNameValid, isNameChanged, email, isEmailValid, isEmailChanged,
+            userPhoto, uploadProgress, name, isNameValid, isNameChanged, email, isEmailValid, isEmailChanged,
             city, isCityValid, isCityChanged, password1, isPassword1Valid, isPassword1Changed,
             password2, isPassword2Valid, isPassword2Changed, isPasswordShow, isSpinnerLoading
         } = this.state;
@@ -176,9 +187,13 @@ class SignUpScreen extends Component {
             <KeyboardAwareScrollView enableOnAndroid={true}>
                 <Content padder={true}>
                     <TouchableOpacity style={styles.photoBox} onPress={this.choosePhoto}>
-                        { !userPhoto && <Thumbnail large source={defaultPhoto} /> }
-                        { userPhoto && <Thumbnail large source={{ uri: userPhoto }} /> }
+                        {!userPhoto && <Thumbnail large source={defaultPhoto} />}
+                        {userPhoto && <Thumbnail large source={{ uri: userPhoto }} />}
                     </TouchableOpacity>
+                    <View style={(uploadProgress && uploadProgress < 100) ? styles.progressBox : styles.hide}>
+                        <Progress.Bar progress={uploadProgress} />
+                        <Text style={{ textAlign: 'center' }}>{Math.floor(uploadProgress)+' %'}</Text>
+                    </View>
                     <Form>
                         <Item
                           floatingLabel
@@ -291,8 +306,19 @@ class SignUpScreen extends Component {
 const styles = StyleSheet.create({
     photoBox: {
         width: '30%',
+        marginTop: 20,
         marginLeft: '35%',
         marginRight: '35%'
+    },
+    progressBox: {
+        display: 'flex',
+        width: '50%',
+        marginLeft: '25%',
+        marginRight: '25%',
+        marginTop: 15
+    },
+    hide: {
+        display: 'none'
     },
     signupBtn: {
         marginTop: 20
