@@ -8,7 +8,7 @@ import { ImagePicker } from 'expo';
 import uuid from 'uuid';
 import { getFullDate } from '../utils';
 import { ErrorStyles } from '../css/error';
-import defaultPhoto from '../images/add_photo.png';
+import defaultPhoto from '../images/add_image.png';
 import { auth, db } from '../firebase';
 import { st, fbs } from '../firebase/config';
 
@@ -50,7 +50,7 @@ class SignUpScreen extends Component {
         this.showToastMessage = this.showToastMessage.bind(this);
         this.handleShowPassword = this.handleShowPassword.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
-        this.uploadImageAsync = this.uploadImageAsync.bind(this);
+        this.uploadImage = this.uploadImage.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -105,18 +105,18 @@ class SignUpScreen extends Component {
         });
         
         !result.cancelled
-          ? this.uploadImageAsync(result.uri)
+          ? this.uploadImage(result.uri)
           : 0
     }
 
-    uploadImageAsync = async (uri) => {
+    uploadImage = async (uri) => {
         let response = await fetch(uri);
         let blob = await response.blob();
         let ref = st.child(uuid.v4());  
         let uploadTask = ref.put(blob);
 
         uploadTask.on('state_changed', (snapshot) => {
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             this.setState({ uploadProgress: progress });
             console.log('Upload is ' + progress + '% done');
             switch (snapshot.state) {
