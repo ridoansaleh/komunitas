@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
-import { Container, View, Header, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
+import { Container, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
 import { ErrorStyles } from '../css/error';
 import { auth as authenticate } from '../firebase';
-import { auth } from '../firebase/config';
+import { auth, db } from '../firebase/config';
 
 class LoginScreen extends Component {
 
@@ -44,11 +44,18 @@ class LoginScreen extends Component {
     handleSubmit () {
         let { email, password } = this.state;
         authenticate.doSignInWithEmailAndPassword(email, password)
-            .then(data => {
+            .then(() => {
                 auth.onAuthStateChanged(user => {
                     if (user) {
+                        let userRef = db.ref('/users/'+user.uid);
                         try {
-                            AsyncStorage.setItem('_pass', password);
+                            userRef.on('value', (data) => {
+                                let res = data.val();
+                                AsyncStorage.setItem('_name', res.name);
+                                AsyncStorage.setItem('_city', res.city);
+                                AsyncStorage.setItem('_photo', res.photo);
+                                AsyncStorage.setItem('_pass', password);
+                            });
                         } catch (error) {
                             console.log('Error while set _pass on storage');
                         }

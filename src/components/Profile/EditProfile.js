@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, AsyncStorage } from 'react-native';
 import { Content, Form, Item, Label, Input, Text, Button, Thumbnail } from 'native-base';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { ImagePicker } from 'expo';
@@ -11,11 +11,14 @@ import defaultPhoto from '../../images/camera.png';
 const INITIAL_STATE = {
     photo: null,
     name: '',
-    isNameValid: true,
+    isNameValid: false,
     isNameChanged: false,
     city: '',
-    isCityValid: true,
-    isCityChanged: false
+    isCityValid: false,
+    isCityChanged: false,
+    _name: '',
+    _city: '',
+    _photo: ''
 }
 
 class EditProfileScreen extends Component {
@@ -33,20 +36,46 @@ class EditProfileScreen extends Component {
         this.showDialogMessage = this.showDialogMessage.bind(this);
         this.choosePhoto = this.choosePhoto.bind(this);
         this.handlePhotoPicked = this.handlePhotoPicked.bind(this);
-        this.uploadImageAsync = this.uploadImageAsync.bind(this);
+        this.uploadImage = this.uploadImage.bind(this);
+        this.isInputsValid = this.isInputsValid.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount () {
+        let old_name, old_city, old_photo = '';
         let userRef = db.ref('/users/'+this.state.userId);
+
+        AsyncStorage.getItem('_name').then(data => old_name = data);
+        AsyncStorage.getItem('_city').then(data => old_city = data);
+        AsyncStorage.getItem('_photo').then(data => old_photo = data);
+
         userRef.on('value', (data) => {
             let user = data.val();
-            this.setState({
-                photo: user.photo,
-                name: user.name,
-                city: user.city
-            });
+            setTimeout(() => {
+                if (old_name && old_city && old_photo) {
+                    this.setState({
+                        name: user.name,
+                        city: user.city,
+                        photo: user.photo,
+                        _name: old_name,
+                        _city: old_city,
+                        _photo: old_photo
+                    });
+                }
+            }, 1000);
         });
+    }
+
+    isInputsValid () {
+        let { name, city, photo,
+              _name, _city, _photo } = this.state;
+        if ((name && name.trim() === _name) &&
+            (city && city.trim() === _city) &&
+            (photo && photo.trim() === _photo)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     handleChangeName (value) {
@@ -88,7 +117,7 @@ class EditProfileScreen extends Component {
     handlePhotoPicked = async result => {
         try {
             if (!result.cancelled) {
-                uploadUrl = await this.uploadImageAsync(result.uri);
+                uploadUrl = await this.uploadImage(result.uri);
                 this.setState({ photo: uploadUrl });
             }
         } catch (e) {
@@ -98,7 +127,7 @@ class EditProfileScreen extends Component {
         }
     }
 
-    uploadImageAsync = async (uri) => {
+    uploadImage = async (uri) => {
         let response = await fetch(uri);
         let blob = await response.blob();
         let ref = st.child(uuid.v4());  
@@ -110,15 +139,18 @@ class EditProfileScreen extends Component {
         let { photo, name, city, userId } = this.state;
         let userRef = db.ref('/users/'+userId);
         userRef.update({
-            photo: photo,
-            name: name,
-            city: city
+            'name': name,
+            'city': city,
+            'photo': photo
         }).then(() => {
+            AsyncStorage.setItem('_name', name);
+            AsyncStorage.setItem('_city', city);
+            AsyncStorage.setItem('_photo', photo);
             this.showDialogMessage(
                 'Sukses',
                 'Selamat Anda berhasil mengubah profil'
             );
-        }).catch((error) => {
+        }).catch(() => {
             this.showDialogMessage(
                 'Error',
                 'Maaf, tidak bisa mengubah profil. Terjadi kesalahan.'
@@ -162,11 +194,11 @@ class EditProfileScreen extends Component {
                                 <Text style={ErrorStyles.errorMessage}>{ 'Kota minimal terdiri dari 4 karakter' }</Text>
                             </Item>
                         }
-                        { (photo && isNameValid && isCityValid) &&
+                        { this.isInputsValid() &&
                             <Button block info style={styles.saveBtn} onPress={this.handleSubmit} >
                                 <Text>Simpan</Text>
                             </Button> }
-                        { (!photo || !isNameValid || !isCityValid) &&
+                        { !this.isInputsValid() &&
                             <Button block disabled style={styles.saveBtn}>
                                 <Text>Simpan</Text>
                             </Button> }

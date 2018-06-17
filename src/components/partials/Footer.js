@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
 import { Footer, FooterTab, Button, Icon, Badge, Text } from 'native-base';
-import { hidden } from 'ansi-colors';
 
 class FooterScreen extends Component {
 
