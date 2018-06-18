@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Image, Alert, AsyncStorage } from 'react-native';
+import { StyleSheet, Image, Alert } from 'react-native';
 import { Container, Content, View, Text, H3, Tabs, Tab, Button, Icon, Spinner } from 'native-base';
 import Events from './Events';
 import Members from './Members';
@@ -12,7 +12,6 @@ class GroupScreen extends Component {
         super(props);
 
         this.state = {
-            activeMenu: null,
             isUserLogin: false,
             userId: null,
             isAdmin: false,
@@ -255,6 +254,7 @@ class GroupScreen extends Component {
                         <Tabs initialPage={0}>
                             <Tab heading="Events">
                                 <Events
+                                    groupKey={groupKey}
                                     data={group.events}
                                     onMenuChange={this.handleRouteChange}
                                 />

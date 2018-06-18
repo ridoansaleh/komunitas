@@ -113,14 +113,15 @@ class HomeScreen extends Component {
           if (event) {
             Object.keys(event).map((u,i) => eventNames.push(u));
             eventNames.map((e,i) => {
-              groupRef.child(event[e]['group']).once('value', snap => {
+              groupRef.child(event[e]['group']).once('value', g => {
                 topEvents.push({
-                  group_name: snap.val().name,
-                  group_image: snap.val().image,
-                  key: e,
-                  name: event[e]['name'],
-                  image: event[e]['image'],
-                  date: event[e]['date']
+                  'key': e,
+                  'name': event[e]['name'],
+                  'image': event[e]['image'],
+                  'date': event[e]['date'],
+                  'group_key': event[e]['group'],
+                  'group_name': g.val().name,
+                  'group_image': g.val().image,
                 });
                 if (topEvents.length === eventNames.length) { // i can't call topEvents outside groupRef's block because the data is empty over there
                   this.fetchCategories(loginStatus, topEvents, true, notif);
@@ -188,7 +189,10 @@ class HomeScreen extends Component {
       }
     } else {
       if (url === 'Event') {
-        return navigate(url, { event_key: param });
+        return navigate(url, {
+          event_key: param.key,
+          group_key: param.group_key
+        });
       } else {
         return navigate(url, param);
       }
@@ -215,7 +219,7 @@ class HomeScreen extends Component {
                 <Image style={styles.cardImage} source={{ uri: item.image }} />
               </CardItem>
               <CardItem>
-                <TouchableOpacity onPress={() => this.handleRouteChange('Event', item.key)}>
+                <TouchableOpacity onPress={() => this.handleRouteChange('Event', item)}>
                   <Text>{item.name}</Text>
                 </TouchableOpacity>
               </CardItem>

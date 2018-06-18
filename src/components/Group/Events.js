@@ -46,7 +46,11 @@ class EventScreen extends Component {
     }
 
     handleRouteChange (url, eventKey) {
-        return this.props.onMenuChange('Event', { event_key: eventKey }); // i can't access props.navigation from the child component
+        let groupKey = this.props.groupKey;
+        return this.props.onMenuChange(url, {
+            event_key: eventKey,
+            group_key: groupKey
+        });
     }
 
     render () {

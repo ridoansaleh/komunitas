@@ -10,17 +10,20 @@ class EventScreen extends Component {
         super(props);
 
         this.state = {
-            isUserLogin: false,
             userKey: null,
-            isUserMember: false,
+            isUserJoinGroup: false,
+            isUserJoinEvent: false,
             event: null,
-            eventKey: this.props.navigation.state.params.event_key
+            eventKey: this.props.navigation.state.params.event_key,
+            groupKey: this.props.navigation.state.params.group_key
         }
 
         this.fetchEventData = this.fetchEventData.bind(this);
-        this.checkIsUserMember = this.checkIsUserMember.bind(this);
+        this.checkIsUserJoinEvent = this.checkIsUserJoinEvent.bind(this);
+        this.checkIsUserJoinGroup = this.checkIsUserJoinGroup.bind(this);
         this.handleCancelJoinEvent = this.handleCancelJoinEvent.bind(this);
         this.handleRequestJoinEvent = this.handleRequestJoinEvent.bind(this);
+        this.handleChangeRequest = this.handleChangeRequest.bind(this);
         this.showAlertMessage = this.showAlertMessage.bind(this);
     }
 
@@ -72,10 +75,10 @@ class EventScreen extends Component {
                             host: groupAdmin,
                             total_members: totalMembers
                         };
-                        if (loginStatus) { 
-                            this.checkIsUserMember(loginStatus, userKey, result)
+                        if (loginStatus) {
+                            this.checkIsUserJoinGroup(loginStatus, userKey, result);
                         } else {
-                            this.setState({ isUserLogin: loginStatus, event: result });
+                            this.setState({ event: result });
                         }
                     }
                 });
@@ -83,7 +86,7 @@ class EventScreen extends Component {
         })
     }
 
-    checkIsUserMember (loginStatus, userKey, eventData) {
+    checkIsUserJoinEvent (loginStatus, userKey, eventData, joinGroupStatus) {
         let membersRef = db.ref('/events/'+this.state.eventKey+'/members');
         let membersKey = [];
 
@@ -97,38 +100,75 @@ class EventScreen extends Component {
                 for (let i=0; i<membersKey.length; i++) {
                     if (membersKey[i] === userKey) {
                         this.setState({
-                            isUserLogin: loginStatus,
                             userKey: userKey,
-                            isUserMember: true,
+                            isUserJoinGroup: joinGroupStatus,
+                            isUserJoinEvent: true,
                             event: eventData
                         });
                     }
-                    if (i === (membersKey.length-1) && !this.state.isUserMember) {
+                    if (i === (membersKey.length-1) && !this.state.isUserJoinEvent) {
                         this.setState({
-                            isUserLogin: loginStatus,
                             userKey: userKey,
+                            isUserJoinGroup: joinGroupStatus,
+                            isUserJoinEvent: false,
                             event: eventData
                         });
                     }
                 }
             } else {
                 this.setState({
-                    isUserLogin: loginStatus,
                     userKey: userKey,
+                    isUserJoinGroup: joinGroupStatus,
+                    isUserJoinEvent: false,
                     event: eventData
                 });
             }
         });
     }
 
-    handleCancelJoinEvent (isUserMember, userKey) {
+    checkIsUserJoinGroup (loginStatus, userKey, eventData) {
+        let { groupKey } = this.state;
+        let groupRef = db.ref('/groups/'+groupKey+'/members');
+        let groupsKey = []; 
+
+        groupRef.on('value', (data) => {
+            if (data.val()) {
+                Object.keys(data.val()).map((g,i) => groupsKey.push(g));
+            }
+
+            if (groupsKey.length > 0) {
+                for (let i=0; i<groupsKey.length; i++) {
+                    if (groupsKey[i] === userKey) {
+                        this.checkIsUserJoinEvent(loginStatus, userKey, eventData, true);
+                    }
+                    if (i === (groupsKey.length-1) && !this.state.isUserJoinGroup) {
+                        this.setState({
+                            userKey: userKey,
+                            isUserJoinGroup: false,
+                            isUserJoinEvent: false,
+                            event: eventData
+                        });
+                    }
+                }
+            } else {
+                this.setState({
+                    userKey: userKey,
+                    isUserJoinGroup: false,
+                    isUserJoinEvent: false,
+                    event: eventData
+                });
+            }
+        });
+    }
+
+    handleCancelJoinEvent (isUserJoinEvent, userKey) {
         let { eventKey } = this.state;
 
-        if (!isUserMember) {
+        if (!isUserJoinEvent) {
             this.showAlertMessage('Peringatan', 'Kamu BELUM ikut event ini !');
         } else {
             let eventKeys = [];
-            let membersRef = db.ref('/events/'+eventKey+'/members/'+userKey);
+            let membersRef = db.ref('/events/'+eventKey+'/members');
 
             membersRef.on('value', (data) => {
                 if (data.val()) {
@@ -139,25 +179,48 @@ class EventScreen extends Component {
             if (eventKeys) {
                 if (eventKeys.length > 1) {
                     db.ref('/events/'+eventKey+'/members/'+userKey).remove();
-                    this.setState({ isUserMember: false });
+                    this.setState({ isUserJoinEvent: false });
                 } else {
                     let eventRef = db.ref('/events/'+eventKey);
                     eventRef.update({ members: false });
-                    this.setState({ isUserMember: false });
+                    this.setState({ isUserJoinEvent: false });
                 }
             }
         }
     }
 
-    handleRequestJoinEvent (isUserMember, userKey) {
+    handleRequestJoinEvent (isUserJoinEvent, userKey) {
         let { eventKey } = this.state;
 
-        if (isUserMember) {
+        if (isUserJoinEvent) {
             this.showAlertMessage('Peringatan', 'Kamu SUDAH ikut event ini !');
         } else {
             let eventRef = db.ref('/events/'+eventKey+'/members/'+userKey);
             eventRef.set({ status: true });
-            this.setState({ isUserMember: true });
+            this.setState({ isUserJoinEvent: true });
+        }
+    }
+
+    handleChangeRequest (userKey) {
+        let { eventKey } = this.state;
+        let eventKeys = [];
+        let membersRef = db.ref('/events/'+eventKey+'/members');
+
+        membersRef.on('value', (data) => {
+            if (data.val()) {
+                Object.keys(data.val()).map((e,i) => eventKeys.push(e));
+            }
+        });
+
+        if (eventKeys) {
+            if (eventKeys.length > 1) {
+                db.ref('/events/'+eventKey+'/members/'+userKey).remove();
+                this.setState({ isUserJoinEvent: false });
+            } else {
+                let eventRef = db.ref('/events/'+eventKey);
+                eventRef.update({ members: false });
+                this.setState({ isUserJoinEvent: false });
+            }
         }
     }
 
@@ -167,7 +230,7 @@ class EventScreen extends Component {
             content,
             [
               {text: 'Tutup', onPress: () => {
-                console.log('Tutup');
+                console.log('Close');
               }}
             ],
             { cancelable: true }
@@ -175,7 +238,7 @@ class EventScreen extends Component {
     }
 
     render () {
-        let { isUserLogin, userKey, isUserMember, event } = this.state;
+        let { userKey, isUserJoinEvent, isUserJoinGroup, event } = this.state;
         return (
             <Container>
                 { event && <Content>
@@ -191,30 +254,48 @@ class EventScreen extends Component {
                     <View style={styles.eventBox}>
                         <H1>{ (event.name).toUpperCase() }</H1>
                     </View>
-                    { ((event.quota > event.total_members) && isUserLogin) &&
+                    { ((event.quota > event.total_members) && isUserJoinGroup && !isUserJoinEvent) &&
                         <Grid style={styles.joinBox}>
                             <Col style={{ width: '70%' }}>
                                 <Text>Apakah kamu ingin ikut ?</Text>
                             </Col>
                             <Col>
-                                <TouchableOpacity onPress={() => this.handleCancelJoinEvent(isUserMember, userKey)}>
-                                    { isUserMember && <Icon name='ios-close-circle-outline' /> }
-                                    { !isUserMember && <Icon name='md-close-circle' /> }
+                                <TouchableOpacity onPress={() => this.handleCancelJoinEvent(isUserJoinEvent, userKey)}>
+                                    { isUserJoinEvent && <Icon name='ios-close-circle-outline' /> }
+                                    { !isUserJoinEvent && <Icon name='md-close-circle' /> }
                                 </TouchableOpacity>
                             </Col>
                             <Col>
-                                <TouchableOpacity onPress={() => this.handleRequestJoinEvent(isUserMember, userKey)}>
-                                    { isUserMember && <Icon name='md-checkmark-circle' /> }
-                                    { !isUserMember && <Icon name='ios-checkmark-circle-outline' /> }
+                                <TouchableOpacity onPress={() => this.handleRequestJoinEvent(isUserJoinEvent, userKey)}>
+                                    { isUserJoinEvent && <Icon name='md-checkmark-circle' /> }
+                                    { !isUserJoinEvent && <Icon name='ios-checkmark-circle-outline' /> }
                                 </TouchableOpacity>
                             </Col>
-                        </Grid> }
+                        </Grid>
+                    }
+                    { ((event.quota > event.total_members) && isUserJoinGroup && isUserJoinEvent) &&
+                        <Grid style={styles.joinBox}>
+                            <Col style={{ width: '55%' }}>
+                                <Text>Kamu ikut</Text>
+                            </Col>
+                            <Col>
+                                <TouchableOpacity onPress={() => this.handleChangeRequest(userKey)}>
+                                    <Text>Batalkan</Text>
+                                </TouchableOpacity>
+                            </Col>
+                            <Col style={{ alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => this.handleChangeRequest(userKey)}>
+                                    <Icon name='md-checkmark-circle' />
+                                </TouchableOpacity>
+                            </Col>
+                        </Grid>
+                    }
                     <List style={{ marginBottom: 10 }}>
                         <ListItem avatar>
                             <Left>
                                 <Icon name='ios-clock-outline' />
                             </Left>
-                            <Body>
+                            <Body style={{ borderBottomWidth: 0 }}>
                                 <Text>{event.date}</Text>
                                 <Text note>{event.time}</Text>
                             </Body>
@@ -223,7 +304,7 @@ class EventScreen extends Component {
                             <Left>
                                 <Icon name='ios-map-outline' />
                             </Left>
-                            <Body>
+                            <Body style={{ borderBottomWidth: 0 }}>
                                 <Text>{event.location}</Text>
                             </Body>
                         </ListItem>
@@ -231,7 +312,7 @@ class EventScreen extends Component {
                             <Left>
                                 <Icon name='ios-person-outline' />
                             </Left>
-                            <Body>
+                            <Body style={{ borderBottomWidth: 0 }}>
                                 <Text>{event.host}</Text>
                             </Body>
                         </ListItem>
@@ -262,7 +343,14 @@ const styles = StyleSheet.create({
         padding: 15
     },
     joinBox: {
-        padding: 15
+        width: '90%',
+        marginLeft: '5%',
+        marginRight: '5%',
+        padding: 15,
+        borderTopWidth: 0.5,
+        borderTopColor: '#AEAFB0',
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#AEAFB0'
     },
     infoBox: {
         marginLeft: 5,
