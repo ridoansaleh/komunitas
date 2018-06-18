@@ -1,10 +1,9 @@
 # Komunitas
-It's similar to Meetup.com, but more simple. Build using react native, native base UI, and react navigation. 
-In the near future, i would like to integrate this with Firebase as database.  
+It's similar to Meetup.com, but more simple. Build using react native, native base, react navigation and firebase.
 
-## Screenshots
+## Screen Shots
 
-Here are a few screenshots of Komunitas app :
+Here are a few screen shots of Komunitas app :
 
 - [Sign Up](#sign-up)
 - [Login](#login)
