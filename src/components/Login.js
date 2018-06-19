@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
-import { Container, Button, Text, Content, Form, Item, Input, Label } from 'native-base';
+import { StyleSheet, TouchableOpacity, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
+import { Container, Button, Text, Content, Form, Item, Input, Label, View } from 'native-base';
 import { ErrorStyles } from '../css/error';
 import { auth as authenticate } from '../firebase';
 import { auth, db } from '../firebase/config';
@@ -15,7 +15,8 @@ class LoginScreen extends Component {
             password: '',
             isEmailValid: false,
             isEmailChanged: false,
-            isPasswordValid: false
+            isPasswordValid: false,
+            isLoading: false
         }
         
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
@@ -43,6 +44,7 @@ class LoginScreen extends Component {
 
     handleSubmit () {
         let { email, password } = this.state;
+        this.setState({ isLoading: true });
         authenticate.doSignInWithEmailAndPassword(email, password)
             .then(() => {
                 auth.onAuthStateChanged(user => {
@@ -55,11 +57,12 @@ class LoginScreen extends Component {
                                 AsyncStorage.setItem('_city', res.city);
                                 AsyncStorage.setItem('_photo', res.photo);
                                 AsyncStorage.setItem('_pass', password);
+                                this.setState({ isLoading: false });
+                                return this.props.navigation.navigate('Home');
                             });
                         } catch (error) {
                             console.log('Error while set _pass on storage');
                         }
-                        return this.props.navigation.navigate('Home');
                     }
                 });
             })
@@ -106,7 +109,7 @@ class LoginScreen extends Component {
         let { 
             email, password, 
             isEmailValid, isEmailChanged,
-            isPasswordValid
+            isPasswordValid, isLoading
         } = this.state;
         return (
             <Container>
@@ -144,6 +147,9 @@ class LoginScreen extends Component {
                         <Text style={styles.signupText}>Belum punya akun? Daftar di sini</Text>
                     </TouchableOpacity>
                 </Content>
+                { isLoading && <View style={styles.loading}>
+                    <ActivityIndicator size='large' color='#FFFFFF'/>
+                </View> }
             </Container>
         );
     }
@@ -161,6 +167,16 @@ const styles = StyleSheet.create({
     signupText: {
         marginTop: 20,
         textAlign: 'center'
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
 
