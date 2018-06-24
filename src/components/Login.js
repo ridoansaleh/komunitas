@@ -67,6 +67,7 @@ class LoginScreen extends Component {
                 });
             })
             .catch(error => {
+                this.setState({ isLoading: false });
                 if (error.code === 'auth/wrong-password') {
                     this.showDialogMessage(
                         'Tidak Valid',
@@ -106,11 +107,7 @@ class LoginScreen extends Component {
     }
 
     render() {
-        let { 
-            email, password, 
-            isEmailValid, isEmailChanged,
-            isPasswordValid, isLoading
-        } = this.state;
+        let { email, password, isEmailValid, isEmailChanged, isPasswordValid, isLoading } = this.state;
         return (
             <Container>
                 <Content padder={true} style={styles.content}>
