@@ -52,15 +52,12 @@ class NotificationScreen extends Component {
                                 }
                             });
                             db.ref('/notifications/'+notifsKey[i]).on('value', (data) => {
-                                let groupName = null;
                                 let groupImage = null;
                                 db.ref('/groups/'+data.val().sender).on('value', (group) => {
-                                    groupName = group.val().name;
                                     groupImage = group.val().image;
                                 });
-                                if (groupName && groupImage) {
+                                if (groupImage) {
                                     result.push({
-                                        'groupName': groupName,
                                         'groupImage': groupImage,
                                         'text': data.val().text,
                                         'time': data.val().time
@@ -119,7 +116,6 @@ class NotificationScreen extends Component {
                                             <Thumbnail source={{ uri: n.groupImage }}/>
                                         </Left>
                                         <Body>
-                                            <Text>{n.groupName}</Text>
                                             <Text note>{n.text}</Text>
                                         </Body>
                                         <Right>
