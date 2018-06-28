@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
-import { Container, Content, Text, List, ListItem, Left, Thumbnail, Icon, Body, H1, H3 } from 'native-base';
+import { Container, Content, Text, List, ListItem, Left, Thumbnail, Icon, Body, H1, H3, Button } from 'native-base';
 import { Col, Grid } from "react-native-easy-grid";
 import { auth, db } from '../firebase/config';
 
@@ -11,6 +11,7 @@ class EventScreen extends Component {
 
         this.state = {
             userKey: null,
+            isUserAdmin: false,
             isUserJoinGroup: false,
             isUserJoinEvent: false,
             event: null,
@@ -19,11 +20,14 @@ class EventScreen extends Component {
         }
 
         this.fetchEventData = this.fetchEventData.bind(this);
+        this.checkIsUserAdmin = this.checkIsUserAdmin.bind(this);
         this.checkIsUserJoinEvent = this.checkIsUserJoinEvent.bind(this);
         this.checkIsUserJoinGroup = this.checkIsUserJoinGroup.bind(this);
         this.handleCancelJoinEvent = this.handleCancelJoinEvent.bind(this);
         this.handleRequestJoinEvent = this.handleRequestJoinEvent.bind(this);
         this.handleChangeRequest = this.handleChangeRequest.bind(this);
+        this.handleDeleteEvent = this.handleDeleteEvent.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
         this.showAlertMessage = this.showAlertMessage.bind(this);
     }
 
@@ -76,7 +80,7 @@ class EventScreen extends Component {
                             total_members: totalMembers
                         };
                         if (loginStatus) {
-                            this.checkIsUserJoinGroup(loginStatus, userKey, result);
+                            this.checkIsUserAdmin(userKey, result);
                         } else {
                             this.setState({ event: result });
                         }
@@ -86,7 +90,25 @@ class EventScreen extends Component {
         })
     }
 
-    checkIsUserJoinEvent (loginStatus, userKey, eventData, joinGroupStatus) {
+    checkIsUserAdmin (userKey, result) {
+        let adminRef = db.ref('/groups/'+this.state.groupKey+'/admin');
+        adminRef.on('value', (data) => {
+            let admin = data.val();
+            if (admin === userKey) {
+                this.setState({
+                    userKey: userKey,
+                    isUserAdmin: true,
+                    isUserJoinGroup: true,
+                    isUserJoinEvent: true,
+                    event: result
+                });
+            } else {
+                this.checkIsUserJoinGroup(userKey, result);
+            }
+        });
+    }
+
+    checkIsUserJoinEvent (userKey, eventData, joinGroupStatus) {
         let membersRef = db.ref('/events/'+this.state.eventKey+'/members');
         let membersKey = [];
 
@@ -101,6 +123,7 @@ class EventScreen extends Component {
                     if (membersKey[i] === userKey) {
                         this.setState({
                             userKey: userKey,
+                            isUserAdmin: false,
                             isUserJoinGroup: joinGroupStatus,
                             isUserJoinEvent: true,
                             event: eventData
@@ -109,6 +132,7 @@ class EventScreen extends Component {
                     if (i === (membersKey.length-1) && !this.state.isUserJoinEvent) {
                         this.setState({
                             userKey: userKey,
+                            isUserAdmin: false,
                             isUserJoinGroup: joinGroupStatus,
                             isUserJoinEvent: false,
                             event: eventData
@@ -118,6 +142,7 @@ class EventScreen extends Component {
             } else {
                 this.setState({
                     userKey: userKey,
+                    isUserAdmin: false,
                     isUserJoinGroup: joinGroupStatus,
                     isUserJoinEvent: false,
                     event: eventData
@@ -126,7 +151,7 @@ class EventScreen extends Component {
         });
     }
 
-    checkIsUserJoinGroup (loginStatus, userKey, eventData) {
+    checkIsUserJoinGroup (userKey, eventData) {
         let { groupKey } = this.state;
         let groupRef = db.ref('/groups/'+groupKey+'/members');
         let groupsKey = []; 
@@ -139,11 +164,12 @@ class EventScreen extends Component {
             if (groupsKey.length > 0) {
                 for (let i=0; i<groupsKey.length; i++) {
                     if (groupsKey[i] === userKey) {
-                        this.checkIsUserJoinEvent(loginStatus, userKey, eventData, true);
+                        this.checkIsUserJoinEvent(userKey, eventData, true);
                     }
                     if (i === (groupsKey.length-1) && !this.state.isUserJoinGroup) {
                         this.setState({
                             userKey: userKey,
+                            isUserAdmin: false,
                             isUserJoinGroup: false,
                             isUserJoinEvent: false,
                             event: eventData
@@ -153,6 +179,7 @@ class EventScreen extends Component {
             } else {
                 this.setState({
                     userKey: userKey,
+                    isUserAdmin: false,
                     isUserJoinGroup: false,
                     isUserJoinEvent: false,
                     event: eventData
@@ -202,11 +229,75 @@ class EventScreen extends Component {
     }
 
     handleChangeRequest (userKey) {
-        let { eventKey } = this.state;
-        let eventKeys = [];
-        let membersRef = db.ref('/events/'+eventKey+'/members');
+        let { isUserAdmin, eventKey } = this.state;
+        if (isUserAdmin) {
+            this.showAlertMessage('Peringatan', 'Kamu tidak bisa keluar dari Event ini karena kamu adalah admin atau host');
+        } else {
+            let eventKeys = [];
+            let membersRef = db.ref('/events/'+eventKey+'/members');
 
-        membersRef.on('value', (data) => {
+            membersRef.on('value', (data) => {
+                if (data.val()) {
+                    Object.keys(data.val()).map((e,i) => eventKeys.push(e));
+                }
+            });
+
+            if (eventKeys) {
+                if (eventKeys.length > 1) {
+                    db.ref('/events/'+eventKey+'/members/'+userKey).remove();
+                    this.setState({ isUserJoinEvent: false });
+                } else {
+                    let eventRef = db.ref('/events/'+eventKey);
+                    eventRef.update({ members: false });
+                    this.setState({ isUserJoinEvent: false });
+                }
+            }
+        }
+    }
+
+    handleDeleteEvent () {
+        Alert.alert(
+            'Peringatan',
+            'Apakah Anda yakin ingin menghapus event ini ?',
+            [
+                { text: 'Ya', onPress: () => { 
+                    this.deleteEvent()
+                }},
+                { text: 'Tidak', onPress: () => {
+                    console.log('Close') 
+                }}
+            ],
+            { cancelable: true }
+        );
+    }
+
+    deleteEvent () {
+        let { eventKey, groupKey } = this.state;
+        let eventsRef = db.ref('/groups/'+groupKey+'/events');
+        let eventKeys = [];
+
+        let delEvent = (eventKey) => {
+            let eventKeys = [];
+            let eventRef = db.ref('/events');
+
+            eventRef.on('value', (data) => {
+                if (data.val()) {
+                    Object.keys(data.val()).map((e,i) => eventKeys.push(e));
+                }
+            });
+
+            if (eventKeys) {
+                if (eventKeys.length > 1) {
+                    db.ref('/events/'+eventKey).remove();
+                } else {
+                    let rootRef = db.ref('/');
+                    rootRef.update({ events: false });
+                }
+                this.props.navigation.navigate('Group', { group_key: groupKey });
+            }
+        }
+
+        eventsRef.on('value', (data) => {
             if (data.val()) {
                 Object.keys(data.val()).map((e,i) => eventKeys.push(e));
             }
@@ -214,12 +305,12 @@ class EventScreen extends Component {
 
         if (eventKeys) {
             if (eventKeys.length > 1) {
-                db.ref('/events/'+eventKey+'/members/'+userKey).remove();
-                this.setState({ isUserJoinEvent: false });
+                db.ref('/groups/'+groupKey+'/events/'+eventKey).remove();
+                delEvent(eventKey);
             } else {
-                let eventRef = db.ref('/events/'+eventKey);
-                eventRef.update({ members: false });
-                this.setState({ isUserJoinEvent: false });
+                let groupRef = db.ref('/groups/'+groupKey);
+                groupRef.update({ events: false });
+                delEvent(eventKey);
             }
         }
     }
@@ -238,10 +329,10 @@ class EventScreen extends Component {
     }
 
     render () {
-        let { userKey, isUserJoinEvent, isUserJoinGroup, event } = this.state;
+        let { userKey, isUserAdmin, isUserJoinEvent, isUserJoinGroup, event } = this.state;
         return (
             <Container>
-                { event && <Content>
+                { event && <Content padder={true}>
                     <Grid style={styles.groupBox}>
                         <Col style={{ width: '30%' }}>
                             <Thumbnail square large source={{ uri: event.group_image }} />
@@ -318,14 +409,21 @@ class EventScreen extends Component {
                         </ListItem>
                     </List>
                     { (event.quota > event.total_members) &&
-                        <View style={styles.infoBox}>
+                        <View style={styles.blueBox}>
                             { (event.total_members !== 0) && <Text>{event.total_members + ' orang ikut '}</Text> }
-                            <Text>{' Sisa ' + (event.quota - event.total_members) + ' tempat lagi, buruan !! '}</Text>
+                            <Text>{'Sisa ' + (event.quota - event.total_members) + ' tempat lagi, buruan !!'}</Text>
                         </View>
                     }
                     { (event.quota === event.total_members) &&
-                        <View style={styles.infoBox}>
+                        <View style={styles.redBox}>
                             <Text>{ 'Tidak ada tempat lagi :(' }</Text>
+                        </View>
+                    }
+                    { isUserAdmin &&
+                        <View style={styles.deleteBtn}>
+                            <Button block danger onPress={() => this.handleDeleteEvent()}>
+                                <Text>Hapus Event</Text>
+                            </Button>
                         </View>
                     }
                 </Content>}
@@ -352,12 +450,22 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: '#AEAFB0'
     },
-    infoBox: {
+    blueBox: {
+        marginLeft: 5,
+        marginRight: 5,
+        padding: 15,
+        borderColor: '#316ED0',
+        borderWidth: 1.5
+    },
+    redBox: {
         marginLeft: 5,
         marginRight: 5,
         padding: 15,
         borderColor: '#EEA4A4',
         borderWidth: 1.5
+    },
+    deleteBtn: {
+        marginTop: 15
     }
 });
 
