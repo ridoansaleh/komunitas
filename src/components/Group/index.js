@@ -28,6 +28,8 @@ class GroupScreen extends Component {
         this.checkIsUserWaiting = this.checkIsUserWaiting.bind(this);
         this.handleRequestJoinGroup = this.handleRequestJoinGroup.bind(this);
         this.handleExitGroup = this.handleExitGroup.bind(this);
+        this.handleDeleteEvent = this.handleDeleteEvent.bind(this);
+        this.deleteEvent = this.deleteEvent.bind(this);
         this.showDialogMessage = this.showDialogMessage.bind(this);
     }
 
@@ -189,6 +191,66 @@ class GroupScreen extends Component {
         }
     }
 
+    handleDeleteEvent (eventKey) {
+        Alert.alert(
+            'Peringatan',
+            'Apakah kamu yakin ingin menghapus event ini ?',
+            [
+                { text: 'Ya', onPress: () => { 
+                    this.deleteEvent(eventKey);
+                }},
+                { text: 'Tidak', onPress: () => {
+                    console.log('Close'); 
+                }}
+            ],
+            { cancelable: true }
+        );
+    }
+
+    deleteEvent (eventKey) {
+        let { groupKey } = this.state;
+        let eventsRef = db.ref('/groups/'+groupKey+'/events');
+        let eventKeys = [];
+
+        delEvent = () => {
+            let eventRef = db.ref('/events');
+            let eventKeys = [];
+
+            eventRef.on('value', (data) => {
+                if (data.val()) {
+                    Object.keys(data.val()).map((e,i) => eventKeys.push(e));
+                }
+            });
+
+            if (eventKeys) {
+                if (eventKeys.length > 1) {
+                    db.ref('/events/'+eventKey).remove();
+                } else {
+                    let rootRef = db.ref('/');
+                    rootRef.update({ events: false });
+                }
+                this.props.navigation.navigate('Group', { group_key: groupKey });
+            }
+        }
+
+        eventsRef.on('value', (data) => {
+            if (data.val()) {
+                Object.keys(data.val()).map((e,i) => eventKeys.push(e));
+            }
+        });
+
+        if (eventKeys) {
+            if (eventKeys.length > 1) {
+                db.ref('/groups/'+groupKey+'/events/'+eventKey).remove();
+                delEvent();
+            } else {
+                let groupRef = db.ref('/groups/'+groupKey);
+                groupRef.update({ events: false });
+                delEvent();
+            }
+        }
+    }
+
     showDialogMessage (title, message) {
         Alert.alert(
             title,
@@ -257,6 +319,7 @@ class GroupScreen extends Component {
                                     groupKey={groupKey}
                                     data={group.events}
                                     onMenuChange={this.handleRouteChange}
+                                    onDeleteEvent={this.handleDeleteEvent}
                                 />
                             </Tab>
                             <Tab heading="Member">

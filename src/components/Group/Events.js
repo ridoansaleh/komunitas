@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
-import { Content, Text, Card, CardItem, Body, H2 } from 'native-base';
+import { Content, Text, Card, CardItem, Body, H2, Icon } from 'native-base';
 import { auth, db } from '../../firebase/config';
 
 class EventScreen extends Component {
@@ -13,6 +13,7 @@ class EventScreen extends Component {
         }
 
         this.handleRouteChange = this.handleRouteChange.bind(this);
+        this.handleDeleteEvent = this.handleDeleteEvent.bind(this);
     }
 
     componentDidMount () {
@@ -45,6 +46,10 @@ class EventScreen extends Component {
         }
     }
 
+    handleDeleteEvent (eventKey) {
+        return this.props.onDeleteEvent(eventKey);
+    }
+
     handleRouteChange (url, eventKey) {
         let groupKey = this.props.groupKey;
         return this.props.onMenuChange(url, {
@@ -68,6 +73,11 @@ class EventScreen extends Component {
                                     <Text style={{ marginTop: 20 }}>{e.date}</Text>
                                     <Text style={{ marginTop: 20 }}>{e.location}</Text>
                                 </Body>
+                            </CardItem>
+                            <CardItem footer>
+                                <TouchableOpacity onPress={() => this.handleDeleteEvent(e.key)}>
+                                    <Icon name='md-trash' />
+                                </TouchableOpacity>
                             </CardItem>
                         </Card> 
                     );

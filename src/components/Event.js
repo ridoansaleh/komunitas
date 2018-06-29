@@ -419,13 +419,13 @@ class EventScreen extends Component {
                             <Text>{ 'Tidak ada tempat lagi :(' }</Text>
                         </View>
                     }
-                    { isUserAdmin &&
+                    {/* { isUserAdmin &&
                         <View style={styles.deleteBtn}>
                             <Button block danger onPress={() => this.handleDeleteEvent()}>
                                 <Text>Hapus Event</Text>
                             </Button>
                         </View>
-                    }
+                    } */}
                 </Content>}
             </Container>
         );

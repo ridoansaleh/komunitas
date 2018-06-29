@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   cardWrapper: {
-    height: 435
+    height: 450
   },
   cardBlock: {
     elevation: 3
